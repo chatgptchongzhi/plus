@@ -1,0 +1,48 @@
+{
+  "recommend": [
+    {
+      "title": "ChatGPT Plus 代充全指南",
+      "date": "2025-11-01",
+      "views": 1200,
+      "thumb": "images/thumb1.jpg"
+    },
+    {
+      "title": "Sora 视频生成教程",
+      "date": "2025-10-29",
+      "views": 980,
+      "thumb": "images/thumb2.jpg"
+    },
+    {
+      "title": "API Key 安全充值教学",
+      "date": "2025-10-20",
+      "views": 810,
+      "thumb": "images/thumb1.jpg"
+    },
+    {
+      "title": "ChatGPT 注册教程",
+      "date": "2025-10-10",
+      "views": 760,
+      "thumb": "images/thumb2.jpg"
+    }
+  ],
+  "list": [
+    {
+      "title": "ChatGPT充值避坑指南",
+      "excerpt": "教你如何安全高效地完成ChatGPT Plus充值，避免被封号与虚假代充陷阱。",
+      "author": "木子AI",
+      "date": "2025-10-31",
+      "views": 1320,
+      "tags": ["ChatGPT", "充值"],
+      "thumb": "images/thumb1.jpg"
+    },
+    {
+      "title": "Sora 视频实测体验",
+      "excerpt": "使用最新Sora模型生成真实短视频，画质、动作细节与AI音色全方位评测。",
+      "author": "木子AI",
+      "date": "2025-10-20",
+      "views": 880,
+      "tags": ["Sora", "视频生成"],
+      "thumb": "images/thumb2.jpg"
+    }
+  ]
+}
