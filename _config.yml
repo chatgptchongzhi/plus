@@ -1,0 +1,4 @@
+# 禁用 Jekyll 构建
+theme: null
+exclude:
+  - README.md
