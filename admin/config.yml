@@ -1,1 +1,83 @@
+backend:
+  name: git-gateway
+  branch: main   # 如果你的默认分支不是 main，请改为 master 或其它
 
+site_url: https://chatgptchongzhi.github.io/plus/
+display_url: https://chatgptchongzhi.github.io/plus/
+
+# 静态资源（图片）保存到仓库的哪个目录
+media_folder: "images/uploads"
+public_folder: "/plus/images/uploads"  # 你的 GitHub Pages 前缀是 /plus
+
+publish_mode: editorial_workflow
+local_backend: false
+logo_url: https://chatgptchongzhi.github.io/plus/images/qrcode-wechat.png
+
+collections:
+  # 站点基础信息（标题、描述、微信、邮箱、广告、关于）
+  - name: "siteinfo"
+    label: "站点信息"
+    files:
+      - file: "content/data/siteinfo.json"
+        label: "站点信息"
+        name: "siteinfo"
+        format: "json"
+        fields:
+          - { label: "站点标题", name: "siteTitle", widget: "string" }
+          - { label: "描述", name: "description", widget: "text" }
+          - { label: "微信号", name: "wechat", widget: "string" }
+          - { label: "邮箱", name: "email", widget: "string" }
+          - { label: "广告文案", name: "adText", widget: "text" }
+          - { label: "关于", name: "about", widget: "markdown" }
+
+  # 顶部导航与子菜单（示例结构：[{ "title": "...", "url": "...", "children": [...] }])
+  - name: "navigation"
+    label: "导航菜单"
+    files:
+      - file: "content/data/navigation.json"
+        label: "导航菜单"
+        name: "navigation"
+        format: "json"
+        fields:
+          - label: "菜单"
+            name: "items"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "标题", name: "title", widget: "string" }
+              - { label: "链接", name: "url", widget: "string" }
+              - label: "子菜单"
+                name: "children"
+                widget: "list"
+                required: false
+                fields:
+                  - { label: "标题", name: "title", widget: "string" }
+                  - { label: "链接", name: "url", widget: "string" }
+
+  # 文章（假设集中在一个 JSON 文件内：content/data/data.json）
+  # 如果你的文章不是这种结构，可以先跳过这块，等会儿我告诉你如何按真实结构改几行即可
+  - name: "posts"
+    label: "文章"
+    files:
+      - file: "content/data/data.json"
+        label: "文章列表"
+        name: "posts_json"
+        format: "json"
+        fields:
+          - label: "文章"
+            name: "posts"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "标题", name: "title", widget: "string" }
+              - { label: "摘要", name: "excerpt", widget: "text", required: false }
+              - { label: "封面图片", name: "cover", widget: "image", required: false }
+              - { label: "发布时间", name: "date", widget: "datetime" }
+              - { label: "作者", name: "author", widget: "string", required: false }
+              - { label: "阅读量", name: "views", widget: "number", required: false, value_type: "int" }
+              - { label: "正文", name: "body", widget: "markdown" }
+              - { label: "固定链接（可选）", name: "slug", widget: "string", required: false }
+
+slug:
+  encoding: "unicode"
+  clean_accents: true
