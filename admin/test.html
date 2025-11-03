@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Decap CMS 配置检测</title>
+  <style>
+    body { font-family: "Microsoft YaHei", sans-serif; background: #fafafa; padding: 40px; }
+    h1 { color: #D32F2F; }
+    .log { padding: 10px; margin: 10px 0; border-radius: 6px; }
+    .ok { background: #e0f2f1; color: #00796b; }
+    .warn { background: #fff3e0; color: #ef6c00; }
+    .err { background: #ffebee; color: #c62828; }
+  </style>
+</head>
+<body>
+  <h1>🔍 Decap CMS 后台检测工具</h1>
+  <div id="result">正在检测，请稍候...</div>
+
+  <script>
+    async function testDecapCMS() {
+      const result = document.getElementById("result");
+      const baseUrl = window.location.origin + "/plus/admin/config.yml";
+      const logs = [];
+
+      function log(msg, type = "ok") {
+        logs.push(`<div class="log ${type}">${msg}</div>`);
+      }
+
+      try {
+        log("🔎 正在请求配置文件：" + baseUrl);
+        const res = await fetch(baseUrl);
+        if (!res.ok) throw new Error("HTTP状态码：" + res.status);
+
+        const text = await res.text();
+
+        // 检查内容结构
+        if (text.includes("collections:")) {
+          log("✅ 找到 config.yml，并检测到 collections 配置项。");
+        } else {
+          log("⚠️ 找到 config.yml，但未检测到 collections，可能格式不正确。", "warn");
+        }
+
+        // 检查 YAML 格式问题（简单正则）
+        if (/^\s|\t/.test(text)) {
+          log("⚠️ 检测到缩进异常（含 Tab 或前导空格不规则）。", "warn");
+        }
+
+        // 检查 Decap 初始化脚本是否可访问
+        const jsUrl = "https://unpkg.com/decap-cms@2.15.72/dist/decap-cms.js";
+        const jsRes = await fetch(jsUrl);
+        if (jsRes.ok) {
+          log("✅ Decap CMS 核心脚本加载正常。");
+        } else {
+          log("❌ 无法加载 Decap CMS 核心脚本：" + jsUrl, "err");
+        }
+
+        log("🧩 检测完成！如果一切为绿色，则后台应可正常访问。");
+
+      } catch (err) {
+        log("❌ 检测失败：" + err.message, "err");
+      }
+
+      result.innerHTML = logs.join("");
+    }
+
+    testDecapCMS();
+  </script>
+</body>
+</html>
