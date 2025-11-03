@@ -1,38 +1,21 @@
-local_backend: true
-
 backend:
   name: git-gateway
   branch: main
 
-media_folder: "images/uploads"
-public_folder: "/images/uploads"
+media_folder: "images"
+public_folder: "/images"
 
-site_url: "https://plus-e2d.pages.dev"
-display_url: "https://plus-e2d.pages.dev"
+publish_mode: simple
 
 collections:
-  # 📝 文章内容
   - name: "posts"
-    label: "文章内容"
+    label: "文章"
     folder: "content/posts"
     create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    slug: "{{slug}}"
+    extension: "md"
     fields:
       - { label: "标题", name: "title", widget: "string" }
-      - { label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD HH:mm" }
-      - { label: "封面图", name: "thumbnail", widget: "image", required: false }
-      - { label: "正文内容", name: "body", widget: "markdown" }
-
-  # ⚙️ 网站基础信息
-  - name: "settings"
-    label: "网站信息"
-    files:
-      - file: "content/settings.yml"
-        label: "基础配置"
-        name: "Config"
-        fields:
-          - { label: "网站标题", name: "site_title", widget: "string", default: "木子AI" }
-          - { label: "网站描述", name: "site_description", widget: "string", default: "ChatGPT / Sora / AI 工具教程与充值引导" }
-          - { label: "微信号", name: "wechat_id", widget: "string", default: "muzi_ai" }
-          - { label: "邮箱", name: "contact_email", widget: "string", default: "contact@muzi.com" }
-          - { label: "二维码图片", name: "wechat_qrcode", widget: "image", required: false }
+      - { label: "发布日期", name: "date", widget: "datetime" }
+      - { label: "封面图", name: "image", widget: "image" }
+      - { label: "正文", name: "body", widget: "markdown" }
