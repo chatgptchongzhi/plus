@@ -4,12 +4,82 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>木子AI 后台管理</title>
+    <style>
+      .cms-diagnostic {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        width: 420px;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+        padding: 20px;
+        font-family: "Microsoft YaHei", sans-serif;
+        z-index: 9999;
+        display: none;
+      }
+      .cms-diagnostic h3 {
+        margin-top: 0;
+        color: #D32F2F;
+      }
+      .cms-log { margin: 6px 0; padding: 8px 10px; border-radius: 6px; }
+      .ok { background: #e8f5e9; color: #2e7d32; }
+      .warn { background: #fff8e1; color: #ef6c00; }
+      .err { background: #ffebee; color: #c62828; }
+    </style>
   </head>
   <body>
-    <!-- ✅ 使用 jsDelivr 镜像，防止 unpkg 加载失败 -->
+    <!-- ✅ 使用 jsDelivr 镜像（防止 unpkg 被墙） -->
     <script src="https://cdn.jsdelivr.net/npm/decap-cms@2.15.72/dist/decap-cms.js"></script>
     <script>
       CMS.init();
+
+      // 注册一个自定义面板 “系统检测”
+      CMS.registerPage({
+        id: "system-check",
+        title: "🧩 系统检测",
+        icon: "settings",
+        render: () => {
+          const container = document.createElement("div");
+          container.classList.add("cms-diagnostic");
+          container.style.display = "block";
+          container.innerHTML = `<h3>Decap CMS 系统检测中...</h3><div id="cms-result">请稍候...</div>`;
+          document.body.appendChild(container);
+          runDiagnostics();
+          return container;
+        },
+      });
+
+      // 运行检测逻辑
+      async function runDiagnostics() {
+        const result = document.getElementById("cms-result");
+        const logs = [];
+        const log = (msg, type = "ok") => logs.push(`<div class="cms-log ${type}">${msg}</div>`);
+
+        const configUrl = window.location.origin + "/plus/admin/config.yml";
+        log("🔍 正在检查配置文件路径: " + configUrl);
+
+        try {
+          const res = await fetch(configUrl);
+          if (!res.ok) throw new Error("HTTP 状态码: " + res.status);
+          const text = await res.text();
+          if (text.includes("collections:")) log("✅ 找到 config.yml，检测到 collections 项。");
+          else log("⚠️ 找到 config.yml，但缺少 collections 字段。", "warn");
+
+          // 检查 CDN 脚本可访问性
+          const jsUrl = "https://cdn.jsdelivr.net/npm/decap-cms@2.15.72/dist/decap-cms.js";
+          const jsRes = await fetch(jsUrl);
+          if (jsRes.ok) log("✅ Decap CMS 核心脚本加载正常。");
+          else log("❌ Decap CMS 脚本加载失败: " + jsUrl, "err");
+
+          log("🟢 系统检测完成。");
+        } catch (e) {
+          log("❌ 检测失败: " + e.message, "err");
+        }
+
+        result.innerHTML = logs.join("");
+      }
     </script>
   </body>
 </html>
