@@ -3,50 +3,16 @@ backend:
   branch: main
 
 media_folder: "images"
-public_folder: "/images"
-
-publish_mode: editorial_workflow
-
-site_url: "https://yourdomain.com"
-logo_url: "/images/logo.png"
+public_folder: "/plus/images"
 
 collections:
   - name: "posts"
-    label: "文章管理"
+    label: "文章"
     folder: "content/posts"
     create: true
     slug: "{{slug}}"
-    extension: "md"
-    format: "frontmatter"
     fields:
       - { label: "标题", name: "title", widget: "string" }
-      - { label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD" }
-      - { label: "分类", name: "category", widget: "string", default: "ChatGPT" }
+      - { label: "日期", name: "date", widget: "datetime" }
       - { label: "标签", name: "tags", widget: "list" }
-      - { label: "封面图片", name: "cover", widget: "image" }
-      - { label: "摘要", name: "excerpt", widget: "text" }
-      - { label: "正文内容", name: "body", widget: "markdown" }
-
-  - name: "siteinfo"
-    label: "站点配置"
-    files:
-      - label: "联系与信息"
-        name: "contact"
-        file: "content/siteinfo.json"
-        fields:
-          - { label: "网站名称", name: "site_name", widget: "string" }
-          - { label: "联系邮箱", name: "email", widget: "string" }
-          - { label: "微信号", name: "wechat", widget: "string" }
-          - { label: "微信二维码", name: "wechat_qr", widget: "image" }
-          - { label: "页脚版权信息", name: "footer", widget: "text" }
-
-  - name: "banners"
-    label: "广告横幅"
-    folder: "content/banners"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "标题", name: "title", widget: "string" }
-      - { label: "图片", name: "image", widget: "image" }
-      - { label: "按钮文字", name: "button", widget: "string" }
-      - { label: "链接地址", name: "link", widget: "string" }
+      - { label: "正文", name: "body", widget: "markdown" }
