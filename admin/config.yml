@@ -1,0 +1,75 @@
+backend:
+  name: git-gateway
+  branch: main
+  commit_messages:
+    create: "Create {{collection}}/{{slug}}"
+    update: "Update {{collection}}/{{slug}}"
+    delete: "Delete {{collection}}/{{slug}}"
+    uploadMedia: "Upload {{path}}"
+    deleteMedia: "Delete {{path}}"
+
+local_backend: true
+
+media_folder: "images"
+public_folder: "/plus/images"
+
+site_url: "https://chatgptchongzhi.github.io/plus"
+logo_url: "/plus/images/logo.png"
+
+collections:
+  # 🧭 导航菜单管理
+  - name: "navigation"
+    label: "网站导航"
+    folder: "content/data"
+    files:
+      - label: "导航菜单"
+        name: "navigation"
+        file: "content/data/navigation.json"
+        fields:
+          - label: "主菜单"
+            name: "menus"
+            widget: "list"
+            fields:
+              - {label: "主菜单标题", name: "title", widget: "string"}
+              - label: "子菜单"
+                name: "submenus"
+                widget: "list"
+                field:
+                  {label: "子菜单标题", name: "submenu", widget: "string"}
+
+  # 🧩 网站基础信息
+  - name: "siteinfo"
+    label: "网站基础信息"
+    file: "content/data/siteinfo.json"
+    fields:
+      - {label: "网站标题", name: "siteTitle", widget: "string"}
+      - {label: "网站描述", name: "description", widget: "text"}
+      - {label: "微信号", name: "wechat", widget: "string"}
+      - {label: "邮箱", name: "email", widget: "string"}
+      - {label: "广告内容", name: "adText", widget: "text"}
+      - {label: "关于本站", name: "about", widget: "text"}
+
+  # 📰 文章管理
+  - name: "posts"
+    label: "文章内容"
+    folder: "content/posts"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - {label: "文章ID", name: "id", widget: "string"}
+      - {label: "标题", name: "title", widget: "string"}
+      - {label: "发布日期", name: "date", widget: "datetime"}
+      - {label: "标签", name: "tags", widget: "list"}
+      - {label: "封面图", name: "cover", widget: "image"}
+      - {label: "摘要", name: "excerpt", widget: "text"}
+      - {label: "正文内容", name: "body", widget: "markdown"}
+
+  # 📦 图片与资源
+  - name: "media"
+    label: "图片资源"
+    folder: "images"
+    create: true
+    fields:
+      - {label: "图片文件", name: "file", widget: "image"}
