@@ -1,17 +1,13 @@
+local_backend: true
+
 backend:
   name: git-gateway
   branch: main
-  identity_url: "https://delightful-meringue-58ca5c.netlify.app/.netlify/identity"
-  gateway_url: "https://delightful-meringue-58ca5c.netlify.app/.netlify/git"
-  site_domain: "delightful-meringue-58ca5c.netlify.app"
+  local_backend: true
 
 media_folder: "images/uploads"
 public_folder: "/images/uploads"
 
-site_url: "https://delightful-meringue-58ca5c.netlify.app"
-display_url: "https://delightful-meringue-58ca5c.netlify.app"
-
-local_backend: false
 
 collections:
   # ① 网站信息（单文件集合）
