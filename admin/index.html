@@ -1,16 +1,40 @@
 <!doctype html>
-<html>
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>内容后台 | 木子AI</title>
-    <!-- Decap CMS -->
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <style>
+      html,body{height:100%}
+      body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+      .nc-appbar-brand{font-weight:700}
+    </style>
+    <!-- 关键：defer，等 DOM 就绪后再执行 -->
+    <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script defer src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   </head>
   <body>
-    <!-- 可选：自定义样式 -->
-    <style>
-      .nc-appbar-brand { font-weight: 700; }
-    </style>
+    <noscript>需要启用 JavaScript 才能使用后台。</noscript>
+    <script>
+      // 等待 DOM 准备好再初始化 Identity 和处理邀请
+      window.addEventListener('DOMContentLoaded', function () {
+        if (window.netlifyIdentity) {
+          // 邀请链接：/admin/#invite_token=xxxx
+          const hasInvite = location.hash && location.hash.includes('invite_token');
+
+          window.netlifyIdentity.on('init', (user) => {
+            if (!user && hasInvite) {
+              // 识别到邀请令牌，打开登录面板
+              window.netlifyIdentity.open('login');
+            }
+          });
+
+          // 登录成功后刷新页面，让 CMS 正常挂载
+          window.netlifyIdentity.on('login', () => location.reload());
+
+          window.netlifyIdentity.init();
+        }
+      });
+    </script>
   </body>
 </html>
