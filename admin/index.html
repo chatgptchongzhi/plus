@@ -1,49 +1,57 @@
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>木子AI 后台管理</title>
-    <style>
-      body {
-        font-family: "Microsoft YaHei", sans-serif;
-        background: #fafafa;
-        text-align: center;
-        padding-top: 80px;
-      }
-      h1 {
-        color: #d32f2f;
-        font-size: 22px;
-      }
-      .loading {
-        color: #666;
-        font-size: 16px;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>🧩 木子AI 后台系统加载中...</h1>
-    <p class="loading">请稍候，正在载入 Decap CMS 模块...</p>
+backend:
+  name: git-gateway
+  branch: main
 
-    <!-- ✅ 改为稳定版 Decap CMS 3.1.0 -->
-    <script>
-      const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/decap-cms@3.1.0/dist/decap-cms.js";
-      script.onload = () => {
-        console.log("✅ Decap CMS 脚本加载成功");
-        if (typeof CMS !== "undefined") {
-          CMS.init();
-          document.body.innerHTML = "";
-        } else {
-          document.body.innerHTML =
-            "<h1 style='color:red'>❌ CMS 未定义，加载失败。</h1>";
-        }
-      };
-      script.onerror = () => {
-        document.body.innerHTML =
-          "<h1 style='color:red'>❌ 无法加载 Decap CMS 脚本，请检查 CDN 网络。</h1>";
-      };
-      document.head.appendChild(script);
-    </script>
-  </body>
-</html>
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+site_url: "https://chatgptchongzhi.github.io/plus"
+display_url: "https://chatgptchongzhi.github.io/plus"
+
+local_backend: true
+
+collections:
+  # ① 网站信息（单文件集合）
+  - name: "siteinfo"
+    label: "网站信息"
+    files:
+      - label: "站点配置"
+        name: "site"
+        file: "content/data/siteinfo.json"
+        fields:
+          - { label: "网站标题", name: "title", widget: "string" }
+          - { label: "描述", name: "description", widget: "text" }
+          - { label: "微信号", name: "wechat", widget: "string" }
+          - { label: "邮箱", name: "email", widget: "string" }
+
+  # ② 导航菜单（单文件集合）
+  - name: "navigation"
+    label: "导航菜单"
+    files:
+      - label: "主菜单与子菜单"
+        name: "nav"
+        file: "content/data/navigation.json"
+        fields:
+          - { label: "菜单项", name: "items", widget: "list", fields: [
+              { label: "标题", name: "title", widget: "string" },
+              { label: "链接", name: "url", widget: "string" },
+              { label: "子菜单", name: "children", widget: "list", fields: [
+                  { label: "标题", name: "title", widget: "string" },
+                  { label: "链接", name: "url", widget: "string" }
+                ]}
+            ]}
+
+  # ③ 文章集合（文件夹集合）
+  - name: "posts"
+    label: "文章管理"
+    folder: "content/posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "标题", name: "title", widget: "string" }
+      - { label: "发布日期", name: "date", widget: "datetime" }
+      - { label: "封面图", name: "cover", widget: "image", required: false }
+      - { label: "摘要", name: "excerpt", widget: "text", required: false }
+      - { label: "内容", name: "body", widget: "markdown" }
