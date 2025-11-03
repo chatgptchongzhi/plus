@@ -3,65 +3,31 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>木子AI 后台管理</title>
-    <style>
-      body {
-        font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-        background-color: #f5f5f5;
-        color: #333;
-        text-align: center;
-        margin: 0;
-        padding: 80px 20px;
-      }
-      h2 {
-        font-weight: 500;
-        margin-bottom: 10px;
-      }
-      .loading {
-        font-size: 16px;
-        color: #777;
-      }
-    </style>
+    <title>网站后台管理</title>
   </head>
-
   <body>
-    <h2>正在加载 Decap CMS 后台...</h2>
-    <div class="loading">请稍候几秒钟</div>
-
-    <!-- 使用 jsDelivr 稳定加载 Decap CMS -->
-    <script src="https://cdn.jsdelivr.net/npm/decap-cms@2.15.72/dist/decap-cms.js"></script>
+    <h2 style="text-align:center;font-family:sans-serif;">正在加载后台...</h2>
+    <!-- 本地引入 Decap CMS（建议放到 assets/js/decap-cms.js） -->
+    <script src="../assets/js/decap-cms.js"></script>
 
     <script>
-      // 🔹 自动启用免登录模式（local_backend）
-      (function () {
-        const currentUrl = window.location.href;
-        if (!currentUrl.includes("local_backend=true")) {
-          const newUrl = currentUrl.includes("?")
-            ? currentUrl + "&local_backend=true"
-            : currentUrl + "?local_backend=true";
-          window.location.replace(newUrl);
-          return;
+      // 自动启用免登录本地模式
+      (function() {
+        const url = new URL(window.location);
+        if (!url.searchParams.has("local_backend")) {
+          url.searchParams.set("local_backend", "true");
+          window.location.href = url.toString();
         }
       })();
 
-      // 🔹 初始化 CMS（Cloudflare Pages 完全本地运行）
-      document.addEventListener("DOMContentLoaded", function () {
-        if (typeof CMS === "undefined") {
-          document.body.innerHTML = "<p style='color:red'>❌ CMS 加载失败，请刷新页面重试。</p>";
-          return;
-        }
-
+      // 初始化 CMS
+      document.addEventListener("DOMContentLoaded", function() {
         CMS.init({
           config: {
             local_backend: true,
-            backend: {
-              name: "git-gateway",
-              branch: "main",
-            },
+            backend: { name: "git-gateway", branch: "main" },
             media_folder: "images/uploads",
             public_folder: "/images/uploads",
-            site_url: "https://plus-e2d.pages.dev",
-            display_url: "https://plus-e2d.pages.dev",
             collections: [
               {
                 name: "posts",
@@ -72,29 +38,11 @@
                 fields: [
                   { label: "标题", name: "title", widget: "string" },
                   { label: "发布日期", name: "date", widget: "datetime" },
-                  { label: "封面图", name: "cover", widget: "image", required: false },
                   { label: "正文内容", name: "body", widget: "markdown" }
-                ],
-              },
-              {
-                name: "siteinfo",
-                label: "网站信息",
-                files: [
-                  {
-                    name: "settings",
-                    label: "基础配置",
-                    file: "content/data.json",
-                    fields: [
-                      { label: "网站标题", name: "title", widget: "string" },
-                      { label: "微信号", name: "wechat", widget: "string" },
-                      { label: "邮箱", name: "email", widget: "string" },
-                      { label: "版权信息", name: "footer", widget: "text" }
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
+                ]
+              }
+            ]
+          }
         });
       });
     </script>
