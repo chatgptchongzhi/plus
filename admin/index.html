@@ -1,23 +1,33 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+<!doctype html>
+<html>
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>网站后台管理 - 木子AI</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
-    <!-- ✅ Decap CMS 脚本加载（推荐 CDN） -->
-   <script src="https://cdn.jsdelivr.net/npm/decap-cms@3.0.4/dist/decap-cms.js"></script>
+    <!-- Decap CMS -->
+    <script src="https://unpkg.com/decap-cms@3.1.0/dist/decap-cms.js"></script>
 
-    <!-- ✅ 指定配置文件路径（相对路径，必须写全） -->
+    <!-- Netlify Identity Widget -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
     <script>
-      window.CMS_MANUAL_INIT = true;
-      CMS.init({
-        config: {
-          load_config_file: true,
-          config_file: "https://chatgptchongzhi.github.io/plus/admin/config.yml",
-        },
-      });
+      // 自动处理 Netlify 邀请与登录
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", user => {
+          if (!user) {
+            window.netlifyIdentity.on("login", () => {
+              document.location.href = "/admin/";
+            });
+          }
+        });
+
+        // 自动打开身份验证弹窗（处理 Accept Invite 场景）
+        if (window.location.hash.includes("invite_token")) {
+          window.netlifyIdentity.open();
+        }
+      }
     </script>
   </body>
 </html>
