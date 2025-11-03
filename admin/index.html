@@ -1,49 +1,23 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>木子AI 后台管理</title>
-    <style>
-      body {
-        font-family: "Microsoft YaHei", sans-serif;
-        background: #fafafa;
-        text-align: center;
-        padding-top: 80px;
-      }
-      h1 {
-        color: #d32f2f;
-        font-size: 22px;
-      }
-      .loading {
-        color: #666;
-        font-size: 16px;
-      }
-    </style>
+    <meta charset="UTF-8" />
+    <title>网站后台管理 - 木子AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
-    <h1>🧩 木子AI 后台系统加载中...</h1>
-    <p class="loading">请稍候，正在载入 Decap CMS 模块...</p>
+    <!-- ✅ Decap CMS 脚本加载（推荐 CDN） -->
+    <script src="https://cdn.jsdelivr.net/npm/decap-cms@3.1.0/dist/decap-cms.js"></script>
 
-    <!-- ✅ 使用稳定 CDN 版本 -->
+    <!-- ✅ 指定配置文件路径（相对路径，必须写全） -->
     <script>
-      const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/decap-cms@3.1.0/dist/decap-cms.js";
-      script.onload = () => {
-        console.log("✅ Decap CMS 脚本加载成功");
-        if (typeof CMS !== "undefined") {
-          CMS.init();
-          document.body.innerHTML = "";
-        } else {
-          document.body.innerHTML =
-            "<h1 style='color:red'>❌ CMS 未定义，加载失败。</h1>";
-        }
-      };
-      script.onerror = () => {
-        document.body.innerHTML =
-          "<h1 style='color:red'>❌ 无法加载 Decap CMS 脚本，请检查 CDN 网络。</h1>";
-      };
-      document.head.appendChild(script);
+      window.CMS_MANUAL_INIT = true;
+      CMS.init({
+        config: {
+          load_config_file: true,
+          config_file: "https://chatgptchongzhi.github.io/plus/admin/config.yml",
+        },
+      });
     </script>
   </body>
 </html>
