@@ -1,50 +1,62 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>网站后台管理</title>
-  </head>
-  <body>
-    <h2 style="text-align:center;font-family:sans-serif;">正在加载后台...</h2>
-    <!-- 本地引入 Decap CMS（建议放到 assets/js/decap-cms.js） -->
-    <script src="../assets/js/decap-cms.js"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>木子AI 后台管理</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      color: #333;
+      flex-direction: column;
+    }
+    .loading {
+      font-size: 22px;
+      color: #111;
+      font-weight: 600;
+    }
+    .error {
+      color: #d93025;
+      margin-top: 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="loading">正在加载后台，请稍候...</div>
+  <div id="cms"></div>
 
-    <script>
-      // 自动启用免登录本地模式
-      (function() {
-        const url = new URL(window.location);
-        if (!url.searchParams.has("local_backend")) {
-          url.searchParams.set("local_backend", "true");
-          window.location.href = url.toString();
-        }
-      })();
+  <!-- ✅ 加载 Decap CMS 本地脚本 -->
+  <script src="../assets/js/decap-cms.js"></script>
 
-      // 初始化 CMS
-      document.addEventListener("DOMContentLoaded", function() {
-        CMS.init({
-          config: {
-            local_backend: true,
-            backend: { name: "git-gateway", branch: "main" },
-            media_folder: "images/uploads",
-            public_folder: "/images/uploads",
-            collections: [
-              {
-                name: "posts",
-                label: "文章内容",
-                folder: "content/posts",
-                create: true,
-                slug: "{{slug}}",
-                fields: [
-                  { label: "标题", name: "title", widget: "string" },
-                  { label: "发布日期", name: "date", widget: "datetime" },
-                  { label: "正文内容", name: "body", widget: "markdown" }
-                ]
-              }
-            ]
-          }
-        });
-      });
-    </script>
-  </body>
+  <script>
+    // ✅ 等待 CMS 脚本加载
+    const checkCMS = setInterval(() => {
+      if (window.CMS) {
+        clearInterval(checkCMS);
+        document.querySelector(".loading").innerText = "后台加载成功，正在启动...";
+        setTimeout(() => {
+          CMS.init();
+        }, 300);
+      }
+    }, 500);
+
+    // ⛔ 加载失败提示
+    setTimeout(() => {
+      if (!window.CMS) {
+        document.querySelector(".loading").innerHTML = "";
+        const error = document.createElement("div");
+        error.className = "error";
+        error.innerText = "❌ CMS 加载失败，请检查 decap-cms.js 路径或刷新重试。";
+        document.body.appendChild(error);
+      }
+    }, 6000);
+  </script>
+</body>
 </html>
