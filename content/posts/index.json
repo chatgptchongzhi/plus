@@ -1,0 +1,18 @@
+[
+  {
+    "slug": "001",
+    "title": "OpenAI Atlas浏览器完整指南2025",
+    "date": "2025-10-22",
+    "excerpt": "OpenAI于2025年10月21日发布的Atlas浏览器完整使用教程。",
+    "cover": "./images/banner.jpg",
+    "tags": ["Agent Mode", "Atlas", "ChatGPT", "OpenAI", "浏览器"]
+  },
+  {
+    "slug": "002",
+    "title": "ChatGPT WildCard停服后怎么办？2025年安全充值方案",
+    "date": "2025-07-28",
+    "excerpt": "ChatGPT WildCard停服后替代方案与充值指南。",
+    "cover": "./images/banner.jpg",
+    "tags": ["ChatGPT Plus", "WildCard", "充值教程"]
+  }
+]
