@@ -1,28 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>木子AI 后台管理</title>
 </head>
 <body>
   <h2 style="font-family:sans-serif;color:#444;text-align:center;margin-top:40px;">正在加载后台，请稍候...</h2>
 
-  <!-- ✅ 异步加载 Decap CMS -->
-  <script>
-    const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/decap-cms@2.10.192/dist/decap-cms.js";
-    script.onload = () => {
-      if (window.CMS) {
-        CMS.init();
-      } else {
-        document.body.innerHTML = "<h2 style='color:red;text-align:center;margin-top:40px;'>Decap CMS 加载失败，请刷新重试</h2>";
-      }
-    };
-    script.onerror = () => {
-      document.body.innerHTML = "<h2 style='color:red;text-align:center;margin-top:40px;'>CDN 加载 decap-cms.js 失败</h2>";
-    };
-    document.body.appendChild(script);
-  </script>
+  <!-- ✅ 本地 decap-cms 代理加载器 -->
+  <script src="./decap-cms.js"></script>
 </body>
 </html>
