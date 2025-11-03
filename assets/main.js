@@ -8,7 +8,7 @@
  * 4. 兼容 busuanzi 阅读统计
  */
 
-const POSTS_PATH = "content/posts/";
+const POSTS_PATH = "./plus/content/posts/";
 const POSTS_PER_PAGE = 5;
 let allPosts = [];
 let currentPage = 1;
