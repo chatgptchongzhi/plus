@@ -32,31 +32,40 @@
   <div class="loading">正在加载后台，请稍候...</div>
   <div id="cms"></div>
 
-  <!-- ✅ 加载 Decap CMS 本地脚本 -->
-  <script src="../assets/js/decap-cms.js"></script>
+  <!-- ✅ 使用最新可用 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
   <script>
-    // ✅ 等待 CMS 脚本加载
+    // ✅ 自动启用免登录模式
+    (function() {
+      const url = new URL(window.location);
+      if (!url.searchParams.has("local_backend")) {
+        url.searchParams.set("local_backend", "true");
+        window.location.href = url.toString();
+      }
+    })();
+
+    // ✅ CMS 初始化检测
     const checkCMS = setInterval(() => {
       if (window.CMS) {
         clearInterval(checkCMS);
         document.querySelector(".loading").innerText = "后台加载成功，正在启动...";
         setTimeout(() => {
           CMS.init();
-        }, 300);
+        }, 500);
       }
     }, 500);
 
-    // ⛔ 加载失败提示
+    // ❌ 加载失败提示
     setTimeout(() => {
       if (!window.CMS) {
         document.querySelector(".loading").innerHTML = "";
         const error = document.createElement("div");
         error.className = "error";
-        error.innerText = "❌ CMS 加载失败，请检查 decap-cms.js 路径或刷新重试。";
+        error.innerText = "❌ CMS 加载失败，请刷新页面或稍后再试。";
         document.body.appendChild(error);
       }
-    }, 6000);
+    }, 8000);
   </script>
 </body>
 </html>
