@@ -1,33 +1,59 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>网站后台管理 - 木子AI</title>
+    <title>后台管理 - 木子AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
-    <!-- Decap CMS -->
-    <script src="https://unpkg.com/decap-cms@3.1.0/dist/decap-cms.js"></script>
-<script>CMS.init({ config: { local_backend: true } });</script>
-    <!-- Netlify Identity Widget -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
+    <script src="https://unpkg.com/decap-cms@2.15.72/dist/decap-cms.js"></script>
     <script>
-      // 自动处理 Netlify 邀请与登录
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", user => {
-          if (!user) {
-            window.netlifyIdentity.on("login", () => {
-              document.location.href = "/admin/";
-            });
-          }
-        });
+      CMS.init({
+        config: {
+          local_backend: true,
+          backend: {
+            name: "git-gateway",
+            branch: "main",
+          },
+          media_folder: "images/uploads",
+          public_folder: "/images/uploads",
+          site_url: "https://delightful-meringue-58ca5c.netlify.app",
+          display_url: "https://delightful-meringue-58ca5c.netlify.app",
 
-        // 自动打开身份验证弹窗（处理 Accept Invite 场景）
-        if (window.location.hash.includes("invite_token")) {
-          window.netlifyIdentity.open();
-        }
-      }
+          collections: [
+            {
+              name: "posts",
+              label: "文章内容",
+              folder: "content/posts",
+              create: true,
+              slug: "{{slug}}",
+              fields: [
+                { label: "标题", name: "title", widget: "string" },
+                { label: "发布日期", name: "date", widget: "datetime" },
+                { label: "封面图", name: "cover", widget: "image", required: false },
+                { label: "正文内容", name: "body", widget: "markdown" },
+              ],
+            },
+            {
+              name: "siteinfo",
+              label: "网站信息",
+              files: [
+                {
+                  name: "settings",
+                  label: "基本设置",
+                  file: "content/data.json",
+                  fields: [
+                    { label: "网站标题", name: "title", widget: "string" },
+                    { label: "微信号", name: "wechat", widget: "string" },
+                    { label: "邮箱", name: "email", widget: "string" },
+                    { label: "版权信息", name: "footer", widget: "text" },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      });
     </script>
   </body>
 </html>
