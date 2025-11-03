@@ -1,12 +1,6 @@
 backend:
   name: git-gateway
   branch: main
-  commit_messages:
-    create: "Create {{collection}}/{{slug}}"
-    update: "Update {{collection}}/{{slug}}"
-    delete: "Delete {{collection}}/{{slug}}"
-    uploadMedia: "Upload {{path}}"
-    deleteMedia: "Delete {{path}}"
 
 local_backend: true
 
@@ -17,10 +11,8 @@ site_url: "https://chatgptchongzhi.github.io/plus"
 logo_url: "/plus/images/logo.png"
 
 collections:
-  # 🧭 导航菜单管理
   - name: "navigation"
     label: "网站导航"
-    folder: "content/data"
     files:
       - label: "导航菜单"
         name: "navigation"
@@ -34,10 +26,8 @@ collections:
               - label: "子菜单"
                 name: "submenus"
                 widget: "list"
-                field:
-                  {label: "子菜单标题", name: "submenu", widget: "string"}
+                field: {label: "子菜单标题", name: "submenu", widget: "string"}
 
-  # 🧩 网站基础信息
   - name: "siteinfo"
     label: "网站基础信息"
     file: "content/data/siteinfo.json"
@@ -49,7 +39,6 @@ collections:
       - {label: "广告内容", name: "adText", widget: "text"}
       - {label: "关于本站", name: "about", widget: "text"}
 
-  # 📰 文章管理
   - name: "posts"
     label: "文章内容"
     folder: "content/posts"
@@ -66,7 +55,6 @@ collections:
       - {label: "摘要", name: "excerpt", widget: "text"}
       - {label: "正文内容", name: "body", widget: "markdown"}
 
-  # 📦 图片与资源
   - name: "media"
     label: "图片资源"
     folder: "images"
