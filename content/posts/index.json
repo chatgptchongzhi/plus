@@ -1,0 +1,22 @@
+[
+  {
+    "slug": "hello-world",
+    "title": "ChatGPT 入门指南：快速上手教程",
+    "date": "2025-01-01",
+    "category": "ChatGPT",
+    "tags": ["ChatGPT", "教程"],
+    "excerpt": "新手如何注册、使用、升级 ChatGPT？详细步骤一文搞定。",
+    "cover": "images/banner1.jpg",
+    "views": 1023
+  },
+  {
+    "slug": "gpt-plus-guide",
+    "title": "ChatGPT Plus 开通与续费全攻略",
+    "date": "2025-02-10",
+    "category": "Plus",
+    "tags": ["Plus", "充值"],
+    "excerpt": "如何安全开通 ChatGPT Plus？虚拟卡支付与官方代充详解。",
+    "cover": "images/banner2.jpg",
+    "views": 866
+  }
+]
