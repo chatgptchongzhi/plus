@@ -1,13 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <title>后台管理 - 木子AI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>木子AI 后台管理</title>
+    <style>
+      body {
+        font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        background: #fafafa;
+        color: #333;
+        text-align: center;
+        padding-top: 60px;
+      }
+      .loading {
+        font-size: 18px;
+        color: #888;
+      }
+    </style>
   </head>
   <body>
-    <script src="https://unpkg.com/decap-cms@2.15.72/dist/decap-cms.js"></script>
+    <div class="loading">正在加载后台管理系统，请稍候...</div>
+
+    <!-- 使用 jsDelivr 加载 Decap CMS -->
+    <script src="https://cdn.jsdelivr.net/npm/decap-cms@2.15.72/dist/decap-cms.js"></script>
+
     <script>
+      // 自动启用本地免登录模式
+      (function() {
+        const currentUrl = window.location.href;
+        if (!currentUrl.includes("local_backend=true")) {
+          const newUrl = currentUrl.includes("?")
+            ? currentUrl + "&local_backend=true"
+            : currentUrl + "?local_backend=true";
+          window.location.replace(newUrl);
+        }
+      })();
+
+      // 初始化 Decap CMS
       CMS.init({
         config: {
           local_backend: true,
@@ -17,8 +46,8 @@
           },
           media_folder: "images/uploads",
           public_folder: "/images/uploads",
-          site_url: "https://delightful-meringue-58ca5c.netlify.app",
-          display_url: "https://delightful-meringue-58ca5c.netlify.app",
+          site_url: "https://plus-e2d.pages.dev",
+          display_url: "https://plus-e2d.pages.dev",
 
           collections: [
             {
@@ -31,8 +60,8 @@
                 { label: "标题", name: "title", widget: "string" },
                 { label: "发布日期", name: "date", widget: "datetime" },
                 { label: "封面图", name: "cover", widget: "image", required: false },
-                { label: "正文内容", name: "body", widget: "markdown" },
-              ],
+                { label: "正文内容", name: "body", widget: "markdown" }
+              ]
             },
             {
               name: "siteinfo",
@@ -40,19 +69,19 @@
               files: [
                 {
                   name: "settings",
-                  label: "基本设置",
+                  label: "基础配置",
                   file: "content/data.json",
                   fields: [
                     { label: "网站标题", name: "title", widget: "string" },
                     { label: "微信号", name: "wechat", widget: "string" },
                     { label: "邮箱", name: "email", widget: "string" },
-                    { label: "版权信息", name: "footer", widget: "text" },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
+                    { label: "版权信息", name: "footer", widget: "text" }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
       });
     </script>
   </body>
