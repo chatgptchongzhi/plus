@@ -3,58 +3,21 @@ local_backend: true
 backend:
   name: git-gateway
   branch: main
-  local_backend: true
 
 media_folder: "images/uploads"
 public_folder: "/images/uploads"
 
+site_url: "https://delightful-meringue-58ca5c.netlify.app"
+display_url: "https://delightful-meringue-58ca5c.netlify.app"
 
 collections:
-  # ① 网站信息（单文件集合）
-  - name: "siteinfo"
-    label: "网站信息"
-    files:
-      - label: "站点配置"
-        name: "site"
-        file: "content/data/siteinfo.json"
-        fields:
-          - { label: "网站标题", name: "title", widget: "string" }
-          - { label: "描述", name: "description", widget: "text" }
-          - { label: "微信号", name: "wechat", widget: "string" }
-          - { label: "邮箱", name: "email", widget: "string" }
-
-  # ② 导航菜单（单文件集合）
-  - name: "navigation"
-    label: "导航菜单"
-    files:
-      - label: "主菜单与子菜单"
-        name: "nav"
-        file: "content/data/navigation.json"
-        fields:
-          - label: "菜单项"
-            name: "items"
-            widget: "list"
-            fields:
-              - { label: "标题", name: "title", widget: "string" }
-              - { label: "链接", name: "url", widget: "string" }
-              - label: "子菜单"
-                name: "children"
-                widget: "list"
-                fields:
-                  - { label: "标题", name: "title", widget: "string" }
-                  - { label: "链接", name: "url", widget: "string" }
-
-  # ③ 文章集合（文件夹集合）
   - name: "posts"
-    label: "文章管理"
+    label: "文章内容"
     folder: "content/posts"
     create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    extension: "md"
-    format: "frontmatter"
+    slug: "{{slug}}"
     fields:
       - { label: "标题", name: "title", widget: "string" }
       - { label: "发布日期", name: "date", widget: "datetime" }
       - { label: "封面图", name: "cover", widget: "image", required: false }
-      - { label: "摘要", name: "excerpt", widget: "text", required: false }
-      - { label: "内容", name: "body", widget: "markdown" }
+      - { label: "正文内容", name: "body", widget: "markdown" }
