@@ -32,14 +32,18 @@ collections:
         name: "nav"
         file: "content/data/navigation.json"
         fields:
-          - { label: "菜单项", name: "items", widget: "list", fields: [
-              { label: "标题", name: "title", widget: "string" },
-              { label: "链接", name: "url", widget: "string" },
-              { label: "子菜单", name: "children", widget: "list", fields: [
-                  { label: "标题", name: "title", widget: "string" },
-                  { label: "链接", name: "url", widget: "string" }
-                ]}
-            ]}
+          - label: "菜单项"
+            name: "items"
+            widget: "list"
+            fields:
+              - { label: "标题", name: "title", widget: "string" }
+              - { label: "链接", name: "url", widget: "string" }
+              - label: "子菜单"
+                name: "children"
+                widget: "list"
+                fields:
+                  - { label: "标题", name: "title", widget: "string" }
+                  - { label: "链接", name: "url", widget: "string" }
 
   # ③ 文章集合（文件夹集合）
   - name: "posts"
