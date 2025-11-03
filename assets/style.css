@@ -1,0 +1,205 @@
+/* ========== 基础样式重置 ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: "Microsoft YaHei", Arial, sans-serif;
+  color: #222;
+  background: #fff;
+  line-height: 1.7;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+img {
+  max-width: 100%;
+  display: block;
+  border-radius: 8px;
+}
+
+/* ========== 顶部导航栏 ========== */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 60px;
+  z-index: 9999;
+}
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #d32f2f;
+  cursor: pointer;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+.nav-item {
+  position: relative;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+}
+.nav-item:hover {
+  color: #d32f2f;
+}
+.nav-item::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-left: 1.5px solid #888;
+  border-bottom: 1.5px solid #888;
+  transform: rotate(-45deg);
+  margin-left: 6px;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.nav-item:hover::after {
+  transform: rotate(135deg);
+  border-color: #d32f2f;
+}
+
+/* 下拉菜单 */
+.dropdown {
+  display: none;
+  position: absolute;
+  top: 36px;
+  left: 0;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  list-style: none;
+  padding: 10px 0;
+  min-width: 160px;
+}
+.nav-item:hover .dropdown {
+  display: block;
+}
+.dropdown li a {
+  display: block;
+  padding: 10px 16px;
+  color: #333;
+  font-size: 15px;
+}
+.dropdown li a:hover {
+  background: #f7f7f7;
+  color: #d32f2f;
+}
+
+/* 搜索框 */
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #f2f2f2;
+  border-radius: 30px;
+  padding: 6px 12px;
+  width: 220px;
+}
+.search-box i {
+  color: #888;
+  margin-right: 6px;
+}
+.search-box input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 15px;
+  color: #333;
+}
+
+/* ========== 主体布局 ========== */
+.container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1300px;
+  margin: 120px auto 80px;
+  padding: 0 60px;
+  gap: 30px;
+}
+.main-content {
+  flex: 1;
+  width: 70%;
+}
+.sidebar {
+  width: 320px;
+  position: sticky;
+  top: 100px;
+  align-self: flex-start;
+}
+
+/* ========== 首页推荐区 ========== */
+.recommend-box {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  padding: 24px 30px;
+  margin-bottom: 40px;
+}
+.recommend-box h2 {
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+  margin-bottom: 24px;
+}
+.red-bar {
+  display: inline-block;
+  width: 4px;
+  height: 22px;
+  background: #d32f2f;
+  margin-right: 10px;
+}
+.grid-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 20px;
+}
+.grid-2x2 .card {
+  display: flex;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.grid-2x2 .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.card img {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+}
+.card .info {
+  padding: 10px 16px;
+}
+.card .info h3 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 8px;
+}
+.card .meta {
+  font-size: 14px;
+  color: #888;
+}
+
+/* ========== 文章列表区 ========== */
+.article-list {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
