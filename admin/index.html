@@ -5,15 +5,15 @@
     <meta name="robots" content="noindex" />
     <title>木子AI 后台管理</title>
 
-    <!-- 使用 jsDelivr CDN 替代 unpkg -->
-    <script src="https://cdn.jsdelivr.net/npm/decap-cms@3.1.7/dist/decap-cms.js"></script>
+    <!-- 改为本地路径 -->
+    <script src="../assets/decap-cms.js"></script>
   </head>
   <body>
     <script>
-      // 等待脚本加载完成再初始化
       window.addEventListener("load", function () {
         if (typeof CMS === "undefined") {
-          alert("Decap CMS 未能加载，请检查网络或更换 CDN。");
+          document.body.innerHTML =
+            "<h2 style='font-family:sans-serif;color:#d33;text-align:center;margin-top:40px;'>⚠️ Decap CMS 未加载成功，请检查路径 ../assets/decap-cms.js 是否存在。</h2>";
         } else {
           CMS.init({
             config: {
