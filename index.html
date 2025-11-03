@@ -3,11 +3,70 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>木子AI - 首页</title>
+  <title>木子AI - ChatGPT / Sora / AI 工具教程与充值引导</title>
+  <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导 - 木子AI" />
+  <meta name="keywords" content="ChatGPT,Sora,AI,教程,充值,木子AI" />
+  <link rel="icon" href="/plus/images/logo.png" type="image/png" />
+  <link rel="stylesheet" href="/plus/assets/style.css" />
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </head>
+
 <body>
-  <h1>✅ 网站运行正常！</h1>
-  <p>说明 GitHub Pages 已经配置成功。</p>
-  <p>现在你可以访问 <a href="./demo.html">点击查看演示页</a></p>
+  <!-- 顶部导航栏（动态加载） -->
+  <header class="navbar">
+    <a href="/plus/index.html" class="logo">木子AI</a>
+    <nav class="nav-links" id="navbar-links"></nav>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="请输入关键词" />
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <div class="container">
+    <div class="main-content">
+      <!-- 推荐区 -->
+      <section class="recommend-box">
+        <h2 class="recommend-title">ChatGPT 使用必读文章</h2>
+        <div class="recommend-grid" id="recommend-grid"></div>
+      </section>
+
+      <!-- 文章列表 -->
+      <section class="article-list" id="article-list"></section>
+      <div id="pagination" class="pagination"></div>
+    </div>
+
+    <!-- 右侧栏 -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-box" id="about-box">
+        <h3>关于本站</h3>
+        <p>木子AI - 专注 ChatGPT / Sora / AI 工具教程与充值引导。</p>
+      </div>
+      <div class="sidebar-box sidebar-ad" id="ad-box">
+        <h3>广告推广</h3>
+        <img src="/plus/images/ad1.png" alt="广告">
+        <p>自定义广告内容，可在后台修改。</p>
+        <button class="btn-green">立即了解</button>
+      </div>
+      <div class="sidebar-box" id="contact-box">
+        <h3>联系老张</h3>
+        <img src="/plus/images/qrcode-wechat.png" class="sidebar-qrcode" />
+        <p>微信号：muzi_ai</p>
+      </div>
+    </aside>
+  </div>
+
+  <!-- 微信悬浮按钮 -->
+  <div class="wechat-float">
+    <img src="/plus/images/logo.png" alt="微信" />
+    <div class="wechat-popup">
+      <img src="/plus/images/qrcode-wechat.png" alt="二维码" />
+    </div>
+  </div>
+
+  <footer>
+    © 2025 木子科技 | 本站内容仅供学习交流，侵权请联系删除 | 联系邮箱：contact@muzi.com
+  </footer>
+
+  <script src="/plus/assets/main.js"></script>
 </body>
 </html>
