@@ -25,10 +25,10 @@
     <h1>🧩 木子AI 后台系统加载中...</h1>
     <p class="loading">请稍候，正在载入 Decap CMS 模块...</p>
 
-    <!-- ✅ 改为 jsDelivr 镜像 + 自动检测加载 -->
+    <!-- ✅ 改为稳定版 Decap CMS 3.1.0 -->
     <script>
       const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/decap-cms@2.15.72/dist/decap-cms.js";
+      script.src = "https://cdn.jsdelivr.net/npm/decap-cms@3.1.0/dist/decap-cms.js";
       script.onload = () => {
         console.log("✅ Decap CMS 脚本加载成功");
         if (typeof CMS !== "undefined") {
