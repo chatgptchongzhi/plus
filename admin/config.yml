@@ -2,61 +2,56 @@ backend:
   name: git-gateway
   branch: main
 
-local_backend: true
-
-media_folder: "images"
-public_folder: "/plus/images"
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
 
 site_url: "https://chatgptchongzhi.github.io/plus"
+display_url: "https://chatgptchongzhi.github.io/plus"
+
+local_backend: true
 
 collections:
-  - name: "navigation"
-    label: "网站导航"
+  # ① 网站信息（单文件集合）
+  - name: "siteinfo"
+    label: "网站信息"
     files:
-      - label: "导航菜单"
-        name: "navigation"
+      - label: "站点配置"
+        name: "site"
+        file: "content/data/siteinfo.json"
+        fields:
+          - { label: "网站标题", name: "title", widget: "string" }
+          - { label: "描述", name: "description", widget: "text" }
+          - { label: "微信号", name: "wechat", widget: "string" }
+          - { label: "邮箱", name: "email", widget: "string" }
+
+  # ② 导航菜单（单文件集合）
+  - name: "navigation"
+    label: "导航菜单"
+    files:
+      - label: "主菜单与子菜单"
+        name: "nav"
         file: "content/data/navigation.json"
         fields:
-          - label: "主菜单"
-            name: "menus"
-            widget: "list"
-            fields:
-              - { label: "主菜单标题", name: "title", widget: "string" }
-              - label: "子菜单"
-                name: "submenus"
-                widget: "list"
-                field: { label: "子菜单标题", name: "submenu", widget: "string" }
+          - { label: "菜单项", name: "items", widget: "list", fields: [
+              { label: "标题", name: "title", widget: "string" },
+              { label: "链接", name: "url", widget: "string" },
+              { label: "子菜单", name: "children", widget: "list", fields: [
+                  { label: "标题", name: "title", widget: "string" },
+                  { label: "链接", name: "url", widget: "string" }
+                ]}
+            ]}
 
-  - name: "siteinfo"
-    label: "网站基础信息"
-    file: "content/data/siteinfo.json"
-    fields:
-      - { label: "网站标题", name: "siteTitle", widget: "string" }
-      - { label: "网站描述", name: "description", widget: "text" }
-      - { label: "微信号", name: "wechat", widget: "string" }
-      - { label: "邮箱", name: "email", widget: "string" }
-      - { label: "广告内容", name: "adText", widget: "text" }
-      - { label: "关于本站", name: "about", widget: "text" }
-
+  # ③ 文章集合（文件夹集合）
   - name: "posts"
-    label: "文章内容"
+    label: "文章管理"
     folder: "content/posts"
     create: true
-    slug: "{{slug}}"
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     extension: "md"
     format: "frontmatter"
     fields:
-      - { label: "文章ID", name: "id", widget: "string" }
       - { label: "标题", name: "title", widget: "string" }
       - { label: "发布日期", name: "date", widget: "datetime" }
-      - { label: "标签", name: "tags", widget: "list" }
-      - { label: "封面图", name: "cover", widget: "image" }
-      - { label: "摘要", name: "excerpt", widget: "text" }
-      - { label: "正文内容", name: "body", widget: "markdown" }
-
-  - name: "media"
-    label: "图片资源"
-    folder: "images"
-    create: true
-    fields:
-      - { label: "图片文件", name: "file", widget: "image" }
+      - { label: "封面图", name: "cover", widget: "image", required: false }
+      - { label: "摘要", name: "excerpt", widget: "text", required: false }
+      - { label: "内容", name: "body", widget: "markdown" }
