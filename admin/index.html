@@ -4,68 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>木子AI 后台管理</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: #f8f9fa;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      color: #333;
-      flex-direction: column;
-    }
-    .loading {
-      font-size: 22px;
-      color: #111;
-      font-weight: 600;
-    }
-    .error {
-      color: #d93025;
-      margin-top: 20px;
-      font-size: 16px;
-    }
-  </style>
 </head>
 <body>
-  <div class="loading">正在加载后台，请稍候...</div>
-  <div id="cms"></div>
-
-  <!-- ✅ 使用稳定版 Decap CMS（支持 local_backend） -->
-  <script src="https://unpkg.com/decap-cms@2.10.192/dist/decap-cms.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/decap-cms@2.10.192/dist/decap-cms.js"></script>
   <script>
-    // ✅ 自动启用免登录模式
-    (function() {
-      const url = new URL(window.location);
-      if (!url.searchParams.has("local_backend")) {
-        url.searchParams.set("local_backend", "true");
-        window.location.href = url.toString();
-      }
-    })();
-
-    // ✅ CMS 初始化检测
-    const checkCMS = setInterval(() => {
-      if (window.CMS) {
-        clearInterval(checkCMS);
-        document.querySelector(".loading").innerText = "后台加载成功，正在启动...";
-        setTimeout(() => {
-          CMS.init();
-        }, 500);
-      }
-    }, 500);
-
-    // ❌ 加载失败提示
-    setTimeout(() => {
-      if (!window.CMS) {
-        document.querySelector(".loading").innerHTML = "";
-        const error = document.createElement("div");
-        error.className = "error";
-        error.innerText = "❌ CMS 加载失败，请刷新页面或稍后再试。";
-        document.body.appendChild(error);
-      }
-    }, 8000);
+    CMS.init();
   </script>
 </body>
 </html>
