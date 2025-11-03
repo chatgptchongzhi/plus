@@ -1,100 +1,49 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="文章详情 - 木子AI">
-  <title>文章详情 - 木子AI</title>
-  <link rel="stylesheet" href="assets/style.css">
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">木子AI - 文章详情</title>
+  <meta name="description" id="meta-desc" content="ChatGPT / Sora / AI 工具教程与充值引导" />
+  <meta name="keywords" id="meta-keywords" content="ChatGPT,Sora,AI,教程,充值" />
+  <link rel="icon" href="./images/logo.png" type="image/png" />
+  <link rel="stylesheet" href="./assets/style.css" />
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </head>
-<body>
 
-  <!-- 顶部导航栏（与首页一致） -->
+<body>
   <header class="navbar">
-    <div class="logo" onclick="location.href='index.html'">木子AI</div>
+    <a href="./index.html" class="logo">木子AI</a>
     <nav class="nav-links">
-      <div class="nav-item">ChatGPT代升级服务
-        <ul class="dropdown">
-          <li><a href="#">GPT PLUS代充</a></li>
-          <li><a href="#">API KEY代充值</a></li>
-        </ul>
-      </div>
-      <div class="nav-item">ChatGPT使用指南
-        <ul class="dropdown">
-          <li><a href="#">注册教程</a></li>
-          <li><a href="#">充值教程</a></li>
-          <li><a href="#">虚拟卡教程</a></li>
-        </ul>
-      </div>
-      <div class="nav-item">ChatGPT-4o生图API
-        <ul class="dropdown">
-          <li><a href="#">Sora视频生成</a></li>
-          <li><a href="#">免费测试</a></li>
-        </ul>
-      </div>
+      <a href="./index.html">首页</a>
+      <a href="#">AI 教程</a>
+      <a href="#">充值引导</a>
+      <a href="#">关于本站</a>
     </nav>
-    <div class="search-box">
-      <i class="fas fa-search"></i>
-      <input type="text" id="searchInput" placeholder="请输入关键词">
-    </div>
   </header>
 
-  <!-- 主体区域 -->
   <main class="article-container">
-    <div class="breadcrumb">
-      <a href="index.html">木子AI</a> » <span id="articleCategory">ChatGPT</span> » <span id="articleTitlePath">文章标题</span>
-    </div>
-
-    <!-- 顶部广告横幅 -->
-    <div class="banner-box">
-      <div class="banner">
-        <img src="images/banner1.jpg" alt="ChatGPT Plus 官方代充广告">
-        <div class="banner-btn"><a href="#">立即前往</a></div>
-      </div>
-      <div class="banner">
-        <img src="images/banner2.jpg" alt="OpenAI API 充值广告">
-        <div class="banner-btn"><a href="#">立即充值</a></div>
-      </div>
-    </div>
-
-    <article id="articleContent" class="article-body">
-      <h1 id="articleTitle">加载中...</h1>
-      <div class="article-meta-bar">
-        <span><i class="fas fa-user"></i> 作者：木子AI（微信：<span id="wechatId">muzi_ai</span>）</span>
-        <span><i class="far fa-clock"></i> 发布日期：<span id="articleDate">2025-01-01</span></span>
-        <span><i class="fas fa-folder-open"></i> 分类：<a id="articleCategoryLink" href="#">ChatGPT</a></span>
-      </div>
-
-      <div id="articleMarkdown" class="markdown-body"></div>
-
-      <div class="article-tags" id="articleTags"></div>
-
-      <div class="read-count">阅读量：<span id="busuanzi_value_page_pv">0</span></div>
-    </article>
-
-    <!-- 右侧目录 -->
+    <article id="article-content"></article>
     <aside class="toc-sidebar">
-      <div class="toc-title">目录</div>
-      <div id="tocList" class="toc-list"></div>
+      <h3>📑 目录</h3>
+      <nav id="toc"></nav>
     </aside>
   </main>
 
-  <!-- 微信悬浮按钮 -->
+  <aside class="sidebar">
+    <div class="sidebar-box"><h3>关于本站</h3><p>木子AI - ChatGPT / Sora 教程与充值引导。</p></div>
+    <div class="sidebar-box"><img src="./images/ad1.png" alt="广告1"></div>
+    <div class="sidebar-box"><img src="./images/ad2.png" alt="广告2"></div>
+  </aside>
+
   <div class="wechat-float">
-    <div class="wechat-btn" id="wechatBtn">微信</div>
-    <div class="wechat-popup" id="wechatPopup">
-      <img src="images/qrcode-wechat.png" alt="微信二维码">
+    <img src="./images/logo.png" alt="微信" />
+    <div class="wechat-popup">
+      <img src="./images/qrcode-wechat.png" alt="二维码" />
     </div>
   </div>
 
-  <!-- 页脚 -->
-  <footer class="footer">
-    <p>© 2025 木子科技 | 本站内容仅供学习交流，侵权请联系删除。</p>
-    <p>联系邮箱：<a href="mailto:contact@muzi.com">contact@muzi.com</a></p>
-  </footer>
-
-  <script src="assets/article.js"></script>
-  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="./assets/article.js"></script>
 </body>
 </html>
