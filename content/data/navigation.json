@@ -1,0 +1,14 @@
+[
+  {
+    "title": "ChatGPT代升级服务",
+    "submenus": ["GPT PLUS代充", "API KEY代充值"]
+  },
+  {
+    "title": "ChatGPT使用指南",
+    "submenus": ["注册教程", "充值教程", "虚拟卡教程"]
+  },
+  {
+    "title": "ChatGPT-4o生图API",
+    "submenus": ["Sora视频生成", "免费测试"]
+  }
+]
