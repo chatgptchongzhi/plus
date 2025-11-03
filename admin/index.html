@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>木子AI 后台管理</title>
 </head>
 <body>
   <h2 style="font-family:sans-serif;color:#444;text-align:center;margin-top:40px;">正在加载后台，请稍候...</h2>
 
-  <!-- ✅ 本地 decap-cms 代理加载器 -->
+  <!-- ✅ 本地 decap-cms 离线版本 -->
   <script src="./decap-cms.js"></script>
+  <script>
+    if (window.CMS) {
+      CMS.init();
+    } else {
+      document.body.innerHTML = "<h2 style='color:red;text-align:center;margin-top:40px;'>CMS 初始化失败，请刷新页面重试</h2>";
+    }
+  </script>
 </body>
 </html>
