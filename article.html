@@ -1,62 +1,81 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title id="doc-title">文章 - 木子AI</title>
-  <link rel="stylesheet" href="assets/site.css?v=1"/>
-  <script defer src="//cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <meta charset="utf-8" />
+  <title>文章 | 木子AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta id="metaDesc" name="description" content="文章详情 - 木子AI" />
+  <link rel="icon" href="/plus/images/logo.png" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <script>window.__BASE_PATH__='';</script>
 </head>
 <body>
-  <header class="navbar">
-    <div class="nav-inner">
-      <a class="logo" href="./"><img src="images/logo.png" alt="logo"/><span data-site="title">木子AI</span></a>
-      <nav id="nav" class="nav-main"></nav>
-      <label class="search"><svg viewBox="0 0 24 24" class="ico"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16.65" y1="16.65" x2="22" y2="22" stroke="currentColor" stroke-width="2"/></svg><input placeholder="请输入关键词"/></label>
+  <!-- 顶部导航（与首页一致） -->
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="logo" href="index.html" data-wb>木子AI</a>
+      <nav class="navbar" id="navbar"></nav>
+      <div class="search-box">
+        <span class="search-icon"></span>
+        <input id="searchInput" type="search" placeholder="搜索其他文章…" />
+      </div>
     </div>
   </header>
 
-  <main class="layout">
-    <section class="main-col article-page">
-      <nav class="breadcrumb" id="breadcrumb">拼账号 » ChatGPT » 文章</nav>
+  <main class="container article-grid">
+    <section class="content-col">
+      <!-- 面包屑 -->
+      <nav class="breadcrumb" id="breadcrumb">木子AI » </nav>
 
-      <!-- 顶部横幅广告 2 条 -->
-      <div class="banner-row">
-        <a class="banner" href="#"><span>ChatGPT Plus 官方代充</span></a>
-        <a class="banner" href="#"><span>OpenAI API 充值</span></a>
+      <!-- 双 Banner -->
+      <div class="double-banners" id="doubleBanners"></div>
+
+      <!-- Meta 栏 -->
+      <div class="article-meta-row" id="articleMetaRow">
+        <!-- 左：作者微信 中：日期 右：分类 -->
       </div>
 
-      <article class="post">
-        <h1 id="post-title"></h1>
+      <!-- 正文 + TOC 并排 -->
+      <div class="article-body-wrap">
+        <article class="article-body" id="articleBody"></article>
+        <aside class="toc-wrap">
+          <h4>目录</h4>
+          <nav id="toc"></nav>
+        </aside>
+      </div>
 
-        <!-- 元信息栏 -->
-        <div class="meta-bar">
-          <div class="meta-left">
-            <span class="fa">👤</span> 作者：<b id="post-author">木子AI</b> ｜ 微信：<b data-site="wechat">muzi_ai</b>
-          </div>
-          <div class="meta-mid">
-            <span class="fa">📅</span> 发布：<time id="post-date"></time>
-          </div>
-          <div class="meta-right" id="post-cats"></div>
-        </div>
+      <!-- 标签 -->
+      <div id="tagPills" class="tag-pills"></div>
 
-        <div class="post-body" id="post-body"></div>
-        <div class="post-tags" id="post-tags"></div>
-      </article>
+      <!-- 阅读量 -->
+      <p class="pv-line">
+        本文阅读量 <span id="busuanzi_value_page_pv">—</span>
+      </p>
     </section>
 
-    <!-- 右侧 TOC 固定 -->
-    <aside class="sidebar">
-      <div class="side-scroll">
-        <section class="side-card">
-          <h3>目录</h3>
-          <nav id="toc"></nav>
-        </section>
-      </div>
+    <!-- 右侧固定侧栏 -->
+    <aside class="sidebar" id="sidebar">
+      <!-- 复用首页侧栏结构，由 JS 注入 -->
     </aside>
   </main>
 
-  <footer class="footer">© <span data-site="year">2025</span> <span data-site="title">木子AI</span></footer>
-  <script src="assets/article.js?v=1" defer></script>
+  <footer class="site-footer">
+    <div class="container">
+      <div>© <span id="year"></span> 木子AI</div>
+      <div>
+        站点总访问量 <span id="busuanzi_value_site_pv">—</span> 次 ·
+        访客数 <span id="busuanzi_value_site_uv">—</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 统计 -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  <!-- 依赖 -->
+  <script src="assets/libs/marked.min.js"></script>
+  <script src="assets/libs/tocbot.min.js"></script>
+  <!-- 业务脚本 -->
+  <script src="assets/article.js"></script>
 </body>
 </html>
