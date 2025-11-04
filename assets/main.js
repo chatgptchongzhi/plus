@@ -2,14 +2,18 @@
 
 /* ========== 基础工具 ========== */
 function withBase(p) {
-  // 绝对地址直接返回
-  if (/^https?:\/\//.test(p) || p.startsWith('data:')) return p;
-  // 取当前页面所在目录作为前缀，如 /plus/
-  const base = location.pathname.replace(/[^/]+$/, ''); 
-  // 去掉传入路径可能带的开头斜杠，避免变成 /content/...
-  p = p.replace(/^\/+/, '');
-  return base + p;
+  // 绝对地址/数据URL直接返回
+  if (/^(https?:|data:)/.test(p)) return p;
+
+  // 计算 /plus/ 前缀：取当前页面所在目录
+  const basePath = location.pathname.replace(/[^/]+$/, ''); // 如 /plus/
+  // 去掉传入路径前导斜杠，避免变成根路径
+  const rel = String(p).replace(/^\/+/, '');
+
+  // 返回“带域名的绝对地址”，不受 <base> 影响
+  return location.origin + basePath + rel;
 }
+
 
 
 async function loadJSON(path) {
