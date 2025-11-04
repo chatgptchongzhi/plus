@@ -202,6 +202,20 @@ function filterByKeyword(list, kw){
       || (p.tags||[]).join(',').toLowerCase().includes(kw);
   });
 }
+// 兜底：过滤掉已经被删除的文章（根据 slug 去探测对应 html 是否还存在）
+async function filterExistingPosts(posts) {
+  const checks = posts.map(async p => {
+    const path = `content/posts/${p.slug}.html`;
+    try {
+      const res = await fetch(withBase(path) + `?t=${Date.now()}`, { method: 'HEAD', cache: 'no-store' });
+      return res.ok ? p : null;  // 200 保留，404/403 等丢弃
+    } catch {
+      return null;
+    }
+  });
+  const results = await Promise.all(checks);
+  return results.filter(Boolean);
+}
 
 /* ===== 初始化 ===== */
 (async function init(){
