@@ -1,0 +1,16 @@
+{
+  "siteTitle": "木子AI",
+  "description": "ChatGPT / Sora / AI 工具教程与充值引导",
+  "wechat": "muzi_ai",
+  "email": "contact@muzi.com",
+  "ad": {
+    "title": "官方代充 · 限时优惠",
+    "price": "¥178 / 月",
+    "button": { "text": "立即咨询", "link": "https://example.com/wechat" },
+    "image": "images/ad1.png"
+  },
+  "banners": [
+    { "image": "images/banner-plus.jpg", "text": "ChatGPT Plus 官方代充", "link": "#" },
+    { "image": "images/banner-plus.jpg", "text": "OpenAI API 安全充值", "link": "#" }
+  ]
+}
