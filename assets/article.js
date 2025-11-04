@@ -1,125 +1,85 @@
-/* ========== Article Loader (HTML-only) ========== */
-/* 作用：
-   1) 从 URL 读取 ?slug=xxx
-   2) 加载 content/posts/xxx.html 并塞进 #articleBody
-   3) 填充面包屑 / meta / 右侧栏
-   4) 初始化 TOC（tocbot）
-   5) 全程使用 withBase() 保证 /plus/ 子路径正确
-*/
+/* assets/article.js —— 一次性替换版 */
 
-(function(){
-  const $ = (sel)=> document.querySelector(sel);
-  const $$ = (sel)=> Array.from(document.querySelectorAll(sel));
-  const byId = (id)=> document.getElementById(id);
+function withBase(p){
+  const base = (document.querySelector('a.logo')?.getAttribute('href') || 'index.html')
+    .replace(/index\.html.*/,'')
+    .replace(/\/?$/, '/');
+  if (/^https?:\/\//.test(p) || p.startsWith('/')) return p;
+  return base + p;
+}
 
-  // 安全获取 URL 参数
-  function getSlug(){
-    const u = new URL(location.href);
-    return (u.searchParams.get('slug') || '').trim();
+async function loadJSON(path){
+  const r = await fetch(withBase(path));
+  if(!r.ok) throw new Error('load failed: ' + path);
+  return r.json();
+}
+
+function fmtDate(dateStr){
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr || '';
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), da = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${da}`;
+}
+function isoDate(dateStr){
+  const d = new Date(dateStr);
+  return isNaN(d) ? '' : d.toISOString().slice(0,10);
+}
+
+/* 统一的 Byline */
+function renderByline(dateStr){
+  const nice = fmtDate(dateStr);
+  const iso  = isoDate(dateStr);
+  return `
+    <div class="byline-row">
+      <span class="badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 6v2h16v-2c0-3.33-2.67-6-8-6z"/>
+        </svg>
+      </span>
+      <span class="byline-text">木子 — 联系微信：ef98ee</span>
+      <span class="post-meta"> · <time datetime="${iso}">${nice}</time></span>
+    </div>
+  `;
+}
+
+function getSlug(){
+  const u = new URL(location.href);
+  return u.searchParams.get('slug') || '';
+}
+
+async function init(){
+  const slug = getSlug();
+  if(!slug){
+    document.getElementById('articleBody').innerHTML = '<p>缺少 slug 参数。</p>';
+    return;
   }
 
-  // 拉取文本（HTML）
-  async function fetchText(path){
-    // 加时间戳避免缓存
-    const url = (window.withBase ? window.withBase(path) : path) + (path.includes('?') ? '&' : '?') + 'v=' + Date.now();
-    const res = await fetch(url, { cache: 'no-store' });
-    if(!res.ok) throw new Error('load '+url+' '+res.status);
-    return res.text();
+  // 在索引里找这篇文章的元信息（日期 / 标签等）
+  const index = await loadJSON('content/search.json?v=13');
+  const meta  = index.find(i=>i.slug === slug);
+
+  // Meta 区域
+  const metaRow = document.getElementById('articleMetaRow');
+  if(metaRow){
+    metaRow.innerHTML = renderByline(meta?.date || '');
   }
 
-  // 渲染右侧栏（复用站点信息）
-  async function renderSidebar(){
-    if(typeof window.fetchJSON === 'function'){
-      try {
-        const site = await window.fetchJSON('content/data/siteinfo.json');
-        const desc = byId('siteDesc');
-        const wx   = byId('wxId');
-        const mail = byId('siteEmail');
-        const adTitle = byId('adTitle');
-        const adPrice = byId('adPrice');
-        const adImage = byId('adImage');
-        const adBtn   = byId('adBtn');
-        const qr      = byId('qrcode');
-
-        if(desc) desc.textContent = site.description || '';
-        if(wx)   wx.textContent   = site.wechat || '';
-        if(mail) mail.textContent = site.email || '';
-
-        if(adTitle) adTitle.textContent = site.ad?.title || '广告';
-        if(adPrice) adPrice.textContent = site.ad?.price || '';
-        if(adImage) adImage.src = (window.withBase ? window.withBase(site.ad?.image || 'images/ad1.png') : (site.ad?.image || 'images/ad1.png'));
-        if(adBtn){
-          adBtn.textContent = site.ad?.button?.text || '了解更多';
-          adBtn.href        = (window.withBase ? window.withBase(site.ad?.button?.link || '#') : (site.ad?.button?.link || '#'));
-        }
-        if(qr) qr.src = (window.withBase ? window.withBase('images/qrcode-wechat.png') : 'images/qrcode-wechat.png');
-      } catch(e){}
-    }
-  }
-
-  // 构建 TOC
-  function buildTOC(){
-    if(!window.tocbot) return;
-    try{
-      window.tocbot.init({
-        tocSelector: '#toc',
-        contentSelector: '#articleBody',
-        headingSelector: 'h1, h2, h3',
-        collapseDepth: 6,
-        scrollSmooth: true
-      });
-    }catch(e){}
-  }
-
-  // 面包屑、meta 等（可按需拓展）
-  function renderMeta(slug){
-    const crumb = byId('breadcrumb');
-    if(crumb){
-      crumb.innerHTML = '木子AI » ';
-    }
-  }
-
-  async function init(){
-    // 年份
-    const y = byId('year');
-    if(y) y.textContent = new Date().getFullYear();
-
-    // 导航（来自 main.js）
-    if(typeof window.renderNav === 'function'){
-      await window.renderNav();
-    }
-    // 右侧栏
-    await renderSidebar();
-
-    const slug = getSlug();
-    if(!slug){
-      const body = byId('articleBody');
-      if(body) body.innerHTML = '<p style="color:#999">未指定 slug。</p>';
-      return;
-    }
-
-    // 加载 HTML 正文
-    const htmlPath = `content/posts/${slug}.html`;
-    let html = '';
-    try{
-      html = await fetchText(htmlPath);
-    }catch(e){
-      html = `<p style="color:#999">未找到本文内容（尝试路径：${htmlPath}）。</p>`;
-    }
-
-    const body = byId('articleBody');
-    if(body){
-      body.innerHTML = html;
-    }
-
-    renderMeta(slug);
-    buildTOC();
-  }
-
-  // 等主文档就绪
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
+  // 正文（按你的规则：content/posts/${slug}.html）
+  const path = `content/posts/${slug}.html`;
+  const r = await fetch(withBase(path));
+  if(!r.ok){
+    document.getElementById('articleBody').innerHTML =
+      `<p>未找到本文内容（尝试路径：<code>${path}</code>）。</p>`;
   }else{
-    init();
+    const html = await r.text();
+    document.getElementById('articleBody').innerHTML = html;
   }
-})();
+
+  // 右侧标签等（可按需用 meta.tags / meta.categories）
+  const tagPills = document.getElementById('tagPills');
+  if(tagPills && meta?.tags){
+    tagPills.innerHTML = meta.tags.map(t=>`<a class="tag-pill" href="${withBase(`index.html?tag=${encodeURIComponent(t)}`)}">#${t}</a>`).join('');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
