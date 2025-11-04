@@ -110,6 +110,22 @@ async function loadSearchIndex(){
     top: !!x.top
   }));
 }
+/* ===== 过滤：只保留仍然存在的正文文件 ===== */
+async function filterExistingPosts(list){
+  const results = await Promise.all(list.map(async (p) => {
+    // 只检查有 slug 的条目
+    if (!p || !p.slug) return null;
+    // 检查对应的静态正文是否还在：content/posts/<slug>.html
+    const url = withBase(`content/posts/${encodeURIComponent(p.slug)}.html?v=${Date.now()}`);
+    try {
+      const res = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+      return res.ok ? p : null; // 200 就保留，否则丢弃
+    } catch (e) {
+      return null;
+    }
+  }));
+  return results.filter(Boolean);
+}
 
 /* ===== 推荐区（最新 4 条，或有 top 优先） ===== */
 function renderRecommend(list){
