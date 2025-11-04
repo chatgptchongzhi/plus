@@ -1,12 +1,12 @@
 /* =========================================================================
-   布局零变动版 main.js
-   - 不要求 HTML 增加 data- 属性
-   - 不改动 DOM 结构和类名
-   - 仅替换已有文字内容/链接
+   木子AI - 前台主脚本（零改动布局增强版）
+   - 兼容你的原有选择器写法
+   - 找不到时自动兜底（不要求改 index.html）
+   - 不改变 DOM 结构 / 不影响排版
    ====================================================================== */
 
 (function () {
-  // ---- 工具：防缓存加载 JSON ----
+  /** -------------------- 工具区 -------------------- **/
   const fetchJSON = (path) =>
     fetch(`${path}${path.includes('?') ? '&' : '?'}v=${Date.now()}`, { cache: 'no-store' })
       .then((r) => {
@@ -14,59 +14,95 @@
         return r.json();
       });
 
-  const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-  const setText = (el, txt) => { if (el && typeof txt === 'string') el.textContent = txt; };
-  const setAttr = (el, attr, val) => { if (el && val != null) el.setAttribute(attr, val); };
+  const $ = (sel, root = document) => root.querySelector(sel);
 
-  // ---- 入口：应用站点信息 ----
-  function applySiteInfo(site) {
+  const setTextEl = (el, txt) => { if (el && typeof txt === 'string') el.textContent = txt; };
+  const setAttrEl = (el, attr, val) => { if (el && val != null) el.setAttribute(attr, val); };
+
+  // 选择器优先；若未命中，用 fallback() 兜底返回元素
+  const pick = (selectors, fallback) => {
+    for (const s of selectors) { const el = $(s); if (el) return el; }
+    return typeof fallback === 'function' ? fallback() : null;
+  };
+
+  // GitHub Pages 子路径适配（/plus/）
+  const basePath = (function () {
+    const m = location.pathname.match(/\/([^\/]+)\//);
+    return m ? `/${m[1]}/` : '/';
+  })();
+  const normalizeUrl = (url) => {
+    if (!url) return '#';
+    if (/^https?:\/\//i.test(url)) return url;
+    if (url.startsWith('/')) return basePath + url.replace(/^\//, '');
+    return url;
+  };
+
+  /** -------------------- 站点信息渲染 -------------------- **/
+  function renderSiteInfo(site) {
     console.log('siteinfo loaded:', site);
 
-    // 1) 页面 <title>
-    if (site.siteTitle) document.title = site.siteTitle;
+    // 1) 标题
+    if (site.siteTitle) {
+      document.title = site.siteTitle;
+      const titleEl = pick(
+        ['[data-site=title]', '.site-title', '#site-title'],
+        () => $('h1') // 兜底：第一个 H1
+      );
+      setTextEl(titleEl, site.siteTitle);
+    }
 
-    // 2) 标题（优先命中常见选择器；否则找第一个 h1）
-    const titleEl =
-      $('.site-title') || $('#site-title') || $('h1');
-    if (site.siteTitle) setText(titleEl, site.siteTitle);
+    // 2) 描述
+    if (site.description) {
+      const descEl = pick(
+        ['[data-site=description]', '.site-desc', '#site-desc'],
+        () => {
+          const h1 = $('h1');
+          // 兜底：H1 后面的第一个 <p>
+          if (h1 && h1.nextElementSibling && h1.nextElementSibling.tagName === 'P') {
+            return h1.nextElementSibling;
+          }
+          // 再兜底：header 区域中的第一个段落
+          return $('header p') || $('.tagline') || $('.subtitle');
+        }
+      );
+      setTextEl(descEl, site.description);
+    }
 
-    // 3) 描述（常见：.site-desc / #site-desc / 紧邻 h1 的段落）
-    const descEl =
-      $('.site-desc') || $('#site-desc') ||
-      (titleEl ? (titleEl.nextElementSibling && titleEl.nextElementSibling.tagName === 'P' ? titleEl.nextElementSibling : null) : null) ||
-      $('header p') || $('.tagline') || $('.subtitle');
-    if (site.description) setText(descEl, site.description);
-
-    // 4) 微信号
-    //   先找类名或 id；找不到再扫描包含“微信”字样的元素并替换其中文本
-    let wechatEl = $('.wechat') || $('#wechat');
+    // 3) 微信号
     if (site.wechat) {
+      const wechatEl = pick(['[data-site=wechat]', '.wechat', '#wechat']);
       if (wechatEl) {
-        setText(wechatEl, site.wechat);
+        setTextEl(wechatEl, site.wechat);
       } else {
-        const candidate = $$('body *').find((e) => {
+        // 兜底：找包含“微信”字样的元素，然后替换文本中的微信号
+        const cand = $$('body *').find((e) => {
           const t = (e.textContent || '').trim();
           return t && (/^微信[:：]/.test(t) || t.includes('微信：') || /^微信$/.test(t));
         });
-        if (candidate) {
-          // 常见文本形态替换：微信：xxx
-          candidate.innerHTML = candidate.innerHTML.replace(/微信[:：]?\s*[\w\-\._@]+/g, '微信： ' + site.wechat);
+        if (cand) {
+          cand.innerHTML = (cand.innerHTML || '').replace(
+            /微信[:：]?\s*[\w\-\._@]+/g,
+            '微信： ' + site.wechat
+          );
         }
       }
     }
 
-    // 5) 邮箱（a[href^="mailto:"]、.email-link、.email）
+    // 4) 邮箱（同时更新 mailto）
     if (site.email) {
-      const emailLink = $('a[href^="mailto:"], .email-link') || $('#email');
-      if (emailLink) setAttr(emailLink, 'href', 'mailto:' + site.email);
+      const emailTxt = pick(['[data-site=email]', '.email', '#email']);
+      setTextEl(emailTxt, site.email);
 
-      const emailTxt = $('.email');
-      if (emailTxt) setText(emailTxt, site.email);
-      else {
-        const emailCandidate = $$('body *').find((e) => (e.textContent || '').includes('邮箱'));
-        if (emailCandidate) {
-          emailCandidate.innerHTML = emailCandidate.innerHTML.replace(
+      const emailLink =
+        pick(['[data-site=email-link]', '.email-link'], () => $('a[href^="mailto:"]'));
+      setAttrEl(emailLink, 'href', `mailto:${site.email}`);
+
+      // 再兜底：找到包含“邮箱”的元素，把其中的邮箱地址替换掉
+      if (!emailTxt && !emailLink) {
+        const cand = $$('body *').find((e) => (e.textContent || '').includes('邮箱'));
+        if (cand) {
+          cand.innerHTML = (cand.innerHTML || '').replace(
             /邮箱[:：]?\s*[\w\.\-\+]+@[\w\.\-]+/g,
             '邮箱： ' + site.email
           );
@@ -74,42 +110,40 @@
       }
     }
 
-    // 6) 广告文案（若页面有 .ad-text）
+    // 5) 广告文案（若存在对应元素）
     if (site.adText) {
-      const adEl = $('.ad-text');
-      if (adEl) setText(adEl, site.adText);
+      const adEl = pick(['[data-site=adText]', '.ad-text', '#ad-text']);
+      setTextEl(adEl, site.adText);
     }
 
-    // 7) 关于文案（若页面有 .about-text；否则尝试“关于”小节第一个段落）
+    // 6) 关于（若存在对应元素；否则找“关于”小节的第一个段落）
     if (site.about) {
-      const aboutEl =
-        $('.about-text') ||
-        (function () {
-          const h2 = $$('h2').find((x) => /关于/.test(x.textContent || ''));
-          if (!h2) return null;
-          return (h2.parentElement && h2.parentElement.querySelector('p')) || null;
-        })();
-      if (aboutEl) setText(aboutEl, site.about);
+      const aboutEl = pick(['[data-site=about]', '.about-text', '#about-text'], () => {
+        const h2 = $$('h2').find((x) => /关于/.test(x.textContent || ''));
+        return h2 ? (h2.parentElement && h2.parentElement.querySelector('p')) : null;
+      });
+      setTextEl(aboutEl, site.about);
     }
 
-    // 8) 年份（若页面有 .year）
-    const yearEl = $('.year');
-    if (yearEl) setText(yearEl, new Date().getFullYear());
+    // 7) 年份
+    const year = new Date().getFullYear();
+    const yearEl = pick(['[data-site=year]', '.year', '#year']);
+    setTextEl(yearEl, String(year));
   }
 
-  // ---- 可选：导航（如果你的页面没有导航容器，这段不会改任何东西）----
-  function applyNavigation(nav) {
+  /** -------------------- 导航渲染（可选） -------------------- **/
+  function renderNavigation(nav) {
     const items = Array.isArray(nav) ? nav : (nav && Array.isArray(nav.items) ? nav.items : []);
     if (!items.length) return;
 
-    const container = $('#nav') || $('[data-nav="list"]');
-    if (!container) return;
+    const container = $('[data-nav=list]') || $('#nav');
+    if (!container) return; // 没有容器就不渲染
 
     const createItem = (item) => {
       const li = document.createElement('li');
       const a = document.createElement('a');
       a.textContent = item.title || item.name || '未命名';
-      a.href = item.url || '#';
+      a.href = normalizeUrl(item.url || '#');
       li.appendChild(a);
 
       const children = item.children || item.items;
@@ -124,15 +158,31 @@
     const ul = document.createElement('ul');
     ul.className = 'nav-list';
     items.forEach((it) => ul.appendChild(createItem(it)));
+
     container.innerHTML = '';
     container.appendChild(ul);
   }
 
-  // ---- 初始化 ----
+  /** -------------------- 初始化（加载 JSON） -------------------- **/
   function init() {
-    fetchJSON('content/data/siteinfo.json').then(applySiteInfo).catch(console.error);
-    // 导航可选（存在时渲染）
-    fetchJSON('content/data/navigation.json').then(applyNavigation).catch(() => {});
+    // 1) 站点信息
+    fetchJSON('content/data/siteinfo.json')
+      .then(renderSiteInfo)
+      .catch((e) => console.error('加载 siteinfo.json 失败：', e));
+
+    // 2) 导航（可选）
+    fetchJSON('content/data/navigation.json')
+      .then(renderNavigation)
+      .catch(() => { /* 可无导航 */ });
+
+    // 3) 图片 404 提示 + / 开头路径自动补 basePath（不影响布局）
+    $$('img').forEach((img) => {
+      img.addEventListener('error', () => {
+        console.warn('图片加载失败：', img.getAttribute('src'));
+      }, { once: true });
+      const src = img.getAttribute('src') || '';
+      if (src.startsWith('/')) img.setAttribute('src', normalizeUrl(src));
+    });
   }
 
   if (document.readyState === 'loading') {
