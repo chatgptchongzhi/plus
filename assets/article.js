@@ -1,95 +1,125 @@
-// plus/assets/article.js
-(function () {
-  const $ = (s) => document.querySelector(s);
-  const fmt = (s) => (s ? new Date(s.replace(/-/g,'/')).toISOString().slice(0,10) : '');
+/* ========== Article Loader (HTML-only) ========== */
+/* 作用：
+   1) 从 URL 读取 ?slug=xxx
+   2) 加载 content/posts/xxx.html 并塞进 #articleBody
+   3) 填充面包屑 / meta / 右侧栏
+   4) 初始化 TOC（tocbot）
+   5) 全程使用 withBase() 保证 /plus/ 子路径正确
+*/
 
-  function getSlug() {
+(function(){
+  const $ = (sel)=> document.querySelector(sel);
+  const $$ = (sel)=> Array.from(document.querySelectorAll(sel));
+  const byId = (id)=> document.getElementById(id);
+
+  // 安全获取 URL 参数
+  function getSlug(){
     const u = new URL(location.href);
     return (u.searchParams.get('slug') || '').trim();
   }
 
-  function withBase(url) {
-    if (!url) return '';
-    if (/^https?:|^data:|^mailto:|^#/.test(url)) return url;
-    const p = location.pathname;
-    const idx = p.indexOf('/plus/');
-    const base = idx >= 0 ? p.slice(0, idx + '/plus/'.length).replace(/\/$/, '') : '';
-    url = url.replace(/^\.?\//,'');
-    return base ? base + '/' + url : '/' + url;
-  }
-
-  async function fetchText(path) {
-    const url = withBase(path + (path.includes('?') ? '&' : '?') + 'v=' + Date.now());
+  // 拉取文本（HTML）
+  async function fetchText(path){
+    // 加时间戳避免缓存
+    const url = (window.withBase ? window.withBase(path) : path) + (path.includes('?') ? '&' : '?') + 'v=' + Date.now();
     const res = await fetch(url, { cache: 'no-store' });
-    if (!res.ok) throw new Error('load ' + url + ' ' + res.status);
+    if(!res.ok) throw new Error('load '+url+' '+res.status);
     return res.text();
   }
 
-  function extractFM(text) {
-    const m = text.match(/^---\s*([\s\S]*?)\s*---\s*/);
-    if (!m) return { fm: {}, body: text };
-    const yaml = m[1];
-    const body = text.slice(m[0].length);
-    const fm = {};
-    yaml.split(/\r?\n/).forEach(line=>{
-      const mm = line.match(/^([a-zA-Z0-9_]+)\s*:\s*(.*)$/);
-      if (!mm) return;
-      let v = mm[2].trim();
-      try { fm[mm[1]] = JSON.parse(v); } catch { fm[mm[1]] = v; }
-    });
-    return { fm, body };
+  // 渲染右侧栏（复用站点信息）
+  async function renderSidebar(){
+    if(typeof window.fetchJSON === 'function'){
+      try {
+        const site = await window.fetchJSON('content/data/siteinfo.json');
+        const desc = byId('siteDesc');
+        const wx   = byId('wxId');
+        const mail = byId('siteEmail');
+        const adTitle = byId('adTitle');
+        const adPrice = byId('adPrice');
+        const adImage = byId('adImage');
+        const adBtn   = byId('adBtn');
+        const qr      = byId('qrcode');
+
+        if(desc) desc.textContent = site.description || '';
+        if(wx)   wx.textContent   = site.wechat || '';
+        if(mail) mail.textContent = site.email || '';
+
+        if(adTitle) adTitle.textContent = site.ad?.title || '广告';
+        if(adPrice) adPrice.textContent = site.ad?.price || '';
+        if(adImage) adImage.src = (window.withBase ? window.withBase(site.ad?.image || 'images/ad1.png') : (site.ad?.image || 'images/ad1.png'));
+        if(adBtn){
+          adBtn.textContent = site.ad?.button?.text || '了解更多';
+          adBtn.href        = (window.withBase ? window.withBase(site.ad?.button?.link || '#') : (site.ad?.button?.link || '#'));
+        }
+        if(qr) qr.src = (window.withBase ? window.withBase('images/qrcode-wechat.png') : 'images/qrcode-wechat.png');
+      } catch(e){}
+    }
   }
 
-  function renderTOC() {
-    if (!window.tocbot) return;
-    try {
+  // 构建 TOC
+  function buildTOC(){
+    if(!window.tocbot) return;
+    try{
       window.tocbot.init({
         tocSelector: '#toc',
-        contentSelector: '.article-body',
+        contentSelector: '#articleBody',
         headingSelector: 'h1, h2, h3',
-        collapseDepth: 6
+        collapseDepth: 6,
+        scrollSmooth: true
       });
-    } catch {}
+    }catch(e){}
   }
 
-  function renderMeta(fm) {
-    const row = document.querySelector('#articleMetaRow');
-    const left = `<span>作者：老张（微信：<b>muzi_ai</b>）</span>`;
-    const mid  = `<span>${fmt(fm.date) || ''}</span>`;
-    const right= `<span>分类：${(fm.categories||[]).join(' / ')}</span>`;
-    row.innerHTML = `<div class="meta-left">${left}</div><div class="meta-mid">${mid}</div><div class="meta-right">${right}</div>`;
-    const pills = (fm.tags||[]).map(t=>`<a class="tag-pill" href="${withBase('tags.html?name='+encodeURIComponent(t))}">#${t}</a>`).join('');
-    document.querySelector('#tagPills').innerHTML = pills;
+  // 面包屑、meta 等（可按需拓展）
+  function renderMeta(slug){
+    const crumb = byId('breadcrumb');
+    if(crumb){
+      crumb.innerHTML = '木子AI » ';
+    }
   }
 
-  function renderBreadcrumb(fm) {
-    const bc = document.querySelector('#breadcrumb');
-    const name = fm.title || document.title || '';
-    bc.innerHTML = `木子AI » ${name}`;
-  }
+  async function init(){
+    // 年份
+    const y = byId('year');
+    if(y) y.textContent = new Date().getFullYear();
 
-  (async function () {
-    const y = document.querySelector('#year'); if (y) y.textContent = new Date().getFullYear();
+    // 导航（来自 main.js）
+    if(typeof window.renderNav === 'function'){
+      await window.renderNav();
+    }
+    // 右侧栏
+    await renderSidebar();
 
     const slug = getSlug();
-    if (!slug) { document.querySelector('#articleBody').innerHTML = '<p style="color:#999">缺少 slug 参数。</p>'; return; }
-
-    let fm = {}, html = '';
-
-    // 先尝试 HTML
-    try {
-      const raw = await fetchText(`content/posts/${slug}.html`);
-      const ex = extractFM(raw);
-      fm = ex.fm || {};
-      html = ex.body || raw;
-      document.querySelector('#articleBody').innerHTML = html;
-      renderMeta(fm);
-      renderBreadcrumb(fm);
-      renderTOC();
+    if(!slug){
+      const body = byId('articleBody');
+      if(body) body.innerHTML = '<p style="color:#999">未指定 slug。</p>';
       return;
-    } catch (e) {}
+    }
 
-    // 再尝试 Markdown
-    try {
-      const raw = await fetchText(`content/posts/${slug}.md`);
-      const ex = extractF
+    // 加载 HTML 正文
+    const htmlPath = `content/posts/${slug}.html`;
+    let html = '';
+    try{
+      html = await fetchText(htmlPath);
+    }catch(e){
+      html = `<p style="color:#999">未找到本文内容（尝试路径：${htmlPath}）。</p>`;
+    }
+
+    const body = byId('articleBody');
+    if(body){
+      body.innerHTML = html;
+    }
+
+    renderMeta(slug);
+    buildTOC();
+  }
+
+  // 等主文档就绪
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  }else{
+    init();
+  }
+})();
