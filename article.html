@@ -1,61 +1,62 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title id="page-title">木子AI - 文章详情</title>
-  <meta name="description" id="meta-desc" content="ChatGPT / Sora / AI 工具教程与充值引导" />
-  <meta name="keywords" id="meta-keywords" content="ChatGPT,Sora,AI,教程,充值" />
-  <link rel="icon" href="/plus/images/logo.png" type="image/png" />
-  <link rel="stylesheet" href="/plus/assets/style.css" />
-  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title id="doc-title">文章 - 木子AI</title>
+  <link rel="stylesheet" href="assets/site.css?v=1"/>
+  <script defer src="//cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
-
 <body>
-  <!-- 顶部导航栏 -->
   <header class="navbar">
-    <a href="/plus/index.html" class="logo">木子AI</a>
-    <nav class="nav-links" id="navbar-links"></nav>
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="请输入关键词" />
+    <div class="nav-inner">
+      <a class="logo" href="./"><img src="images/logo.png" alt="logo"/><span data-site="title">木子AI</span></a>
+      <nav id="nav" class="nav-main"></nav>
+      <label class="search"><svg viewBox="0 0 24 24" class="ico"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16.65" y1="16.65" x2="22" y2="22" stroke="currentColor" stroke-width="2"/></svg><input placeholder="请输入关键词"/></label>
     </div>
   </header>
 
-  <main class="article-container">
-    <article id="article-content"></article>
-    <aside class="toc-sidebar">
-      <h3>📑 目录</h3>
-      <nav id="toc"></nav>
+  <main class="layout">
+    <section class="main-col article-page">
+      <nav class="breadcrumb" id="breadcrumb">拼账号 » ChatGPT » 文章</nav>
+
+      <!-- 顶部横幅广告 2 条 -->
+      <div class="banner-row">
+        <a class="banner" href="#"><span>ChatGPT Plus 官方代充</span></a>
+        <a class="banner" href="#"><span>OpenAI API 充值</span></a>
+      </div>
+
+      <article class="post">
+        <h1 id="post-title"></h1>
+
+        <!-- 元信息栏 -->
+        <div class="meta-bar">
+          <div class="meta-left">
+            <span class="fa">👤</span> 作者：<b id="post-author">木子AI</b> ｜ 微信：<b data-site="wechat">muzi_ai</b>
+          </div>
+          <div class="meta-mid">
+            <span class="fa">📅</span> 发布：<time id="post-date"></time>
+          </div>
+          <div class="meta-right" id="post-cats"></div>
+        </div>
+
+        <div class="post-body" id="post-body"></div>
+        <div class="post-tags" id="post-tags"></div>
+      </article>
+    </section>
+
+    <!-- 右侧 TOC 固定 -->
+    <aside class="sidebar">
+      <div class="side-scroll">
+        <section class="side-card">
+          <h3>目录</h3>
+          <nav id="toc"></nav>
+        </section>
+      </div>
     </aside>
   </main>
 
-  <!-- 固定右栏 -->
-  <aside class="sidebar">
-    <div class="sidebar-box" id="about-box">
-      <h3>关于本站</h3>
-      <p>木子AI - ChatGPT / Sora 教程与充值引导。</p>
-    </div>
-    <div class="sidebar-box" id="ad-box">
-      <h3>广告推广</h3>
-      <img src="/plus/images/ad2.png" alt="广告">
-      <p>自定义广告内容，可在后台修改。</p>
-      <button class="btn-green">立即了解</button>
-    </div>
-  </aside>
-
-  <div class="wechat-float">
-    <img src="/plus/images/logo.png" alt="微信" />
-    <div class="wechat-popup">
-      <img src="/plus/images/qrcode-wechat.png" alt="二维码" />
-    </div>
-  </div>
-
-  <footer>
-    © 2025 木子科技 | 本站内容仅供学习交流，侵权请联系删除 | 联系邮箱：contact@muzi.com
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="/plus/assets/article.js"></script>
-  <script src="/plus/assets/main.js"></script>
+  <footer class="footer">© <span data-site="year">2025</span> <span data-site="title">木子AI</span></footer>
+  <script src="assets/article.js?v=1" defer></script>
 </body>
 </html>
