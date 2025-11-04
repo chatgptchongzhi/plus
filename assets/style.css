@@ -167,3 +167,24 @@ img{max-width:100%; display:block}
   .list-thumb{width:100%; height:auto; aspect-ratio:16/9}
   .list-main{width:100%}
 }
+
+/* === 修复：子菜单定位到各自的 nav-group 下方 === */
+.navbar { position: relative; z-index: 200; }      /* 可留着，不影响 */
+
+.navbar .nav-group{
+  position: relative;              /* ★ 关键：让本组成为定位参照 */
+  display: inline-flex;
+  align-items: center;
+}
+
+.navbar .dropdown{
+  position: absolute;
+  top: calc(100% + 8px);           /* 紧贴主菜单下方，留 8px 间距 */
+  left: 0;                         /* 和当前这组左对齐 */
+  z-index: 210;
+  display: none;                   /* 默认隐藏 */
+}
+
+/* 鼠标悬停时只展开当前组的子菜单（兜底，JS 异常也生效） */
+.navbar .nav-group:hover .dropdown{ display: block; }
+
