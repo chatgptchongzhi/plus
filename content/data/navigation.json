@@ -1,14 +1,26 @@
-[
-  {
-    "title": "ChatGPT代升级服务",
-    "submenus": ["GPT PLUS代充", "API KEY代充值"]
-  },
-  {
-    "title": "ChatGPT使用指南",
-    "submenus": ["注册教程", "充值教程", "虚拟卡教程"]
-  },
-  {
-    "title": "ChatGPT-4o生图API",
-    "submenus": ["Sora视频生成", "免费测试"]
-  }
-]
+{
+  "items": [
+    {
+      "title": "ChatGPT代升级服务",
+      "children": [
+        {"title":"GPT PLUS代充","url":"#"},
+        {"title":"API KEY代充值","url":"#"}
+      ]
+    },
+    {
+      "title": "ChatGPT使用指南",
+      "children": [
+        {"title":"注册教程","url":"#"},
+        {"title":"充值教程","url":"#"},
+        {"title":"虚拟卡教程","url":"#"}
+      ]
+    },
+    {
+      "title": "ChatGPT-4o生图API",
+      "children": [
+        {"title":"Sora视频生成","url":"#"},
+        {"title":"免费测试","url":"#"}
+      ]
+    }
+  ]
+}
