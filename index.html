@@ -1,71 +1,90 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>木子AI - ChatGPT / Sora / AI 工具教程与充值引导</title>
-  <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导 - 木子AI" />
-  <meta name="keywords" content="ChatGPT,Sora,AI,教程,充值,木子AI" />
-  <link rel="icon" href="/plus/images/logo.png" type="image/png" />
-  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title data-site="title">木子AI</title>
+  <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导" />
+  <link rel="icon" href="images/logo.png" type="image/png" />
+  <link rel="stylesheet" href="assets/site.css?v=1" />
+  <script defer src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </head>
-
 <body>
-  <!-- 顶部导航栏（动态加载） -->
+  <!-- 顶部导航（固定） -->
   <header class="navbar">
-    <a href="/plus/index.html" class="logo">木子AI</a>
-    <nav class="nav-links" id="navbar-links"></nav>
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="请输入关键词" />
+    <div class="nav-inner">
+      <a class="logo" href="./">
+        <img src="images/logo.png" alt="logo" onerror="this.style.display='none'"/>
+        <span data-site="title">木子AI</span>
+      </a>
+
+      <nav id="nav" class="nav-main" aria-label="主菜单"></nav>
+
+      <label class="search">
+        <svg viewBox="0 0 24 24" class="ico"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16.65" y1="16.65" x2="22" y2="22" stroke="currentColor" stroke-width="2"/></svg>
+        <input id="searchInput" placeholder="请输入关键词" />
+      </label>
     </div>
   </header>
 
-  <!-- 主内容 -->
-  <div class="container">
-    <div class="main-content">
+  <!-- 主体：左 70% + 右固定 320px -->
+  <main class="layout">
+    <section class="main-col">
       <!-- 推荐区 -->
-      <section class="recommend-box">
-        <h2 class="recommend-title">ChatGPT 使用必读文章</h2>
-        <div class="recommend-grid" id="recommend-grid"></div>
+      <section class="card recommend-box">
+        <h2 class="block-title">
+          <i class="bar"></i> ChatGPT 使用必读文章
+        </h2>
+        <div id="recommend-grid" class="grid-2x2"></div>
       </section>
 
       <!-- 文章列表 -->
       <section class="article-list" id="article-list"></section>
-      <div id="pagination" class="pagination"></div>
-    </div>
 
-    <!-- 右侧栏 -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-box" id="about-box">
-        <h3>关于本站</h3>
-        <p>木子AI - 专注 ChatGPT / Sora / AI 工具教程与充值引导。</p>
-      </div>
-      <div class="sidebar-box sidebar-ad" id="ad-box">
-        <h3>广告推广</h3>
-        <img src="/plus/images/ad1.png" alt="广告">
-        <p>自定义广告内容，可在后台修改。</p>
-        <button class="btn-green">立即了解</button>
-      </div>
-      <div class="sidebar-box" id="contact-box">
-        <h3>联系老张</h3>
-        <img src="/plus/images/qrcode-wechat.png" class="sidebar-qrcode" />
-        <p>微信号：muzi_ai</p>
+      <!-- 分页 -->
+      <div id="pagination" class="pagination"></div>
+    </section>
+
+    <!-- 右侧固定栏 -->
+    <aside class="sidebar">
+      <div class="side-scroll">
+        <section class="side-card">
+          <h3>关于本站</h3>
+          <p class="about" data-site="about">木子AI - 专注 ChatGPT / Sora / AI 工具教程与充值引导。</p>
+        </section>
+
+        <section class="side-card ad">
+          <h3>充值推广</h3>
+          <img src="images/ad1.png" alt="广告" onerror="this.style.display='none'"/>
+          <p class="ad-text" data-site="adText">自定义广告内容，可在后台修改。</p>
+          <a class="btn wx" href="#contact">立即了解</a>
+        </section>
+
+        <section class="side-card" id="contact">
+          <h3>联系老张</h3>
+          <img class="qrcode" src="images/qrcode-wechat.png" alt="微信二维码" onerror="this.style.display='none'"/>
+          <p>微信号：<b data-site="wechat">muzi_ai</b></p>
+          <p>邮箱：<a class="email-link" data-site="email-link" href="mailto:contact@muzi.com"><span data-site="email">contact@muzi.com</span></a></p>
+        </section>
       </div>
     </aside>
-  </div>
+  </main>
 
-  <!-- 微信悬浮按钮 -->
-  <div class="wechat-float">
-    <img src="/plus/images/logo.png" alt="微信" />
-    <div class="wechat-popup">
-      <img src="/plus/images/qrcode-wechat.png" alt="二维码" />
+  <!-- 悬浮微信按钮 -->
+  <div class="wx-float">
+    <img class="btn" src="images/logo.png" alt="微信" onerror="this.parentNode.classList.add('fallback')" />
+    <div class="pop">
+      <img src="images/qrcode-wechat.png" width="311" height="403" alt="二维码"/>
     </div>
   </div>
 
-  <footer>
-    © 2025 木子科技 | 本站内容仅供学习交流，侵权请联系删除 | 联系邮箱：contact@muzi.com
+  <!-- 页脚 -->
+  <footer class="footer">
+    © <span data-site="year">2025</span> <span data-site="title">木子AI</span> ｜ 本站内容仅供学习交流，侵权请联系删除 ｜ 联系邮箱：
+    <a class="email-link" data-site="email-link" href="mailto:contact@muzi.com"><span data-site="email">contact@muzi.com</span></a>
+    <span id="busuanzi_container_site_pv"> ｜ 站点总访问：<span id="busuanzi_value_site_pv">0</span></span>
   </footer>
 
-  <script src="/plus/assets/main.js"></script>
+  <script src="assets/main.js?v=1" defer></script>
 </body>
 </html>
