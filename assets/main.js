@@ -222,7 +222,8 @@ async function filterExistingPosts(posts) {
   $('#year').textContent = new Date().getFullYear();
   await renderNav();
   await renderSidebar();
-  const index = await loadSearchIndex();
+let index = await loadSearchIndex();
+index = await filterExistingPosts(index);  
 
   // 搜索联动
   const input = $('#searchInput');
