@@ -1,140 +1,114 @@
-/* =========================================================================
-   木子AI - 前台主脚本（缓存绕过 + 站点信息渲染 + 导航渲染）
-   复制整段，直接覆盖 /assets/main.js
-   ====================================================================== */
-
 (function () {
-  /** -------------------- 工具区 -------------------- **/
-  const bust = () => `?v=${Date.now()}`; // 缓存绕过参数
-  const fetchJSON = (path) =>
-    fetch(`${path}${path.includes('?') ? '&' : '?'}v=${Date.now()}`, { cache: 'no-store' }).then((r) => {
-      if (!r.ok) throw new Error(`Fetch ${path} failed: ${r.status}`);
-      return r.json();
-    });
+  const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+  const $  = (s, r=document) => r.querySelector(s);
+  const fetchJSON = (p) => fetch(p+`?v=${Date.now()}`, {cache:'no-store'}).then(r=>r.json());
 
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-  const $ = (sel, root = document) => root.querySelector(sel);
-
-  const setText = (selList, txt) => {
-    (Array.isArray(selList) ? selList : [selList]).forEach((sel) => {
-      $$(sel).forEach((el) => (el.textContent = txt ?? ''));
-    });
-  };
-  const setHTML = (selList, html) => {
-    (Array.isArray(selList) ? selList : [selList]).forEach((sel) => {
-      $$(sel).forEach((el) => (el.innerHTML = html ?? ''));
-    });
-  };
-  const setAttr = (selList, attr, val) => {
-    (Array.isArray(selList) ? selList : [selList]).forEach((sel) => {
-      $$(sel).forEach((el) => el.setAttribute(attr, val ?? ''));
-    });
-  };
-
-  // GitHub Pages 子路径适配（/plus/）
-  const basePath = (function () {
-    // 只要当前路径中包含 /plus/，就认为仓库名是 plus
-    const m = location.pathname.match(/\/([^\/]+)\//);
-    return m ? `/${m[1]}/` : '/';
-  })();
-  const normalizeUrl = (url) => {
-    if (!url) return '#';
-    if (/^https?:\/\//i.test(url)) return url; // 绝对 URL 原样返回
-    if (url.startsWith('/')) return basePath + url.replace(/^\//, ''); // 站内绝对路径 → 补上 basePath
-    return url; // 相对路径
-  };
-
-  /** -------------------- 站点信息渲染 -------------------- **/
-  function renderSiteInfo(site) {
-    // 调试：在控制台能看到你后台的最新值
-    console.log('siteinfo loaded:', site);
-
-    // <title> 和一些常见占位
-    if (site.siteTitle) {
-      document.title = site.siteTitle;
-      setText(['[data-site=title]', '.site-title', '#site-title'], site.siteTitle);
-    }
-
-    setText(['[data-site=description]', '.site-desc', '#site-desc'], site.description);
-    setText(['[data-site=wechat]', '.wechat', '#wechat'], site.wechat);
-    setText(['[data-site=email]', '.email', '#email'], site.email);
-    setText(['[data-site=adText]', '.ad-text', '#ad-text'], site.adText);
-    setText(['[data-site=about]', '.about-text', '#about-text'], site.about);
-
-    // 年份自动更新
-    const year = new Date().getFullYear();
-    setText(['[data-site=year]', '.year', '#year'], year);
-
-    // 如需把邮箱写到 href=mailto:
-    $$( '[data-site=email-link], .email-link, a[href^="mailto:"]' ).forEach((a)=>{
-      if (site.email) a.setAttribute('href', `mailto:${site.email}`);
-    });
+  function setSiteInfo(s){
+    if(s.siteTitle){ document.title=s.siteTitle; $$('[data-site=title]').forEach(e=>e.textContent=s.siteTitle); }
+    $$('[data-site=description]').forEach(e=>e.textContent=s.description||'');
+    $$('[data-site=wechat]').forEach(e=>e.textContent=s.wechat||'');
+    $$('[data-site=email]').forEach(e=>e.textContent=s.email||'');
+    $$('[data-site=adText]').forEach(e=>e.textContent=s.adText||'');
+    $$('[data-site=about]').forEach(e=>e.textContent=s.about||'');
+    $$('[data-site=email-link]').forEach(a=>{ if(s.email) a.href=`mailto:${s.email}` });
+    $$('[data-site=year]').forEach(e=>e.textContent=new Date().getFullYear());
   }
 
-  /** -------------------- 导航渲染（可选） -------------------- **/
-  function renderNavigation(nav) {
-    // nav 可能是 {items:[...]} 或直接是 [...]
-    const items = Array.isArray(nav) ? nav : (nav && Array.isArray(nav.items) ? nav.items : []);
-    if (!items.length) {
-      console.warn('navigation.json 为空或结构不匹配');
-      return;
+  function buildNav(nav){
+    const items = Array.isArray(nav)?nav:(nav?.items||[]);
+    const navEl = $('#nav');
+    navEl.innerHTML = items.map(m => {
+      const kids = (m.children||m.items||[]).map(k => `<a href="${k.url||'#'}">${k.title||k.name}</a>`).join('');
+      return `<div class="nav-item"><a href="${m.url||'#'}">${m.title||m.name||''}</a>${kids?`<div class="sub">${kids}</div>`:''}</div>`;
+    }).join('');
+  }
+
+  // 渲染 2×2 推荐
+  function renderRecommend(list){
+    const box = $('#recommend-grid');
+    const top4 = list.slice(0,4);
+    box.innerHTML = top4.map(p=>`
+      <a class="rec-item" href="article.html?slug=${encodeURIComponent(p.slug)}">
+        <img class="rec-cover" src="${p.cover||'images/banner-plus.jpg'}" alt="${p.title}" />
+        <div class="rec-info">
+          <h3 class="rec-title">${p.title}</h3>
+          <div class="rec-meta">${p.date} · 阅读<span id="pv_${p.slug}"></span></div>
+        </div>
+      </a>
+    `).join('');
+  }
+
+  // 列表 + 分页
+  const state = { page:1, size:6, q:'', tag:null, all:[] };
+
+  function filterPosts(){
+    let arr = [...state.all];
+    if(state.q){
+      const q = state.q.toLowerCase();
+      arr = arr.filter(p => (p.title+p.excerpt+(p.tags||[]).join(',')).toLowerCase().includes(q));
     }
+    if(state.tag){
+      arr = arr.filter(p => (p.tags||[]).includes(state.tag));
+    }
+    return arr;
+  }
 
-    const container = $('[data-nav=list]') || $('#nav');
-    if (!container) return; // 页面上没有导航容器就跳过
+  function renderList(){
+    const arr = filterPosts();
+    const total = Math.ceil(arr.length / state.size) || 1;
+    state.page = Math.min(state.page, total);
+    const start = (state.page-1)*state.size;
+    const pageItems = arr.slice(start, start+state.size);
 
-    const createItem = (item) => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.textContent = item.title || item.name || '未命名';
-      a.href = normalizeUrl(item.url || '#');
-      li.appendChild(a);
+    $('#article-list').innerHTML = pageItems.map(p=>`
+      <article class="article-card">
+        <a href="article.html?slug=${encodeURIComponent(p.slug)}"><img class="article-thumb" src="${p.cover||'images/banner-plus.jpg'}" alt="${p.title}"></a>
+        <div class="article-content">
+          <a class="article-title" href="article.html?slug=${encodeURIComponent(p.slug)}">${p.title}</a>
+          <p class="article-excerpt">${p.excerpt||''}</p>
+          <div class="article-meta">
+            <span>作者：${p.author||'木子AI'}</span>
+            <span>日期：${p.date}</span>
+            <span>阅读：<span id="pv_${p.slug}"></span></span>
+          </div>
+          <div class="article-tags">
+            ${(p.tags||[]).map(t=>`<a class="tag" href="?tag=${encodeURIComponent(t)}">#${t}</a>`).join('')}
+          </div>
+        </div>
+      </article>
+    `).join('');
 
-      const children = item.children || item.items;
-      if (Array.isArray(children) && children.length) {
-        const ul = document.createElement('ul');
-        children.forEach((child) => ul.appendChild(createItem(child)));
-        li.appendChild(ul);
-      }
-      return li;
+    // 分页
+    const pag = $('#pagination');
+    const btn = (label, page, active=false, disabled=false) =>
+      `<button class="page-btn ${active?'active':''}" ${disabled?'disabled':''} data-page="${page}">${label}</button>`;
+    const pages = Array.from({length: total}, (_,i)=>i+1).map(p=>btn(p, p, p===state.page)).join('');
+    pag.innerHTML = btn('上一页', Math.max(1,state.page-1), false, state.page===1) + pages + btn('下一页', Math.min(total,state.page+1), false, state.page===total);
+    pag.onclick = (e)=>{
+      const b=e.target.closest('.page-btn'); if(!b) return;
+      const p=Number(b.dataset.page); if(!isNaN(p)){ state.page=p; renderList(); window.scrollTo({top:0,behavior:'smooth'}) }
     };
-
-    const ul = document.createElement('ul');
-    ul.className = 'nav-list';
-    items.forEach((it) => ul.appendChild(createItem(it)));
-
-    // 清空并挂载
-    container.innerHTML = '';
-    container.appendChild(ul);
   }
 
-  /** -------------------- 初始化（加载 JSON） -------------------- **/
-  function init() {
-    // 1) 站点信息（强制无缓存）
-    fetchJSON('content/data/siteinfo.json')
-      .then(renderSiteInfo)
-      .catch((e) => console.error('加载 siteinfo.json 失败：', e));
-
-    // 2) 导航（如果有）
-    fetchJSON('content/data/navigation.json')
-      .then(renderNavigation)
-      .catch((e) => console.warn('加载 navigation.json 失败或未配置：', e));
-
-    // 3) 图片 404 提示（不阻塞渲染）
-    // 给所有 img 打一个错误监听，方便你快速发现错误路径
-    $$( 'img' ).forEach((img) => {
-      img.addEventListener('error', () => {
-        console.warn('图片加载失败：', img.getAttribute('src'));
-      }, { once: true });
-      // 对以 / 开头的路径自动补 basePath（只在 GitHub Pages 子路径场景）
-      const src = img.getAttribute('src') || '';
-      if (src.startsWith('/')) img.setAttribute('src', normalizeUrl(src));
-    });
+  function wireSearch(){
+    const ipt = $('#searchInput');
+    const url = new URL(location.href);
+    state.tag = url.searchParams.get('tag');
+    ipt.addEventListener('input', ()=>{ state.q = ipt.value.trim(); state.page=1; renderList(); });
+    if(state.tag) renderList();
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, { once: true });
-  } else {
-    init();
-  }
+  // 初始化
+  Promise.all([
+    fetchJSON('content/data/siteinfo.json').then(setSiteInfo),
+    fetchJSON('content/data/navigation.json').then(buildNav),
+    fetchJSON('content/data/posts.json')
+  ]).then(([_,__,posts])=>{
+    // 按时间倒序
+    posts.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+    state.all = posts;
+    renderRecommend(posts);
+    renderList();
+    wireSearch();
+  }).catch(console.error);
 })();
