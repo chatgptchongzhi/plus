@@ -2,14 +2,15 @@
 
 /* ========== 基础工具 ========== */
 function withBase(p) {
-  // 兼容 GitHub Pages 子路径（如 /plus/）
-  const base = (document.querySelector('a.logo')?.getAttribute('href') || 'index.html')
-    .replace(/index\.html.*/,'')
-    .replace(/\/?$/,'/');
-  // 允许传入绝对路径
-  if (/^https?:\/\//.test(p) || p.startsWith('/')) return p;
+  // 绝对地址直接返回
+  if (/^https?:\/\//.test(p) || p.startsWith('data:')) return p;
+  // 取当前页面所在目录作为前缀，如 /plus/
+  const base = location.pathname.replace(/[^/]+$/, ''); 
+  // 去掉传入路径可能带的开头斜杠，避免变成 /content/...
+  p = p.replace(/^\/+/, '');
   return base + p;
 }
+
 
 async function loadJSON(path) {
   const res = await fetch(withBase(path), { cache: 'no-cache' });
