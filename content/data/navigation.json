@@ -3,7 +3,7 @@
     {
       "title": "ChatGPT代升级服务",
       "children": [
-        { "title": "GPT PLUS代充", "url": "article.html?slug=gpt-plus-topup" },
+        { "title": "GPT PLUS代充", "url": "content/posts/gpt-plus-topup.html" },
         { "title": "API KEY代充值", "url": "article.html?slug=api-topup" }
       ]
     },
