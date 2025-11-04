@@ -2,89 +2,110 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
+  <title>木子AI - ChatGPT / Sora / AI 工具教程与充值引导</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title data-site="title">木子AI</title>
   <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导" />
-  <link rel="icon" href="images/logo.png" type="image/png" />
-  <link rel="stylesheet" href="assets/site.css?v=1" />
-  <script defer src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <link rel="icon" href="/plus/images/logo.png" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <script>
+    // 防止 FOUC：先占位 basePath，真实逻辑在 main.js
+    window.__BASE_PATH__ = '';
+  </script>
 </head>
 <body>
-  <!-- 顶部导航（固定） -->
-  <header class="navbar">
-    <div class="nav-inner">
-      <a class="logo" href="./">
-        <img src="images/logo.png" alt="logo" onerror="this.style.display='none'"/>
-        <span data-site="title">木子AI</span>
-      </a>
+  <!-- 顶部导航 -->
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="logo" href="index.html" data-wb>木子AI</a>
 
-      <nav id="nav" class="nav-main" aria-label="主菜单"></nav>
+      <nav class="navbar" id="navbar">
+        <!-- 由 JS 渲染 navigation.json -->
+      </nav>
 
-      <label class="search">
-        <svg viewBox="0 0 24 24" class="ico"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16.65" y1="16.65" x2="22" y2="22" stroke="currentColor" stroke-width="2"/></svg>
-        <input id="searchInput" placeholder="请输入关键词" />
-      </label>
+      <!-- 搜索框 -->
+      <div class="search-box">
+        <span class="search-icon"></span>
+        <input id="searchInput" type="search" placeholder="请输入关键词（标题 / 标签 / 正文）" />
+      </div>
     </div>
   </header>
 
-  <!-- 主体：左 70% + 右固定 320px -->
-  <main class="layout">
-    <section class="main-col">
+  <main class="container main-grid">
+    <!-- 主列 -->
+    <section class="content-col">
       <!-- 推荐区 -->
-      <section class="card recommend-box">
-        <h2 class="block-title">
-          <i class="bar"></i> ChatGPT 使用必读文章
-        </h2>
-        <div id="recommend-grid" class="grid-2x2"></div>
+      <section class="card block recommend">
+        <h2 class="block-title"><span class="bar"></span>ChatGPT 使用必读文章</h2>
+        <div id="recommendGrid" class="recommend-grid"></div>
       </section>
 
+      <!-- 搜索提示 -->
+      <div id="searchHint" class="search-hint" style="display:none;"></div>
+
       <!-- 文章列表 -->
-      <section class="article-list" id="article-list"></section>
+      <section id="listContainer"></section>
 
       <!-- 分页 -->
       <div id="pagination" class="pagination"></div>
     </section>
 
-    <!-- 右侧固定栏 -->
-    <aside class="sidebar">
-      <div class="side-scroll">
-        <section class="side-card">
-          <h3>关于本站</h3>
-          <p class="about" data-site="about">木子AI - 专注 ChatGPT / Sora / AI 工具教程与充值引导。</p>
-        </section>
+    <!-- 右侧固定侧栏 -->
+    <aside class="sidebar" id="sidebar">
+      <!-- 关于本站 -->
+      <section class="card side-card" id="aboutCard">
+        <h3>关于本站</h3>
+        <p id="siteDesc">ChatGPT / Sora / AI 工具教程与充值引导</p>
+        <ul class="site-meta">
+          <li>微信：<span id="wxId">muzi_ai</span></li>
+          <li>邮箱：<a id="siteEmail" href="mailto:contact@muzi.com">contact@muzi.com</a></li>
+        </ul>
+      </section>
 
-        <section class="side-card ad">
-          <h3>充值推广</h3>
-          <img src="images/ad1.png" alt="广告" onerror="this.style.display='none'"/>
-          <p class="ad-text" data-site="adText">自定义广告内容，可在后台修改。</p>
-          <a class="btn wx" href="#contact">立即了解</a>
-        </section>
+      <!-- 广告推广 -->
+      <section class="card side-card ad-card" id="adCard">
+        <h3 id="adTitle">官方代充 · 限时优惠</h3>
+        <div class="ad-img-wrap">
+          <img id="adImage" alt="ad" onerror="this.style.display='none'"/>
+        </div>
+        <div class="ad-price" id="adPrice">¥178 / 月</div>
+        <a class="btn btn-primary" id="adBtn" target="_blank" rel="noopener">立即咨询</a>
+      </section>
 
-        <section class="side-card" id="contact">
-          <h3>联系老张</h3>
-          <img class="qrcode" src="images/qrcode-wechat.png" alt="微信二维码" onerror="this.style.display='none'"/>
-          <p>微信号：<b data-site="wechat">muzi_ai</b></p>
-          <p>邮箱：<a class="email-link" data-site="email-link" href="mailto:contact@muzi.com"><span data-site="email">contact@muzi.com</span></a></p>
-        </section>
-      </div>
+      <!-- 联系 -->
+      <section class="card side-card contact-card">
+        <h3>联系老张</h3>
+        <div class="qrcode-wrap">
+          <img id="qrcode" alt="微信二维码" onerror="this.style.display='none'"/>
+        </div>
+        <p class="muted">加微信备注：Plus代充</p>
+      </section>
     </aside>
   </main>
 
-  <!-- 悬浮微信按钮 -->
-  <div class="wx-float">
-    <img class="btn" src="images/logo.png" alt="微信" onerror="this.parentNode.classList.add('fallback')" />
-    <div class="pop">
-      <img src="images/qrcode-wechat.png" width="311" height="403" alt="二维码"/>
+  <!-- 全局悬浮微信按钮 -->
+  <div class="wx-float" id="wxFloat">
+    <img src="images/qrcode-wechat.png" alt="WeChat" onerror="this.parentElement.classList.add('fallback')" />
+    <div class="wx-float-pop" id="wxFloatPop">
+      <img src="images/qrcode-wechat.png" alt="WeChat QR" onerror="this.style.display='none'"/>
     </div>
   </div>
 
   <!-- 页脚 -->
-  <footer class="footer">
-    © <span data-site="year">2025</span> <span data-site="title">木子AI</span> ｜ 本站内容仅供学习交流，侵权请联系删除 ｜ 联系邮箱：
-    <a class="email-link" data-site="email-link" href="mailto:contact@muzi.com"><span data-site="email">contact@muzi.com</span></a>
-    <span id="busuanzi_container_site_pv"> ｜ 站点总访问：<span id="busuanzi_value_site_pv">0</span></span>
+  <footer class="site-footer">
+    <div class="container">
+      <div>© <span id="year"></span> 木子AI</div>
+      <div>
+        站点总访问量 <span id="busuanzi_value_site_pv">—</span> 次 ·
+        访客数 <span id="busuanzi_value_site_uv">—</span>
+      </div>
+    </div>
   </footer>
 
-  <script src="assets/main.js?v=1" defer></script>
+  <!-- 统计 -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  <!-- 脚本 -->
+  <script src="assets/libs/marked.min.js"></script>
+  <script src="assets/main.js"></script>
 </body>
 </html>
