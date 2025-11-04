@@ -32,38 +32,56 @@ const debounce = (fn, wait=300) => {
 const fmtDate = s => s ? new Date(s.replace(/-/g,'/')).toISOString().slice(0,10) : '';
 
 /* ===== 读取站点数据 ===== */
+/* ===== 读取站点数据（强制不走缓存） ===== */
 async function fetchJSON(path){
-  const res = await fetch(withBase(path));
-  if(!res.ok) throw new Error('load '+path+' '+res.status);
+  const url = withBase(path + (path.includes('?') ? '&' : '?') + 'v=' + Date.now());
+  const res = await fetch(url, { cache: 'no-store' });
+  if (!res.ok) throw new Error('load ' + url + ' ' + res.status);
   return res.json();
 }
 
+
 /* ===== 导航渲染（含200ms防闪退） ===== */
+/* ===== 导航渲染（含200ms防闪退，自动修正直链为 slug） ===== */
 async function renderNav(){
   const nav = $('#navbar');
+  if (!nav) return;
+
   const data = await fetchJSON('content/data/navigation.json');
-  nav.innerHTML = data.items.map((grp,i)=>`
+
+  // 把 content/posts/xxx.html 自动改成 article.html?slug=xxx
+  function fixUrl(u){
+    if (!u) return '#';
+    const m1 = u.match(/^content\/posts\/([^\.\/]+)\.html$/i);
+    if (m1) return 'article.html?slug=' + m1[1];
+    return u; // 已是 slug 或外链/锚点
+  }
+
+  nav.innerHTML = (data.items || []).map((grp,i)=>`
     <div class="nav-group">
-      <div class="nav-item" data-idx="${i}">${grp.title}</div>
+      <div class="nav-item" data-idx="${i}">${grp.title || ''}</div>
       <div class="dropdown" id="dd-${i}">
-        ${grp.children.map(c=>`<a href="${withBase(c.url)}">${c.title}</a>`).join('')}
+        ${(grp.children || []).map(c=>`
+          <a href="${withBase(fixUrl(c.url))}">${c.title || ''}</a>
+        `).join('')}
       </div>
     </div>
   `).join('');
 
   // 防闪退 hover 延迟隐藏
-  $$('.nav-group').forEach((g,i)=>{
+  $$('.nav-group').forEach((g)=>{
     const item = g.querySelector('.nav-item');
-    const dd = g.querySelector('.dropdown');
+    const dd   = g.querySelector('.dropdown');
     let hideTimer=null;
-    function show(){ clearTimeout(hideTimer); dd.style.display='block'; }
-    function hide(){ hideTimer = setTimeout(()=> dd.style.display='none',200); }
+    const show=()=>{ clearTimeout(hideTimer); dd.style.display='block'; };
+    const hide=()=>{ hideTimer=setTimeout(()=> dd.style.display='none',200); };
     item.addEventListener('mouseenter', show);
     item.addEventListener('mouseleave', hide);
     dd.addEventListener('mouseenter', ()=>clearTimeout(hideTimer));
     dd.addEventListener('mouseleave', hide);
   });
 }
+
 
 /* ===== 右侧栏渲染 ===== */
 async function renderSidebar(){
