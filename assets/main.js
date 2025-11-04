@@ -99,17 +99,30 @@ async function renderSidebar(){
 }
 
 /* ===== 搜索索引 ===== */
-async function loadSearchIndex(){
-  // 直接读取 search.json；若缺失个别字段，运行时补齐
-  const idx = await fetchJSON('content/data/search.json');
-  return idx.map(x=>({
-    ...x,
-    date: fmtDate(x.date),
-    tags: x.tags || [],
-    categories: x.categories || [],
-    top: !!x.top
-  }));
-}
+// 先加载 search.json，再过滤只保留仍然存在的正文文件
+const rawIndex = await loadSearchIndex();
+const index = await filterExistingPosts(rawIndex);
+
+// 搜索联动（基于过滤后的 index）
+const input = $('#searchInput');
+const apply = ()=>{
+  const kw = input.value.trim();
+  const filtered = filterByKeyword(index, kw).sort((a,b)=>
+    (b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||'')
+  );
+  $('#searchHint').style.display = kw ? 'block':'none';
+  $('#searchHint').textContent = kw ? `找到 ${filtered.length} 条与「${kw}」相关的内容` : '';
+  renderRecommend(filtered);
+  renderList(filtered, getPageFromURL(), 6);
+};
+input.addEventListener('input', debounce(apply, 300));
+
+// 初始渲染（用过滤后的 index）
+const page = getPageFromURL();
+const sorted = [...index].sort((a,b)=> (b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||''));
+renderRecommend(sorted);
+renderList(sorted, page, 6);
+
 /* ===== 过滤：只保留仍然存在的正文文件 ===== */
 async function filterExistingPosts(list){
   const results = await Promise.all(list.map(async (p) => {
