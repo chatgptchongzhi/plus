@@ -167,39 +167,3 @@ img{max-width:100%; display:block}
   .list-thumb{width:100%; height:auto; aspect-ratio:16/9}
   .list-main{width:100%}
 }
-/* --- 修复：每个组都是定位参照，弹层只跟着自己的组 --- */
-.navbar {
-  position: relative;            /* 导航容器可见即可 */
-  z-index: 2001;
-}
-
-.navbar .nav-group {
-  position: relative !important; /* ★ 关键：强制这层成为定位参照 */
-  display: inline-flex;
-  align-items: center;
-}
-
-.navbar .nav-item {
-  padding: 10px 6px;
-}
-
-.navbar .dropdown {
-  position: absolute;
-  top: calc(100% + 8px);         /* 紧贴主菜单下方，留 8px 间距 */
-  left: 0;                       /* ★ 相对当前 .nav-group 左对齐 */
-  min-width: 220px;
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 10px;
-  padding: 10px 0;
-  display: none;
-  box-shadow: 0 10px 30px rgba(0,0,0,.06);
-  z-index: 2100;
-}
-
-/* 悬停兜底（即使 JS 异常也能展开正确位置） */
-.navbar .nav-group:hover .dropdown { display: block; }
-
-/* 可选：让弹层相对标题居中对齐（把上面的 left:0 注释掉再启用这两行） */
-/* .navbar .dropdown { left: 50%; transform: translateX(-50%); } */
-
