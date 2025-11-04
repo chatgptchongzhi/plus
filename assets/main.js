@@ -1,37 +1,23 @@
-/* assets/main.js —— 急救容错版（一次性替换） */
+/* assets/main.js —— 一次性整页替换（指向 content/data/search.json） */
 
-/* ====== 1) 容错获取索引 ====== */
-// 优先顺序：content/search.json → window.POST_INDEX → 空数组
-async function getIndexSafe() {
-  // A. 尝试拉取 JSON（如果你在用 search.json）
-  try {
-    const r = await fetch(withBase('content/search.json?v=16'), { cache: 'no-store' });
-    if (r.ok) {
-      const j = await r.json();
-      if (Array.isArray(j)) return j;
-      console.warn('[main] search.json 不是数组，忽略');
-    } else {
-      console.warn('[main] 拉取 search.json 失败：', r.status);
-    }
-  } catch (e) {
-    console.warn('[main] 解析 search.json 出错：', e);
-  }
-  // B. 兜底：看是否存在全局变量（如果你使用了 assets/post-index.js）
-  if (Array.isArray(window.POST_INDEX)) return window.POST_INDEX;
-
-  // C. 最终兜底：空数组（页面会显示“暂无文章”，不再整页空白）
-  return [];
-}
-
-/* ====== 2) 工具函数 ====== */
+/* ========== 基础工具 ========== */
 function withBase(p) {
+  // 兼容 GitHub Pages 子路径（如 /plus/）
   const base = (document.querySelector('a.logo')?.getAttribute('href') || 'index.html')
-    .replace(/index\.html.*/, '')
-    .replace(/\/?$/, '/');
+    .replace(/index\.html.*/,'')
+    .replace(/\/?$/,'/');
+  // 允许传入绝对路径
   if (/^https?:\/\//.test(p) || p.startsWith('/')) return p;
   return base + p;
 }
-function fmtDate(dateStr){
+
+async function loadJSON(path) {
+  const res = await fetch(withBase(path), { cache: 'no-cache' });
+  if (!res.ok) throw new Error('load failed: ' + path);
+  return res.json();
+}
+
+function fmtDate(dateStr) {
   const d = new Date(dateStr);
   if (isNaN(d)) return dateStr || '';
   const y = d.getFullYear();
@@ -39,19 +25,56 @@ function fmtDate(dateStr){
   const da = String(d.getDate()).padStart(2,'0');
   return `${y}-${m}-${da}`;
 }
-function isoDate(dateStr){
+function isoDate(dateStr) {
   const d = new Date(dateStr);
   return isNaN(d) ? '' : d.toISOString().slice(0,10);
 }
 
-/* ====== 3) Byline + Post Meta + Badge ====== */
+function $(sel, root=document){ return root.querySelector(sel); }
+function $all(sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
+function debounce(fn, wait=250){
+  let t=null;
+  return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), wait); };
+}
+
+/* ========== 统一读取索引（已改成真实路径，并带兜底） ========== */
+/**
+ * 真实文件：content/data/search.json
+ * 兜底顺序：
+ * 1) content/data/search.json?v=13
+ * 2) content/data/search.json
+ * 3) content/search.json?v=13
+ * 4) content/search.json
+ */
+async function getIndexSafe(){
+  const tryPaths = [
+    'content/data/search.json?v=13',
+    'content/data/search.json',
+    'content/search.json?v=13',
+    'content/search.json',
+  ];
+  let lastErr = null;
+  for (const p of tryPaths) {
+    try {
+      const j = await loadJSON(p);
+      console.log('[index] loaded:', p, j?.length);
+      return j;
+    } catch (e){
+      lastErr = e;
+      console.warn('[index] try fail:', p, e?.message || e);
+    }
+  }
+  throw lastErr || new Error('No index json found');
+}
+
+/* ========== Byline + Post Meta + Badge ========== */
 function renderByline(dateStr){
   const nice = fmtDate(dateStr);
   const iso  = isoDate(dateStr);
   return `
     <div class="byline-row">
-      <span class="badge" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="currentColor">
+      <span class="badge" aria-hidden="true" title="作者">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
           <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 6v2h16v-2c0-3.33-2.67-6-8-6z"/>
         </svg>
       </span>
@@ -61,39 +84,23 @@ function renderByline(dateStr){
   `;
 }
 
-/* ====== 4) 列表渲染（带空态） ====== */
-function renderEmptyState() {
-  const wrap = document.getElementById('listWrap');
-  if (!wrap) return;
-  wrap.innerHTML = `
-    <article class="list-card" style="justify-content:center; text-align:center">
-      <div>
-        <h3 class="list-title">暂无文章</h3>
-        <p class="article-excerpt">还没有可展示的内容。请确认 <code>content/search.json</code> 存在且为合法 JSON，
-        或者在 <code>assets/post-index.js</code> 里定义 <code>window.POST_INDEX=[]</code>。</p>
-      </div>
-    </article>
-  `;
-  const pager = document.getElementById('pager');
-  if (pager) pager.innerHTML = '';
-}
+/* ========== 列表渲染 ========== */
 function renderList(list, page=1, pageSize=6){
-  const wrap = document.getElementById('listWrap');
-  if(!wrap) return;
-  if (!Array.isArray(list) || list.length === 0) {
-    renderEmptyState();
-    return;
-  }
+  const wrap = $('#listWrap');
+  if (!wrap) return;
 
   const total = list.length;
-  const pages = Math.max(1, Math.ceil(total/pageSize));
+  const pages = Math.max(1, Math.ceil(total / pageSize));
   page = Math.min(Math.max(1, page), pages);
-  const start = (page-1)*pageSize;
-  const cur = list.slice(start, start+pageSize);
+  const start = (page - 1) * pageSize;
+  const cur = list.slice(start, start + pageSize);
 
-  wrap.innerHTML = cur.map(item => {
-    const url = withBase(`article.html?slug=${encodeURIComponent(item.slug)}`);
+  wrap.innerHTML = cur.map(item=>{
+    const url   = withBase(`article.html?slug=${encodeURIComponent(item.slug)}`);
     const cover = item.cover || 'images/banner-plus.jpg';
+    const tags  = (item.tags||[]).map(t=>(
+      `<a class="tag-pill" href="${withBase(`index.html?tag=${encodeURIComponent(t)}`)}">#${t}</a>`
+    )).join('');
     return `
       <article class="list-card">
         <a class="list-thumb" href="${url}">
@@ -103,44 +110,40 @@ function renderList(list, page=1, pageSize=6){
           <h3 class="list-title"><a href="${url}">${item.title}</a></h3>
           ${renderByline(item.date)}
           <p class="article-excerpt">${item.excerpt || ''}</p>
-          <div class="article-tags">
-            ${(item.tags||[]).map(t=>`<a class="tag-pill" href="${withBase(`index.html?tag=${encodeURIComponent(t)}`)}">#${t}</a>`).join('')}
-          </div>
+          <div class="article-tags">${tags}</div>
         </div>
       </article>
     `;
   }).join('');
 
-  const pager = document.getElementById('pager');
-  if(pager){
-    const pagesHtml = Array.from({length: pages}, (_,i)=>i+1).map(n=>{
+  // 分页
+  const pager = $('#pager');
+  if (pager){
+    const nums = Array.from({length: pages}, (_,i)=>i+1).map(n=>{
       const cls = `page-num ${n===page?'active':''}`;
-      return `<a class="${cls}" href="?page=${n}">${n}</a>`;
+      const href = `?page=${n}`;
+      return `<a class="${cls}" href="${href}">${n}</a>`;
     }).join('');
-    pager.innerHTML = pagesHtml;
-    pager.querySelectorAll('a').forEach(a=>{
+    pager.innerHTML = nums;
+    $all('a', pager).forEach(a=>{
       a.addEventListener('click', e=>{
         e.preventDefault();
         const p = Number(a.textContent);
         renderList(list, p, pageSize);
         history.replaceState(null, '', `?page=${p}`);
-        window.scrollTo({top:0,behavior:'smooth'});
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
   }
 }
 
-/* ====== 5) 推荐渲染（也带空态兜底） ====== */
+/* ========== 推荐区渲染（左侧“必读文章”） ========== */
 function renderRecommend(list){
-  const block = document.getElementById('recoWrap');
-  if(!block) return;
-  if (!Array.isArray(list) || list.length === 0) {
-    block.innerHTML = '';
-    return;
-  }
+  const block = $('#recoWrap');
+  if (!block) return;
   const top4 = list.slice(0,4);
   block.innerHTML = top4.map(item=>{
-    const url = withBase(`article.html?slug=${encodeURIComponent(item.slug)}`);
+    const url   = withBase(`article.html?slug=${encodeURIComponent(item.slug)}`);
     const cover = item.cover || 'images/banner-plus.jpg';
     return `
       <div class="reco-item">
@@ -156,13 +159,14 @@ function renderRecommend(list){
   }).join('');
 }
 
-/* ====== 6) 搜索 ====== */
+/* ========== 搜索 / 过滤 ========== */
 function getPageFromURL(){
   const u = new URL(location.href);
   return Number(u.searchParams.get('page') || '1');
 }
+
 function filterByKeyword(list, kw){
-  if(!kw) return list;
+  if (!kw) return list;
   const k = kw.toLowerCase();
   return list.filter(i =>
     (i.title||'').toLowerCase().includes(k) ||
@@ -172,12 +176,10 @@ function filterByKeyword(list, kw){
   );
 }
 
-/* ====== 7) 入口 ====== */
+/* ========== 入口 ========== */
 async function init(){
   try{
-    const index = await getIndexSafe();
-
-    // 优先置顶，再按日期降序
+    const index  = await getIndexSafe();              // ✅ 现在读取 content/data/search.json
     const sorted = [...index].sort((a,b)=>
       (b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||'')
     );
@@ -185,21 +187,34 @@ async function init(){
     renderRecommend(sorted);
     renderList(sorted, getPageFromURL(), 6);
 
-    const input = document.getElementById('searchInput');
-    if(input){
+    // 搜索框联动
+    const input = $('#searchInput');
+    if (input){
       const apply = ()=>{
-        const f = filterByKeyword(sorted, input.value.trim());
+        const kw = input.value.trim();
+        const f  = filterByKeyword(sorted, kw);
         renderRecommend(f);
         renderList(f, 1, 6);
+        const hint = $('#searchHint');
+        if (hint){
+          hint.style.display = kw ? 'block':'none';
+          hint.textContent   = kw ? `找到 ${f.length} 条与「${kw}」相关的内容` : '';
+        }
       };
-      input.addEventListener('input', ()=>{
-        clearTimeout(input._t);
-        input._t = setTimeout(apply, 250);
-      });
+      input.addEventListener('input', debounce(apply, 250));
     }
   }catch(err){
-    console.error('[main] 初始化异常：', err);
-    renderEmptyState();
+    console.error('[init] failed:', err);
+    const wrap = $('#listWrap');
+    if (wrap){
+      wrap.innerHTML = `
+        <div class="card" style="color:#b00020">
+          读取索引失败：${String(err?.message || err)}<br>
+          请确认文件 <code>content/data/search.json</code> 已存在且可访问。
+        </div>
+      `;
+    }
   }
 }
+
 document.addEventListener('DOMContentLoaded', init);
