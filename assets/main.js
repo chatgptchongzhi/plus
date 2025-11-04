@@ -1,93 +1,115 @@
 /* =========================================================================
-   木子AI - 前台主脚本（缓存绕过 + 站点信息渲染 + 导航渲染）
-   复制整段，直接覆盖 /assets/main.js
+   布局零变动版 main.js
+   - 不要求 HTML 增加 data- 属性
+   - 不改动 DOM 结构和类名
+   - 仅替换已有文字内容/链接
    ====================================================================== */
 
 (function () {
-  /** -------------------- 工具区 -------------------- **/
-  const bust = () => `?v=${Date.now()}`; // 缓存绕过参数
+  // ---- 工具：防缓存加载 JSON ----
   const fetchJSON = (path) =>
-    fetch(`${path}${path.includes('?') ? '&' : '?'}v=${Date.now()}`, { cache: 'no-store' }).then((r) => {
-      if (!r.ok) throw new Error(`Fetch ${path} failed: ${r.status}`);
-      return r.json();
-    });
+    fetch(`${path}${path.includes('?') ? '&' : '?'}v=${Date.now()}`, { cache: 'no-store' })
+      .then((r) => {
+        if (!r.ok) throw new Error(`Fetch ${path} failed: ${r.status}`);
+        return r.json();
+      });
 
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const setText = (el, txt) => { if (el && typeof txt === 'string') el.textContent = txt; };
+  const setAttr = (el, attr, val) => { if (el && val != null) el.setAttribute(attr, val); };
 
-  const setText = (selList, txt) => {
-    (Array.isArray(selList) ? selList : [selList]).forEach((sel) => {
-      $$(sel).forEach((el) => (el.textContent = txt ?? ''));
-    });
-  };
-  const setHTML = (selList, html) => {
-    (Array.isArray(selList) ? selList : [selList]).forEach((sel) => {
-      $$(sel).forEach((el) => (el.innerHTML = html ?? ''));
-    });
-  };
-  const setAttr = (selList, attr, val) => {
-    (Array.isArray(selList) ? selList : [selList]).forEach((sel) => {
-      $$(sel).forEach((el) => el.setAttribute(attr, val ?? ''));
-    });
-  };
-
-  // GitHub Pages 子路径适配（/plus/）
-  const basePath = (function () {
-    // 只要当前路径中包含 /plus/，就认为仓库名是 plus
-    const m = location.pathname.match(/\/([^\/]+)\//);
-    return m ? `/${m[1]}/` : '/';
-  })();
-  const normalizeUrl = (url) => {
-    if (!url) return '#';
-    if (/^https?:\/\//i.test(url)) return url; // 绝对 URL 原样返回
-    if (url.startsWith('/')) return basePath + url.replace(/^\//, ''); // 站内绝对路径 → 补上 basePath
-    return url; // 相对路径
-  };
-
-  /** -------------------- 站点信息渲染 -------------------- **/
-  function renderSiteInfo(site) {
-    // 调试：在控制台能看到你后台的最新值
+  // ---- 入口：应用站点信息 ----
+  function applySiteInfo(site) {
     console.log('siteinfo loaded:', site);
 
-    // <title> 和一些常见占位
-    if (site.siteTitle) {
-      document.title = site.siteTitle;
-      setText(['[data-site=title]', '.site-title', '#site-title'], site.siteTitle);
+    // 1) 页面 <title>
+    if (site.siteTitle) document.title = site.siteTitle;
+
+    // 2) 标题（优先命中常见选择器；否则找第一个 h1）
+    const titleEl =
+      $('.site-title') || $('#site-title') || $('h1');
+    if (site.siteTitle) setText(titleEl, site.siteTitle);
+
+    // 3) 描述（常见：.site-desc / #site-desc / 紧邻 h1 的段落）
+    const descEl =
+      $('.site-desc') || $('#site-desc') ||
+      (titleEl ? (titleEl.nextElementSibling && titleEl.nextElementSibling.tagName === 'P' ? titleEl.nextElementSibling : null) : null) ||
+      $('header p') || $('.tagline') || $('.subtitle');
+    if (site.description) setText(descEl, site.description);
+
+    // 4) 微信号
+    //   先找类名或 id；找不到再扫描包含“微信”字样的元素并替换其中文本
+    let wechatEl = $('.wechat') || $('#wechat');
+    if (site.wechat) {
+      if (wechatEl) {
+        setText(wechatEl, site.wechat);
+      } else {
+        const candidate = $$('body *').find((e) => {
+          const t = (e.textContent || '').trim();
+          return t && (/^微信[:：]/.test(t) || t.includes('微信：') || /^微信$/.test(t));
+        });
+        if (candidate) {
+          // 常见文本形态替换：微信：xxx
+          candidate.innerHTML = candidate.innerHTML.replace(/微信[:：]?\s*[\w\-\._@]+/g, '微信： ' + site.wechat);
+        }
+      }
     }
 
-    setText(['[data-site=description]', '.site-desc', '#site-desc'], site.description);
-    setText(['[data-site=wechat]', '.wechat', '#wechat'], site.wechat);
-    setText(['[data-site=email]', '.email', '#email'], site.email);
-    setText(['[data-site=adText]', '.ad-text', '#ad-text'], site.adText);
-    setText(['[data-site=about]', '.about-text', '#about-text'], site.about);
+    // 5) 邮箱（a[href^="mailto:"]、.email-link、.email）
+    if (site.email) {
+      const emailLink = $('a[href^="mailto:"], .email-link') || $('#email');
+      if (emailLink) setAttr(emailLink, 'href', 'mailto:' + site.email);
 
-    // 年份自动更新
-    const year = new Date().getFullYear();
-    setText(['[data-site=year]', '.year', '#year'], year);
+      const emailTxt = $('.email');
+      if (emailTxt) setText(emailTxt, site.email);
+      else {
+        const emailCandidate = $$('body *').find((e) => (e.textContent || '').includes('邮箱'));
+        if (emailCandidate) {
+          emailCandidate.innerHTML = emailCandidate.innerHTML.replace(
+            /邮箱[:：]?\s*[\w\.\-\+]+@[\w\.\-]+/g,
+            '邮箱： ' + site.email
+          );
+        }
+      }
+    }
 
-    // 如需把邮箱写到 href=mailto:
-    $$( '[data-site=email-link], .email-link, a[href^="mailto:"]' ).forEach((a)=>{
-      if (site.email) a.setAttribute('href', `mailto:${site.email}`);
-    });
+    // 6) 广告文案（若页面有 .ad-text）
+    if (site.adText) {
+      const adEl = $('.ad-text');
+      if (adEl) setText(adEl, site.adText);
+    }
+
+    // 7) 关于文案（若页面有 .about-text；否则尝试“关于”小节第一个段落）
+    if (site.about) {
+      const aboutEl =
+        $('.about-text') ||
+        (function () {
+          const h2 = $$('h2').find((x) => /关于/.test(x.textContent || ''));
+          if (!h2) return null;
+          return (h2.parentElement && h2.parentElement.querySelector('p')) || null;
+        })();
+      if (aboutEl) setText(aboutEl, site.about);
+    }
+
+    // 8) 年份（若页面有 .year）
+    const yearEl = $('.year');
+    if (yearEl) setText(yearEl, new Date().getFullYear());
   }
 
-  /** -------------------- 导航渲染（可选） -------------------- **/
-  function renderNavigation(nav) {
-    // nav 可能是 {items:[...]} 或直接是 [...]
+  // ---- 可选：导航（如果你的页面没有导航容器，这段不会改任何东西）----
+  function applyNavigation(nav) {
     const items = Array.isArray(nav) ? nav : (nav && Array.isArray(nav.items) ? nav.items : []);
-    if (!items.length) {
-      console.warn('navigation.json 为空或结构不匹配');
-      return;
-    }
+    if (!items.length) return;
 
-    const container = $('[data-nav=list]') || $('#nav');
-    if (!container) return; // 页面上没有导航容器就跳过
+    const container = $('#nav') || $('[data-nav="list"]');
+    if (!container) return;
 
     const createItem = (item) => {
       const li = document.createElement('li');
       const a = document.createElement('a');
       a.textContent = item.title || item.name || '未命名';
-      a.href = normalizeUrl(item.url || '#');
+      a.href = item.url || '#';
       li.appendChild(a);
 
       const children = item.children || item.items;
@@ -102,34 +124,15 @@
     const ul = document.createElement('ul');
     ul.className = 'nav-list';
     items.forEach((it) => ul.appendChild(createItem(it)));
-
-    // 清空并挂载
     container.innerHTML = '';
     container.appendChild(ul);
   }
 
-  /** -------------------- 初始化（加载 JSON） -------------------- **/
+  // ---- 初始化 ----
   function init() {
-    // 1) 站点信息（强制无缓存）
-    fetchJSON('content/data/siteinfo.json')
-      .then(renderSiteInfo)
-      .catch((e) => console.error('加载 siteinfo.json 失败：', e));
-
-    // 2) 导航（如果有）
-    fetchJSON('content/data/navigation.json')
-      .then(renderNavigation)
-      .catch((e) => console.warn('加载 navigation.json 失败或未配置：', e));
-
-    // 3) 图片 404 提示（不阻塞渲染）
-    // 给所有 img 打一个错误监听，方便你快速发现错误路径
-    $$( 'img' ).forEach((img) => {
-      img.addEventListener('error', () => {
-        console.warn('图片加载失败：', img.getAttribute('src'));
-      }, { once: true });
-      // 对以 / 开头的路径自动补 basePath（只在 GitHub Pages 子路径场景）
-      const src = img.getAttribute('src') || '';
-      if (src.startsWith('/')) img.setAttribute('src', normalizeUrl(src));
-    });
+    fetchJSON('content/data/siteinfo.json').then(applySiteInfo).catch(console.error);
+    // 导航可选（存在时渲染）
+    fetchJSON('content/data/navigation.json').then(applyNavigation).catch(() => {});
   }
 
   if (document.readyState === 'loading') {
