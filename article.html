@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>文章 - 木子AI</title>
+  <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导" />
 
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js"></script>
+  <!-- 站点主样式（加版本号，强制刷新缓存） -->
+  <link rel="stylesheet" href="assets/style.css?v=13" />  <!-- ★ 加了 ?v=13 -->
 
-<script src="assets/article.js" defer></script>
+  <!-- 目录 & Markdown（使用 CDN 版本；二选一，另一套本地引用删掉） -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js"></script>
 </head>
 <body>
   <!-- 顶部导航（与首页一致） -->
@@ -30,9 +36,7 @@
       <div class="double-banners" id="doubleBanners"></div>
 
       <!-- Meta 栏 -->
-      <div class="article-meta-row" id="articleMetaRow">
-        <!-- 左：作者微信 中：日期 右：分类 -->
-      </div>
+      <div class="article-meta-row" id="articleMetaRow"></div>
 
       <!-- 正文 + TOC 并排 -->
       <div class="article-body-wrap">
@@ -47,15 +51,11 @@
       <div id="tagPills" class="tag-pills"></div>
 
       <!-- 阅读量 -->
-      <p class="pv-line">
-        本文阅读量 <span id="busuanzi_value_page_pv">—</span>
-      </p>
+      <p class="pv-line">本文阅读量 <span id="busuanzi_value_page_pv">—</span></p>
     </section>
 
-    <!-- 右侧固定侧栏 -->
-    <aside class="sidebar" id="sidebar">
-      <!-- 复用首页侧栏结构，由 JS 注入 -->
-    </aside>
+    <!-- 右侧固定侧栏（由 JS 注入） -->
+    <aside class="sidebar" id="sidebar"></aside>
   </main>
 
   <footer class="site-footer">
@@ -71,12 +71,8 @@
   <!-- 统计 -->
   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
-  <!-- 依赖 -->
-  <link rel="stylesheet" href="assets/libs/tocbot.min.css">
-<script src="assets/libs/tocbot.min.js"></script>
-  <link rel="stylesheet" href="assets/style.css?v=9">
-<script src="assets/main.js?v=9" defer></script>
-  <!-- 业务脚本 -->
-  <script src="assets/article.js"></script>
+  <!-- 顺序很重要：先主脚本（提供 withBase/renderNav），后文章脚本 -->
+  <script src="assets/main.js?v=13"></script>      <!-- ★ 加了 ?v=13 -->
+  <script src="assets/article.js?v=13"></script>   <!-- ★ 加了 ?v=13 -->
 </body>
 </html>
