@@ -202,5 +202,28 @@ img{max-width:100%; display:block}
 .badge svg{ width:16px; height:16px; display:block; }
 .byline-text{ color:#333; }
 .post-meta{ color:#999; }
+/* ===== 顶部导航（恢复可见 + 子菜单贴顶） ===== */
+.site-header { position: sticky; top: 0; z-index: 1000; background: #fff; }
+.navbar { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:16px 24px; border-bottom:1px solid #eee; }
+.logo { font-weight:700; color:#d32f2f; text-decoration:none; font-size:22px; }
+
+.nav-links { display:flex; gap:18px; list-style:none; margin:0; padding:0; }
+.nav-item > a { display:inline-block; padding:8px 10px; color:#222; text-decoration:none; }
+.nav-item > a:hover{ color:#d32f2f; }
+
+.nav-item.has-sub { position: relative; }
+.submenu{
+  position:absolute; left:0; top:100%;
+  min-width:180px; background:#fff; border:1px solid #eee; border-radius:10px;
+  box-shadow:0 10px 30px rgba(0,0,0,.06);
+  padding:8px; display:none; z-index:1001;
+}
+.submenu li{ list-style:none; }
+.submenu a{ display:block; padding:8px 10px; border-radius:8px; color:#333; }
+.submenu a:hover{ background:#f6f6f6; color:#d32f2f; }
+
+/* 悬停或键盘聚焦时显示二级菜单 */
+.nav-item.has-sub:hover > .submenu,
+.nav-item.has-sub:focus-within > .submenu{ display:block; }
 
 
