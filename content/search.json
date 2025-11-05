@@ -1,8 +1,20 @@
 [
-  { "title":"Hello，ChatGPT：快速入门指南", "slug":"demo-hello-chatgpt", "excerpt":"第一次使用 ChatGPT？这篇文章带你快速上手", "tags":["ChatGPT","入门"] },
-  { "title":"Sora 视频生成：从零到上手", "slug":"demo-sora-api-guide", "excerpt":"体验 Sora 视频生成流程与参数", "tags":["Sora","视频"] }
+  {
+    "title": "Hello，ChatGPT：快速入门指南",
+    "slug": "demo-hello-chatgpt",
+    "excerpt": "第一次使用 ChatGPT？这篇文章带你快速上手",
+    "tags": ["ChatGPT", "入门"]
+  },
+  {
+    "title": "Sora 视频生成：从零到上手",
+    "slug": "demo-sora-api-guide",
+    "excerpt": "体验 Sora 视频生成流程与参数",
+    "tags": ["Sora", "视频"]
+  },
+  {
+    "title": "GPT PLUS代充（安全稳定的开通与续费指南）",
+    "slug": "gpt-plus-topup",
+    "excerpt": "如何安全开通与续费 ChatGPT Plus：支付方式、风险与售后。",
+    "tags": ["ChatGPT", "代充"]
+  }
 ]
-{ "title":"GPT PLUS代充（安全稳定的开通与续费指南）",
-  "slug":"gpt-plus-topup",
-  "excerpt":"如何安全开通与续费 ChatGPT Plus：支付方式、风险与售后。",
-  "tags":["ChatGPT","代充"] }
