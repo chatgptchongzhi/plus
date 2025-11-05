@@ -1,11 +1,24 @@
-{
-  "title": "GPT PLUS代充（安全稳定的开通与续费指南）",
-  "slug": "gpt-plus-topup",
-  "date": "2025-11-05",
-  "tags": ["ChatGPT","代充"],
-  "categories": ["ChatGPT"],
-  "cover": "/plus/images/cover-gptplus.jpg",
-  "excerpt": "如何安全开通与续费 ChatGPT Plus：支付方式、风险排查与售后说明。",
-  "top": false,
-  "views": 0
-}
+[
+  {
+    "title": "Hello，ChatGPT：快速入门指南",
+    "slug": "demo-hello-chatgpt",
+    "date": "2025-11-01",
+    "tags": ["ChatGPT","入门"],
+    "categories": ["ChatGPT"],
+    "cover": "/plus/images/banner-plus.jpg",
+    "excerpt": "第一次使用 ChatGPT？这篇文章带你快速上手，避开常见坑。",
+    "top": true,
+    "views": 123
+  },
+  {
+    "title": "Sora 视频生成：从零到上手",
+    "slug": "demo-sora-api-guide",
+    "date": "2025-11-02",
+    "tags": ["Sora","视频"],
+    "categories": ["Sora"],
+    "cover": "/plus/images/banner-plus.jpg",
+    "excerpt": "带你用最简单的方式体验 Sora 视频生成流程与参数。",
+    "top": false,
+    "views": 88
+  }
+]
