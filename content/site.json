@@ -1,0 +1,72 @@
+{
+  "siteTitle": "木子AI",
+  "siteDesc": "ChatGPT / Sora / AI 工具教程与充值引导",
+  "siteUrl": "https://<USERNAME>.github.io/plus/",
+  "author": "木子",
+  "email": "contact@muzi.com",
+  "wechatId": "muzi_ai",
+  "logo": "/plus/images/logo.png",
+  "banner": "/plus/images/banner-plus.jpg",
+  "wechatQrcode": "/plus/images/qrcode-wechat.png",
+
+  "nav": [
+    {
+      "label": "ChatGPT代升级服务",
+      "children": [
+        { "label": "GPT PLUS代充", "slug": "gpt-plus-topup" },
+        { "label": "API KEY代充值", "slug": "openai-api-recharge" }
+      ]
+    },
+    {
+      "label": "ChatGPT使用指南",
+      "children": [
+        { "label": "注册教程", "slug": "chatgpt-register-guide" },
+        { "label": "充值教程", "slug": "chatgpt-topup-guide" },
+        { "label": "虚拟卡教程", "slug": "virtual-card-guide" }
+      ]
+    },
+    {
+      "label": "ChatGPT-4o生图API",
+      "children": [
+        { "label": "Sora视频生成", "slug": "sora-video-guide" },
+        { "label": "免费测试", "slug": "4o-image-api-free-test" }
+      ]
+    }
+  ],
+
+  "recommendCount": 4,
+  "pageSize": 8,
+  "breadcrumbSeparator": "»",
+  "tocLevels": ["h2","h3"],
+
+  "sidebar": {
+    "about": "木子AI：专注 ChatGPT / Sora 教程与充值引导。",
+    "ad": {
+      "title": "ChatGPT Plus 代充",
+      "price": "￥**/**月",
+      "buttonText": "立即咨询",
+      "buttonLink": "https://example.com/im",
+      "image": "/plus/images/banner-plus.jpg"
+    },
+    "contact": { "title": "联系木子" }
+  },
+
+  "ads": {
+    "articleTop": [
+      {
+        "title": "ChatGPT Plus 官方代充",
+        "desc": "稳定安全，售后保障。",
+        "buttonText": "立即代充",
+        "buttonLink": "https://example.com/plus",
+        "image": "/plus/images/banner-plus.jpg"
+      },
+      {
+        "title": "OpenAI API 充值",
+        "desc": "开发者专用，低费率。",
+        "buttonText": "前往充值",
+        "buttonLink": "https://example.com/api",
+        "image": "/plus/images/banner-plus.jpg"
+      }
+    ]
+  }
+}
