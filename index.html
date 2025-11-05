@@ -15,20 +15,41 @@
 <body>
   <!-- 顶部导航 -->
   <header class="site-header">
-    <div class="container nav-wrap">
-      <a class="logo" href="index.html" data-wb>木子AI</a>
+  <div class="navbar">
+    <a class="logo" href="index.html">木子AI</a>
 
-      <nav class="navbar" id="navbar">
-        <!-- 由 JS 渲染 navigation.json -->
-      </nav>
+    <nav class="nav">
+      <ul class="nav-links">
+        <li class="nav-item has-sub">
+          <a href="index.html">ChatGPT</a>
+          <ul class="submenu">
+            <li><a href="signup-guide.html">注册教程</a></li>
+            <li><a href="index.html?tag=API">API 教程</a></li>
+            <li><a href="index.html?tag=Plus">Plus 升级</a></li>
+          </ul>
+        </li>
 
-      <!-- 搜索框 -->
-      <div class="search-box">
-        <span class="search-icon"></span>
-        <input id="searchInput" type="search" placeholder="请输入关键词（标题 / 标签 / 正文）" />
-      </div>
-    </div>
-  </header>
+        <li class="nav-item has-sub">
+          <a href="index.html?tag=Sora">Sora</a>
+          <ul class="submenu">
+            <li><a href="index.html?tag=Sora入门">入门教程</a></li>
+            <li><a href="index.html?tag=Sora技巧">进阶技巧</a></li>
+          </ul>
+        </li>
+
+        <li class="nav-item has-sub">
+          <a href="index.html?tag=充值">代充/优惠</a>
+          <ul class="submenu">
+            <li><a href="index.html?tag=官方代充">官方代充</a></li>
+            <li><a href="index.html?tag=避坑指南">避坑指南</a></li>
+          </ul>
+        </li>
+
+        <li class="nav-item"><a href="index.html?tag=教程">全部教程</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
 
   <main class="container main-grid">
     <!-- 主列 -->
