@@ -14,42 +14,54 @@
 </head>
 <body>
   <!-- 顶部导航 -->
-  <header class="site-header">
-  <div class="navbar">
+  <!-- 顶部导航：固定顶部，左Logo / 中间主菜单 / 右搜索框 -->
+<header class="site-header" role="banner" aria-label="主导航">
+  <div class="nav-inner">
+    <!-- 左：Logo -->
     <a class="logo" href="index.html">木子AI</a>
 
-    <nav class="nav">
+    <!-- 中：主菜单（3组） -->
+    <nav class="navbar" role="navigation" aria-label="主菜单">
       <ul class="nav-links">
+        <!-- 1. ChatGPT代升级服务 -->
         <li class="nav-item has-sub">
-          <a href="index.html">ChatGPT</a>
+          <a href="index.html?tag=代升级">ChatGPT代升级服务</a>
+          <ul class="submenu">
+            <li><a href="article.html?slug=gpt-plus-topup">GPT PLUS代充</a></li>
+            <li><a href="article.html?slug=api-key-topup">API KEY代充值</a></li>
+          </ul>
+        </li>
+
+        <!-- 2. ChatGPT使用指南 -->
+        <li class="nav-item has-sub">
+          <a href="index.html?tag=使用指南">ChatGPT使用指南</a>
           <ul class="submenu">
             <li><a href="signup-guide.html">注册教程</a></li>
-            <li><a href="index.html?tag=API">API 教程</a></li>
-            <li><a href="index.html?tag=Plus">Plus 升级</a></li>
+            <li><a href="article.html?slug=plus-pay-guide">充值教程</a></li>
+            <li><a href="article.html?slug=virtual-card-guide">虚拟卡教程</a></li>
           </ul>
         </li>
 
+        <!-- 3. ChatGPT-4o生图API -->
         <li class="nav-item has-sub">
-          <a href="index.html?tag=Sora">Sora</a>
+          <a href="index.html?tag=4o-生图">ChatGPT-4o生图API</a>
           <ul class="submenu">
-            <li><a href="index.html?tag=Sora入门">入门教程</a></li>
-            <li><a href="index.html?tag=Sora技巧">进阶技巧</a></li>
+            <li><a href="article.html?slug=sora-video">Sora视频生成</a></li>
+            <li><a href="article.html?slug=api-free-test">免费测试</a></li>
           </ul>
         </li>
-
-        <li class="nav-item has-sub">
-          <a href="index.html?tag=充值">代充/优惠</a>
-          <ul class="submenu">
-            <li><a href="index.html?tag=官方代充">官方代充</a></li>
-            <li><a href="index.html?tag=避坑指南">避坑指南</a></li>
-          </ul>
-        </li>
-
-        <li class="nav-item"><a href="index.html?tag=教程">全部教程</a></li>
       </ul>
     </nav>
+
+    <!-- 右：搜索框 -->
+    <form class="nav-search" role="search" action="index.html" method="get" onsubmit="return true">
+      <input id="searchInput" name="q" type="search" placeholder="请输入关键词（标题 / 标签 / 正文）" aria-label="站内搜索">
+      <!-- 只是视觉按钮，不提交也行 -->
+      <button type="button" aria-label="搜索">🔍</button>
+    </form>
   </div>
 </header>
+
 
   <main class="container main-grid">
     <!-- 主列 -->
