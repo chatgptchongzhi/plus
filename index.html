@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>木子AI</title>
+  <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导" />
+  <link rel="stylesheet" href="/plus/assets/style.css?v=0">
+  <script>const PREFIX='/plus/';const BUILD_VERSION=Date.now();const url=p=>`${PREFIX}${p}?v=${BUILD_VERSION}`;</script>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="navbar shadow">
+    <a class="logo" href="/plus/">木子AI</a>
+    <nav class="nav">
+      <ul id="navList" class="nav-list"><!-- 由 JS 根据 site.json 渲染 --></ul>
+    </nav>
+    <div class="search">
+      <span class="icon">🔍</span>
+      <input id="searchInput" type="search" placeholder="请输入关键词">
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="main-col">
+      <!-- 推荐区 -->
+      <section id="recommend" class="card recommend-box">
+        <h2 class="block-title"><i class="bar"></i>ChatGPT 使用必读文章</h2>
+        <div id="recommendGrid" class="grid-2"></div>
+      </section>
+
+      <!-- 文章列表 -->
+      <section class="article-list" id="articleList"></section>
+
+      <!-- 分页 -->
+      <div id="pagination" class="pagination"></div>
+    </section>
+
+    <!-- 右侧栏 -->
+    <aside id="sidebar" class="sidebar sticky">
+      <!-- 关于本站 -->
+      <section class="card" id="aboutBox"></section>
+      <!-- 广告 -->
+      <section class="card" id="adBox"></section>
+      <!-- 联系 -->
+      <section class="card" id="contactBox"></section>
+    </aside>
+  </main>
+
+  <!-- 悬浮微信按钮 -->
+  <div class="wechat-float" id="wechatFloat">
+    <div class="wf-btn" id="wfBtn">微信</div>
+    <div class="wf-pop" id="wfPop"><img id="wfImg" alt="微信二维码" /></div>
+  </div>
+
+  <footer class="footer">
+    © 2025 木子科技 · 本站内容仅供学习交流，侵权请联系删除 · <span id="siteEmail"></span>
+  </footer>
+
+  <script defer src="/plus/assets/libs/marked.min.js?v=0"></script>
+  <script defer src="/plus/assets/libs/tocbot.min.js?v=0"></script>
+  <script defer src="/plus/assets/main.js?v=0"></script>
+</body>
+</html>
