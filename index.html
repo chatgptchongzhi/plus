@@ -1,166 +1,147 @@
+<!-- plus/index.html -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <title>木子AI - ChatGPT / Sora / AI 工具教程与充值引导</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导" />
-  <link rel="icon" href="/plus/images/logo.png" />
-  <link rel="stylesheet" href="assets/style.css?v=13" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>木子AI｜ChatGPT · Sora · 教程与充值引导</title>
+  <meta name="description" content="木子AI：ChatGPT / Sora / AI 工具教程与充值引导，含注册、充值、虚拟卡、API 等实用指南。" />
+  <meta name="keywords" content="ChatGPT, Sora, 代充, API, 教程, 充值, 虚拟卡" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="木子AI｜ChatGPT · Sora · 教程与充值引导" />
+  <meta property="og:description" content="ChatGPT / Sora / AI 工具教程与充值引导。" />
+  <meta property="og:image" content="/plus/images/banner-plus.jpg" />
+  <meta property="og:url" content="https://<USERNAME>.github.io/plus/" />
+  <meta name="twitter:card" content="summary_large_image" />
   <script>
-    // 防止 FOUC：先占位 basePath，真实逻辑在 main.js
-    window.__BASE_PATH__ = '';
+    // 全局常量 & 版本号（用于 cache bust）
+    window.PREFIX = '/plus/';
+    window.BUILD_VERSION = Date.now();
+    // 动态写入 CSS（带版本号）
+    document.write(
+      '<link rel="stylesheet" href="'+ PREFIX +'assets/style.css?v='+ BUILD_VERSION +'">'
+    );
   </script>
+  <style>
+    /* 首屏关键样式（内联一小部分，完整在 assets/style.css） */
+    html,body{margin:0;padding:0;background:#fff;color:#111;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+    .navbar{position:fixed;top:0;left:0;right:0;background:#fff;border-bottom:1px solid #eee;z-index:9999;display:flex;align-items:center;justify-content:space-between;padding:14px 60px}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;color:#D32F2F;text-decoration:none}
+    .container{max-width:1200px;margin:0 auto;padding:100px 60px 60px}
+    @media (max-width:768px){.container{padding:100px 20px 60px}.navbar{padding:12px 20px}}
+  </style>
 </head>
 <body>
- 
-  <!-- 顶部导航：固定顶部，左Logo / 中间主菜单 / 右搜索框 -->
-<!-- [代码块1 - HTML]：替换整段 <header> -->
-<header class="site-header" role="banner" aria-label="站点顶部导航">
-  <div class="nav-inner">
-    <!-- 左：LOGO -->
-    <a class="logo" href="index.html" aria-label="返回首页">
-      <img src="images/logo.png" alt="木子AI" width="28" height="28" loading="lazy">
-      <span class="logo-text">木子AI</span>
+  <!-- 顶部导航 -->
+  <header class="navbar">
+    <a class="logo" href="/plus/">
+      <img src="/plus/images/logo.png?v=0" alt="木子AI" width="28" height="28" onerror="this.style.display='none'">
+      木子AI
     </a>
-
-    <!-- 中：主菜单（水平居中） -->
-    <nav class="navbar" role="navigation" aria-label="主导航">
-      <ul class="nav-links" role="menubar">
-        <!-- 1. ChatGPT代升级服务 -->
-        <li class="nav-item has-sub" role="none">
-          <a role="menuitem" href="javascript:void(0)" class="nav-link" aria-haspopup="true" aria-expanded="false">
-            ChatGPT代升级服务
-            <span class="caret" aria-hidden="true"></span>
-          </a>
-          <ul class="submenu" role="menu" aria-label="ChatGPT代升级服务 子菜单">
-            <li role="none"><a role="menuitem" href="article.html?slug=gpt-plus-topup">GPT PLUS代充</a></li>
-            <li role="none"><a role="menuitem" href="article.html?slug=api-key-topup">API KEY代充值</a></li>
+    <nav class="nav">
+      <ul class="nav-links">
+        <li class="nav-item has-sub">
+          <a href="javascript:;" class="nav-link">ChatGPT代升级服务</a>
+          <ul class="sub-menu">
+            <li><a data-goto="gpt-plus-topup" href="/plus/article.html?slug=gpt-plus-topup">GPT PLUS代充</a></li>
+            <li><a data-goto="api-key-topup" href="/plus/article.html?slug=api-key-topup">API KEY代充值</a></li>
           </ul>
         </li>
-
-        <!-- 2. ChatGPT 使用指南 -->
-        <li class="nav-item has-sub" role="none">
-          <a role="menuitem" href="javascript:void(0)" class="nav-link" aria-haspopup="true" aria-expanded="false">
-            ChatGPT 使用指南
-            <span class="caret" aria-hidden="true"></span>
-          </a>
-          <ul class="submenu" role="menu" aria-label="ChatGPT 使用指南 子菜单">
-            <li role="none"><a role="menuitem" href="signup-guide.html">注册教程</a></li>
-            <li role="none"><a role="menuitem" href="article.html?slug=plus-pay-guide">充值教程</a></li>
-            <li role="none"><a role="menuitem" href="article.html?slug=virtual-card-guide">虚拟卡教程</a></li>
+        <li class="nav-item has-sub">
+          <a href="javascript:;" class="nav-link">ChatGPT使用指南</a>
+          <ul class="sub-menu">
+            <li><a href="/plus/tags.html?tag=注册教程">注册教程</a></li>
+            <li><a href="/plus/tags.html?tag=充值教程">充值教程</a></li>
+            <li><a href="/plus/tags.html?tag=虚拟卡">虚拟卡教程</a></li>
           </ul>
         </li>
-
-        <!-- 3. ChatGPT-4o生图API，免费测试 -->
-        <li class="nav-item has-sub" role="none">
-          <a role="menuitem" href="javascript:void(0)" class="nav-link" aria-haspopup="true" aria-expanded="false">
-            ChatGPT-4o生图API，免费测试
-            <span class="caret" aria-hidden="true"></span>
-          </a>
-          <ul class="submenu" role="menu" aria-label="ChatGPT-4o生图API 子菜单">
-            <li role="none"><a role="menuitem" href="article.html?slug=sora-video">Sora视频生成</a></li>
-            <li role="none"><a role="menuitem" href="article.html?slug=api-free-test">免费在线观看</a></li>
+        <li class="nav-item has-sub">
+          <a href="javascript:;" class="nav-link">ChatGPT-4o生图API</a>
+          <ul class="sub-menu">
+            <li><a data-goto="sora-api" href="/plus/article.html?slug=sora-api">Sora视频生成</a></li>
+            <li><a href="/plus/tags.html?tag=免费测试">免费测试</a></li>
           </ul>
         </li>
       </ul>
     </nav>
+    <div class="nav-search">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 21l-4.3-4.3m1.8-4.5A7 7 0 1 1 3 12a7 7 0 0 1 15.5 0z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      <input id="searchInput" type="search" placeholder="请输入关键词" />
+    </div>
+  </header>
 
-    <!-- 右：搜索框（胶囊） -->
-    <form class="nav-search" role="search" aria-label="站内搜索" onsubmit="return false;">
-      <label class="sr-only" for="searchInput">搜索</label>
-      <input id="searchInput" type="search" inputmode="search" autocomplete="off"
-             placeholder="请输入关键词（标题 / 标签 / 正文）" />
-      <button class="search-btn" type="button" aria-label="搜索">
-        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-          <path d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 001.57-4.23C15.99 6.01 13.48 3.5 10.5 3.5S5.01 6.01 5.01 9s2.51 5.5 5.49 5.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l4.25 4.25 1.27-1.27L15.5 14zm-5 0C8.01 14 6 11.99 6 9.5S8.01 5 10.5 5 15 7.01 15 9.5 12.99 14 10.5 14z"/>
-        </svg>
-      </button>
-    </form>
+  <!-- Banner -->
+  <div class="banner-wrap">
+    <img class="banner" src="/plus/images/banner-plus.jpg?v=0" alt="木子AI Banner" loading="lazy">
   </div>
-</header>
 
-
-
-  <main class="container main-grid">
-    <!-- 主列 -->
-    <section class="content-col">
-      <!-- 推荐区 -->
-      <section class="card block recommend">
-        <h2 class="block-title"><span class="bar"></span>ChatGPT 使用必读文章</h2>
-        <div class="recommend-grid" id="recoWrap"></div>
-<div id="listWrap"></div>
-<div class="pagination" id="pager"></div>
-
-      </section>
-
-      <!-- 搜索提示 -->
-      <div id="searchHint" class="search-hint" style="display:none;"></div>
-
-      <!-- 文章列表 -->
-      <section id="listContainer"></section>
-
-      <!-- 分页 -->
-      <div id="pagination" class="pagination"></div>
+  <main class="container">
+    <!-- 推荐区 -->
+    <section class="recommend card">
+      <h2 class="section-title"><span class="bar"></span>ChatGPT 使用必读文章</h2>
+      <div id="recommendGrid" class="recommend-grid"></div>
     </section>
 
-    <!-- 右侧固定侧栏 -->
-    <aside class="sidebar" id="sidebar">
-      <!-- 关于本站 -->
-      <section class="card side-card" id="aboutCard">
-        <h3>关于本站</h3>
-        <p id="siteDesc">ChatGPT / Sora / AI 工具教程与充值引导</p>
-        <ul class="site-meta">
-          <li>微信：<span id="wxId">muzi_ai</span></li>
-          <li>邮箱：<a id="siteEmail" href="mailto:contact@muzi.com">contact@muzi.com</a></li>
-        </ul>
-      </section>
+    <!-- 主体两栏 -->
+    <div class="content-wrap">
+      <div class="main-col">
+        <!-- 列表 -->
+        <div id="articleList" class="article-list"></div>
+        <!-- 分页 -->
+        <div id="paginator" class="paginator"></div>
+      </div>
 
-      <!-- 广告推广 -->
-      <section class="card side-card ad-card" id="adCard">
-        <h3 id="adTitle">官方代充 · 限时优惠</h3>
-        <div class="ad-img-wrap">
-          <img id="adImage" alt="ad" onerror="this.style.display='none'"/>
-        </div>
-        <div class="ad-price" id="adPrice">¥178 / 月</div>
-        <a class="btn btn-primary" id="adBtn" target="_blank" rel="noopener">立即咨询</a>
-      </section>
-
-      <!-- 联系 -->
-      <section class="card side-card contact-card">
-        <h3>联系老张</h3>
-        <div class="qrcode-wrap">
-          <img id="qrcode" alt="微信二维码" onerror="this.style.display='none'"/>
-        </div>
-        <p class="muted">加微信备注：Plus代充</p>
-      </section>
-    </aside>
+      <!-- 右侧栏（PC 固定） -->
+      <aside id="sidebar" class="sidebar">
+        <section class="side-card">
+          <h3>关于本站</h3>
+          <p id="siteAbout">木子AI：专注 ChatGPT / Sora / AI 工具教程与充值引导。</p>
+        </section>
+        <section class="side-card">
+          <h3>充值推广</h3>
+          <p>ChatGPT Plus 安全代充（长期包售后）</p>
+          <ul class="price-list">
+            <li>月付：￥178</li>
+            <li>季付：￥499</li>
+          </ul>
+          <a class="btn" href="/plus/article.html?slug=gpt-plus-topup">立即咨询</a>
+        </section>
+        <section class="side-card">
+          <h3>联系老张</h3>
+          <img class="qrcode" src="/plus/images/qrcode-wechat.png?v=0" alt="微信二维码" onerror="this.style.display='none'">
+          <p>微信：<strong>muzi_ai</strong></p>
+        </section>
+      </aside>
+    </div>
   </main>
 
-  <!-- 全局悬浮微信按钮 -->
-  <div class="wx-float" id="wxFloat">
-    <img src="images/qrcode-wechat.png" alt="WeChat" onerror="this.parentElement.classList.add('fallback')" />
-    <div class="wx-float-pop" id="wxFloatPop">
-      <img src="images/qrcode-wechat.png" alt="WeChat QR" onerror="this.style.display='none'"/>
+  <!-- 悬浮微信按钮 -->
+  <a class="float-wechat" href="javascript:;" aria-label="微信">
+    <span class="float-wechat-dot">微 信</span>
+    <div class="float-wechat-pop">
+      <img src="/plus/images/qrcode-wechat.png?v=0" alt="微信二维码" onerror="this.parentNode.innerHTML='<div class=&quot;no-qrcode&quot;>添加微信：muzi_ai</div>';">
     </div>
-  </div>
+  </a>
 
-  <!-- 页脚 -->
-  <footer class="site-footer">
-    <div class="container">
-      <div>© <span id="year"></span> 木子AI</div>
-      <div>
-        站点总访问量 <span id="busuanzi_value_site_pv">—</span> 次 ·
-        访客数 <span id="busuanzi_value_site_uv">—</span>
-      </div>
-    </div>
+  <footer class="footer">
+    <p>© 2025 木子科技 · 本站内容仅供学习交流，侵权请联系删除。</p>
+    <p>联系邮箱：<a href="mailto:contact@muzi.com">contact@muzi.com</a></p>
   </footer>
 
-  <!-- 统计 -->
-  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <!-- 动态插入脚本（带版本号） -->
+  <script>
+    function s(src,defer=true){var d=document,sc=d.createElement('script');sc.src=src+'?v='+BUILD_VERSION; if(defer) sc.defer=true; d.body.appendChild(sc);}
+    s(PREFIX+'assets/libs/marked.min.js');
+    s(PREFIX+'assets/libs/tocbot.min.js');
+    s(PREFIX+'assets/main.js');
+  </script>
 
-  <!-- 脚本 -->
-  <script src="assets/libs/marked.min.js"></script>
-  <script src="assets/main.js?v=13"></script>
+  <!-- README（部署要点与排错）：
+  1) 仓库名：plus；分支：main；GitHub Pages：Deploy from branch → main（/ 根目录）。
+  2) 访问：https://<USERNAME>.github.io/plus/ 。
+  3) 如遇 404 或空白：检查文件大小写、路径是否含 /plus/ 前缀；确认 assets/libs 为“纯 JS”版而非 HTML 包装版。
+  4) JSON/MD 更新后，若未刷新，请改动 BUILD_VERSION（自动为时间戳）或强刷浏览器缓存。
+  5) 如果控制台提示无法加载 content/*.json，请确认这些文件已提交且路径无误。
+  -->
 </body>
 </html>
