@@ -1,107 +1,94 @@
+<!-- plus/article.html -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>文章 - 木子AI</title>
-  <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导" />
-
-  <!-- 站点主样式（带版本号防缓存） -->
-  <link rel="stylesheet" href="assets/style.css?v=14" />
-
-  <!-- TOC / Markdown（如只用 HTML，可保留 tocbot 仅做目录） -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.css" />
-  <script src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title id="docTitle">文章详情｜木子AI</title>
+  <meta name="description" content="文章详情 - 木子AI" />
+  <meta name="keywords" content="ChatGPT, 教程, 充值, API, 虚拟卡" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="文章详情｜木子AI" />
+  <meta property="og:image" content="/plus/images/banner-plus.jpg" />
+  <meta property="og:url" content="https://<USERNAME>.github.io/plus/article.html" />
+  <script>
+    window.PREFIX='/plus/'; window.BUILD_VERSION=Date.now();
+    document.write('<link rel="stylesheet" href="'+ PREFIX +'assets/style.css?v='+ BUILD_VERSION +'">');
+  </script>
 </head>
 <body>
-  <!-- 顶部导航 -->
-  <header class="site-header">
-    <div class="container nav-wrap">
-      <a class="logo" href="index.html" data-wb>木子AI</a>
-      <nav class="navbar" id="navbar"></nav>
-      <div class="search-box">
-        <span class="search-icon"></span>
-        <input id="searchInput" type="search" placeholder="搜索其他文章…" />
-      </div>
+  <header class="navbar">
+    <a class="logo" href="/plus/">
+      <img src="/plus/images/logo.png?v=0" alt="木子AI" width="28" height="28" onerror="this.style.display=\'none\'">
+      木子AI
+    </a>
+    <nav class="nav">
+      <ul class="nav-links">
+        <li class="nav-item"><a href="/plus/">首页</a></li>
+        <li class="nav-item"><a href="/plus/tags.html">标签</a></li>
+      </ul>
+    </nav>
+    <div class="nav-search">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M21 21l-4.3-4.3m1.8-4.5A7 7 0 1 1 3 12a7 7 0 0 1 15.5 0z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      <form action="/plus/index.html"><input name="q" type="search" placeholder="请输入关键词"></form>
     </div>
   </header>
 
-  <!-- 给 main.js 的“首页元素”提供隐藏占位，避免报错 -->
-  <div style="display:none">
-    <div id="recommendGrid"></div>
-    <section id="listContainer"></section>
-    <div id="pagination"></div>
-  </div>
+  <main class="container article-page">
+    <nav class="breadcrumb" id="breadcrumb">
+      <a href="/plus/">拼账号</a> » <a href="/plus/tags.html?tag=ChatGPT">ChatGPT</a> » <span id="crumbTitle">文章标题</span>
+    </nav>
 
-  <main class="container article-grid">
-    <section class="content-col">
-      <!-- 面包屑 -->
-      <nav class="breadcrumb" id="breadcrumb">木子AI » </nav>
-
-      <!-- 双 Banner（可选） -->
-      <div class="double-banners" id="doubleBanners"></div>
-
-      <!-- 文章元信息（作者/日期/分类，可由脚本填充） -->
-      <div class="article-meta-row" id="articleMetaRow"></div>
-
-      <!-- 正文 + TOC -->
-      <div class="article-body-wrap">
-        <article class="article-body" id="articleBody"></article>
-        <aside class="toc-wrap">
-          <h4>目录</h4>
-          <nav id="toc"></nav>
-        </aside>
-      </div>
-
-      <div id="tagPills" class="tag-pills"></div>
-      <p class="pv-line">本文阅读量 <span id="busuanzi_value_page_pv">—</span></p>
+    <!-- 上部广告位 -->
+    <section class="ad-row">
+      <a class="ad-card" href="/plus/article.html?slug=gpt-plus-topup">
+        <img src="/plus/images/banner-plus.jpg?v=0" alt="Plus 代充">
+        <div class="ad-meta">
+          <strong>ChatGPT Plus 代充</strong>
+          <button>了解更多</button>
+        </div>
+      </a>
+      <a class="ad-card" href="/plus/article.html?slug=api-key-topup">
+        <img src="/plus/images/banner-plus.jpg?v=0" alt="API 充值">
+        <div class="ad-meta">
+          <strong>OpenAI API 充值</strong>
+          <button>查看详情</button>
+        </div>
+      </a>
     </section>
 
-    <!-- 右侧固定侧栏（由脚本注入站点信息） -->
-    <aside class="sidebar" id="sidebar">
-      <section class="card side-card" id="aboutCard">
-        <h3>关于本站</h3>
-        <p id="siteDesc">ChatGPT / Sora / AI 工具教程与充值引导</p>
-        <ul class="site-meta">
-          <li>微信：<span id="wxId">muzi_ai</span></li>
-          <li>邮箱：<a id="siteEmail" href="mailto:contact@muzi.com">contact@muzi.com</a></li>
-        </ul>
-      </section>
+    <article class="article">
+      <h1 id="postTitle">文章标题</h1>
+      <div class="meta-bar" id="metaBar">
+        <span>作者：<strong id="authorName">木子AI</strong>（微信：<b id="authorWx">muzi_ai</b>）</span>
+        <span>发布：<time id="postDate">2025-10-31</time></span>
+        <span>分类：<a id="catLink" href="/plus/tags.html">ChatGPT</a></span>
+      </div>
 
-      <section class="card side-card ad-card" id="adCard">
-        <h3 id="adTitle">官方代充 · 限时优惠</h3>
-        <div class="ad-img-wrap">
-          <img id="adImage" alt="ad" onerror="this.style.display='none'"/>
-        </div>
-        <div class="ad-price" id="adPrice">¥178 / 月</div>
-        <a class="btn btn-primary" id="adBtn" target="_blank" rel="noopener">立即咨询</a>
-      </section>
+      <div class="post-body">
+        <div id="postContent" class="markdown-body"></div>
+        <div id="postTOC" class="toc"></div>
+      </div>
 
-      <section class="card side-card contact-card">
-        <h3>联系老张</h3>
-        <div class="qrcode-wrap">
-          <img id="qrcode" alt="微信二维码" onerror="this.style.display='none'"/>
-        </div>
-        <p class="muted">加微信备注：Plus代充</p>
-      </section>
-    </aside>
+      <nav class="post-nav">
+        <a id="prevPost" class="prev" href="javascript:;">上一篇</a>
+        <a id="nextPost" class="next" href="javascript:;">下一篇</a>
+      </nav>
+    </article>
+
+    <!-- 右侧固定 TOC（PC显示） -->
+    <aside id="tocFixed" class="toc-fixed"></aside>
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <div>© <span id="year"></span> 木子AI</div>
-      <div>
-        站点总访问量 <span id="busuanzi_value_site_pv">—</span> 次 ·
-        访客数 <span id="busuanzi_value_site_uv">—</span>
-      </div>
-    </div>
+  <footer class="footer">
+    <p>© 2025 木子科技 · 本站内容仅供学习交流，侵权请联系删除。联系邮箱：<a href="mailto:contact@muzi.com">contact@muzi.com</a></p>
   </footer>
 
-  <!-- 统计 -->
-  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  <!-- 先主脚本（提供 withBase/renderNav 等），再文章脚本（带版本号防缓存） -->
-  <script src="assets/main.js?v=14"></script>
-  <script src="assets/article.js?v=14"></script>
+  <script>
+    function s(src,defer=true){var d=document,sc=d.createElement('script');sc.src=src+'?v='+BUILD_VERSION; if(defer) sc.defer=true; d.body.appendChild(sc);}
+    s(PREFIX+'assets/libs/marked.min.js');
+    s(PREFIX+'assets/libs/tocbot.min.js');
+    s(PREFIX+'assets/article.js');
+  </script>
 </body>
 </html>
