@@ -6,29 +6,15 @@
   <title>木子AI</title>
   <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导" />
 
-  <!-- 基础样式：先给一个占位版本号，稍后用 JS 注入时间戳 -->
-<!-- 只保留 1 个 link，不带 ?v=0 -->
-<link id="site-css" rel="stylesheet" href="/plus/assets/style.css">
-
-<!-- 用我们已有的 url() 注入时间戳 -->
-<script>
-  // 如果页面里已经有：const PREFIX='/plus/'; const BUILD_VERSION=Date.now(); const url=p=>`${PREFIX}${p}?v=${BUILD_VERSION}`;
-  // 直接用 url() 即可
-  document.getElementById('site-css').href = url('assets/style.css');
-
-  /* 如果你的页面里没有上面的 url() 定义，请用这一行替代：
-  document.getElementById('site-css').href = '/plus/assets/style.css?v=' + Date.now();
-  */
-</script>
-
-
-  <!-- 统一的路径/版本工具 -->
+  <!-- 统一前缀与版本工具：先定义，再用于注入 CSS/JS -->
   <script>
     const PREFIX = '/plus/';
     const BUILD_VERSION = Date.now();
     const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
   </script>
-  <!-- 让 CSS 也走时间戳，避免缓存 -->
+
+  <!-- 仅保留 1 个样式链接，由脚本注入时间戳，避免 v=0 重复请求 -->
+  <link id="site-css" rel="stylesheet">
   <script>
     document.getElementById('site-css').href = url('assets/style.css');
   </script>
@@ -74,12 +60,22 @@
     © 2025 木子科技 · 本站内容仅供学习交流，侵权请联系删除 · <span id="siteEmail"></span>
   </footer>
 
-  <!-- 库 & 主逻辑（保持现有加载方式即可） -->
-  <script defer src="/plus/assets/libs/marked.min.js?v=0"></script>
-  <script defer src="/plus/assets/libs/tocbot.min.js?v=0"></script>
-  <script defer src="/plus/assets/main.js?v=0"></script>
+  <!-- 动态注入脚本（带时间戳）替代 v=0 固定版本 -->
+  <script>
+    const JS_LIST = [
+      'assets/libs/marked.min.js',
+      'assets/libs/tocbot.min.js',
+      'assets/main.js'
+    ];
+    JS_LIST.forEach(p => {
+      const s = document.createElement('script');
+      s.defer = true;
+      s.src = url(p);
+      document.head.appendChild(s);
+    });
+  </script>
 
-  <!-- 全站微信悬浮按钮（自动注入） -->
+  <!-- 全站微信悬浮按钮（自动注入，已防缓存） -->
   <script>
     window.PREFIX = window.PREFIX || '/plus/';
     (function () {
