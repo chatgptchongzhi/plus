@@ -285,4 +285,71 @@ main{min-width:0}
 @media (min-width: 1600px){
   .navbar .nav{ padding-left: 56px; }   /* ← 1600+ 屏的值 */
 }
+/* ===========================
+   A. 右侧栏：悬浮跟随（桌面端）
+   =========================== */
+
+/* 移动端保持原状（不固定）*/
+@media (max-width: 991.98px){
+  .sidebar.sticky{
+    position: static !important;
+    top: auto; right: auto; width: auto;
+    max-height: none; overflow: visible;
+  }
+}
+
+/* 桌面端：将右侧栏固定在视口，随页面滚动一直可见 */
+@media (min-width: 992px){
+  .sidebar.sticky{
+    position: fixed !important;
+    /* 与顶部导航留白，按需要微调 */
+    top: 100px;
+
+    /* 固定宽度（建议 320~360 之间，与你右栏实际卡片宽度一致）*/
+    width: 340px;
+
+    /* 固定后如果内容超出，允许侧栏自身滚动（避免被裁切） */
+    max-height: calc(100vh - 120px); /* 视口高度减去 top 的安全余量 */
+    overflow: auto;
+    z-index: 5;
+  }
+
+  /* 让固定侧栏的右边距和容器右 padding 对齐（与你现有断点一致） */
+  @media (min-width: 992px) and (max-width: 1279px){ .sidebar.sticky{ right: 72px; } }
+  @media (min-width: 1280px) and (max-width: 1439px){ .sidebar.sticky{ right: 96px; } }
+  @media (min-width: 1440px) and (max-width: 1599px){ .sidebar.sticky{ right: 96px; } }
+  @media (min-width: 1600px) and (max-width: 1919px){ .sidebar.sticky{ right:108px; } }
+  @media (min-width: 1920px){                               .sidebar.sticky{ right:144px; } }
+}
+
+/* ===========================
+   B. 字体与加粗规则（首页）
+   只让「ChatGPT 使用必读文章」加粗，其它都不加粗，并整体略微缩小
+   =========================== */
+
+/* 全站整体字号略微缩小 */
+body { font-size: 15px; }  /* 原 16px → 15px */
+
+/* 仅『ChatGPT 使用必读文章』这行保持加粗 */
+.block-title { font-weight: 800; }
+
+/* 推荐区卡片标题：不加粗 & 稍小 */
+.recommend-box .title{
+  font-size: 18px;           /* 原 20px → 18px */
+  font-weight: 500;          /* 取消强加粗 */
+}
+
+/* 首页文章卡片标题：不加粗 & 稍小 */
+.article-title{
+  font-size: 20px;           /* 原 22px → 20px */
+  font-weight: 500;          /* 取消强加粗 */
+}
+
+/* 其它文字整体小一点，保持正常字重 */
+.article-excerpt { font-size: 14px; font-weight: 400; }  /* 原 15px */
+.article-meta    { font-size: 13px; font-weight: 400; }  /* 原 14px */
+.tag             { font-size: 12px; font-weight: 400; }  /* 原 13px */
+
+/* 如果正文页的大标题也要去粗，可以打开下面一行（可选） */
+/* .post-title { font-weight: 600; } */
 
