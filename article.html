@@ -6,7 +6,20 @@
   <title>文章 - 木子AI</title>
 
   <!-- 基础样式：先给一个占位版本号，稍后用 JS 注入时间戳 -->
-  <link id="site-css" rel="stylesheet" href="/plus/assets/style.css?v=0">
+<!-- 只保留 1 个 link，不带 ?v=0 -->
+<link id="site-css" rel="stylesheet" href="/plus/assets/style.css">
+
+<!-- 用我们已有的 url() 注入时间戳 -->
+<script>
+  // 如果页面里已经有：const PREFIX='/plus/'; const BUILD_VERSION=Date.now(); const url=p=>`${PREFIX}${p}?v=${BUILD_VERSION}`;
+  // 直接用 url() 即可
+  document.getElementById('site-css').href = url('assets/style.css');
+
+  /* 如果你的页面里没有上面的 url() 定义，请用这一行替代：
+  document.getElementById('site-css').href = '/plus/assets/style.css?v=' + Date.now();
+  */
+</script>
+
 
   <!-- 统一的路径/版本工具 -->
   <script>
