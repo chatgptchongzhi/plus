@@ -6,8 +6,13 @@
   <title>木子AI</title>
   <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导" />
   <link rel="stylesheet" href="/plus/assets/style.css?v=0">
-  <script>const PREFIX='/plus/';const BUILD_VERSION=Date.now();const url=p=>`${PREFIX}${p}?v=${BUILD_VERSION}`;</script>
+  <script>
+    const PREFIX = '/plus/';
+    const BUILD_VERSION = Date.now();
+    const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
+  </script>
 </head>
+
 <body>
   <!-- 顶部导航 -->
   <header class="navbar shadow">
@@ -38,27 +43,30 @@
 
     <!-- 右侧栏 -->
     <aside id="sidebar" class="sidebar sticky">
-      <!-- 关于本站 -->
       <section class="card" id="aboutBox"></section>
-      <!-- 广告 -->
       <section class="card" id="adBox"></section>
-      <!-- 联系 -->
       <section class="card" id="contactBox"></section>
     </aside>
   </main>
-
-  <!-- 悬浮微信按钮 -->
-  <div class="wechat-float" id="wechatFloat">
-    <div class="wf-btn" id="wfBtn">微信</div>
-    <div class="wf-pop" id="wfPop"><img id="wfImg" alt="微信二维码" /></div>
-  </div>
 
   <footer class="footer">
     © 2025 木子科技 · 本站内容仅供学习交流，侵权请联系删除 · <span id="siteEmail"></span>
   </footer>
 
+  <!-- 库 & 主逻辑 -->
   <script defer src="/plus/assets/libs/marked.min.js?v=0"></script>
   <script defer src="/plus/assets/libs/tocbot.min.js?v=0"></script>
   <script defer src="/plus/assets/main.js?v=0"></script>
+
+  <!-- 全站微信悬浮按钮（自动注入） -->
+  <script>
+    window.PREFIX = window.PREFIX || '/plus/';
+    (function () {
+      var s = document.createElement('script');
+      s.src = window.PREFIX + 'assets/wechat-float.js?v=' + Date.now();
+      s.defer = true;
+      document.head.appendChild(s);
+    })();
+  </script>
 </body>
 </html>
