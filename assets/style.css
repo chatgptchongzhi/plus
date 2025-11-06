@@ -214,73 +214,43 @@ main{min-width:0}
 
 /* 保障主列在网格中不溢出 */
 .container > .main-col { min-width:0; }
-/* === 顶部导航：让主菜单在 LOGO 与搜索框之间均匀分布 === */
 
-/* 整体三段式：左_LOGO | 中_主菜单 | 右_搜索框 */
-.navbar{
-  display: flex;
-  align-items: center;
-}
+/* === 顶部导航：三段式骨架（左 LOGO | 中主菜单自适应 | 右搜索固定） === */
+.navbar{ display:flex; align-items:center; }
+.navbar .nav{ flex:1 1 auto; min-width:0; }
+.navbar .search{ flex:0 0 320px; max-width:420px; }
 
-/* 中间主菜单这块占满中间的可用空间 */
-.navbar .nav{
-  flex: 1 1 auto;           /* 让主菜单区在 LOGO 与搜索之间伸展 */
-  min-width: 0;
-}
-
-/* 右侧搜索框保持固定宽度（可按需微调） */
-.navbar .search{
-  flex: 0 0 320px;          /* 你也可以改成 300/340 等 */
-  max-width: 420px;
-}
-
-/* 桌面端：均匀分布三个主菜单 */
-@media (min-width: 992px){
-  .nav-list{
-    display: flex;
-    width: 100%;
-    justify-content: space-evenly;  /* 关键：均匀分布，含两侧边距 */
-    align-items: center;
-    gap: 0;                          /* 避免 gap 影响均匀度 */
+/* === 桌面端主菜单：缩小菜单项间距到 28px，并靠左排布 === */
+@media (min-width:992px){
+  .navbar .nav .nav-list{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;  /* 关键：不再 space-evenly，避免大留白 */
+    gap:28px !important;                    /* 关键：菜单项间距 = 28px */
   }
-  .nav-list > li{
-    white-space: nowrap;             /* 防止菜单文本换行挤压布局 */
+  .navbar .nav .nav-list > li{
+    margin:0 !important;                    /* 清除 li + li 等外边距写法 */
+    white-space:nowrap;
+  }
+  .navbar .nav .nav-list > li > a{
+    display:inline-flex !important;
+    align-items:center !important;
+    gap:6px !important;                     /* 文本与箭头更紧凑 */
+    padding-left:4px !important;
+    padding-right:4px !important;
   }
 }
 
-/* 平板及以下：保持原来的自适应（可略有间距） */
-@media (max-width: 991.98px){
-  .nav-list{
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
+/* === 子菜单定位修正：与主菜单左缘对齐（保持你当前的 vertical/top 间距不变） === */
+.navbar .nav .nav-list .nav-item{ position:relative !important; }
+.navbar .nav .nav-list .nav-item > .submenu{
+  left:0 !important;
+  right:auto !important;
+  transform:none !important;                /* 移除 translateX(-50%) 等导致的居中偏移 */
+  /* 不改 top，保持现在的竖直距离 */
 }
-/* === 主菜单：缩小菜单项间距到 28px === */
-.nav { flex: 1 1 auto; } /* 保持导航在 logo 与搜索之间自适应 */
-.nav-list{
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 28px;                 /* ← 菜单项水平间距 */
-}
-.nav-list > li{
-  margin: 0 !important;      /* 清掉旧的 margin，避免和 gap 叠加 */
-}
-
-/* === 子菜单定位修正：贴齐对应主菜单正下方（不改竖直距离）=== */
-.nav-item{ position: relative; }       /* 作为定位锚点 */
-.submenu{
-  left: 0 !important;                  /* 与主菜单左缘对齐 */
-  right: auto !important;
-  transform: none !important;          /* 防止有 translateX(-50%) 等造成偏移 */
-  /* 不改 top，保持你当前的竖直间距 */
-}
-
-/* （可选）让主菜单文字和小箭头更紧凑一些 */
-.nav-item > a{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;                             /* 文本与小箭头的间距 */
+.navbar .nav .nav-list .nav-item > .submenu,
+.navbar .nav .nav-list .nav-item > .submenu ul{
+  margin-left:0 !important;
+  margin-right:0 !important;
 }
