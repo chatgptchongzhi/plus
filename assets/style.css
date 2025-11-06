@@ -257,3 +257,30 @@ main{min-width:0}
     flex-wrap: wrap;
   }
 }
+/* === 主菜单：缩小菜单项间距到 28px === */
+.nav { flex: 1 1 auto; } /* 保持导航在 logo 与搜索之间自适应 */
+.nav-list{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 28px;                 /* ← 菜单项水平间距 */
+}
+.nav-list > li{
+  margin: 0 !important;      /* 清掉旧的 margin，避免和 gap 叠加 */
+}
+
+/* === 子菜单定位修正：贴齐对应主菜单正下方（不改竖直距离）=== */
+.nav-item{ position: relative; }       /* 作为定位锚点 */
+.submenu{
+  left: 0 !important;                  /* 与主菜单左缘对齐 */
+  right: auto !important;
+  transform: none !important;          /* 防止有 translateX(-50%) 等造成偏移 */
+  /* 不改 top，保持你当前的竖直间距 */
+}
+
+/* （可选）让主菜单文字和小箭头更紧凑一些 */
+.nav-item > a{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;                             /* 文本与小箭头的间距 */
+}
