@@ -4,11 +4,37 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>文章 - 木子AI</title>
-  <link rel="stylesheet" href="/plus/assets/style.css?v=2">
+
+  <!-- 统一版本号与路径 -->
   <script>
-    const PREFIX='/plus/';
-    const BUILD_VERSION=Date.now();
-    const url=p=>`${PREFIX}${p}?v=${BUILD_VERSION}`;
+    const PREFIX = '/plus/';
+    const BUILD_VERSION = Date.now();
+    const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
+  </script>
+
+  <!-- 动态加载样式与脚本（自动带版本号，绕过缓存） -->
+  <script>
+    (function () {
+      // 1) 样式
+      var css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = url('assets/style.css');
+      document.head.appendChild(css);
+
+      // 2) 文章页依赖库
+      ['assets/libs/marked.min.js','assets/libs/tocbot.min.js'].forEach(function (p) {
+        var s = document.createElement('script');
+        s.defer = true;
+        s.src = url(p);
+        document.head.appendChild(s);
+      });
+
+      // 3) 文章页主脚本
+      var js = document.createElement('script');
+      js.defer = true;
+      js.src = url('assets/article.js');
+      document.head.appendChild(js);
+    })();
   </script>
 </head>
 <body>
@@ -52,10 +78,6 @@
   <footer class="footer">
     © 2025 木子科技 · <span id="siteEmail"></span>
   </footer>
-
-  <script defer src="/plus/assets/libs/marked.min.js?v=0"></script>
-  <script defer src="/plus/assets/libs/tocbot.min.js?v=0"></script>
-  <script defer src="/plus/assets/article.js?v=2"></script>
 
   <!-- 全站微信悬浮按钮（自动注入） -->
   <script>
