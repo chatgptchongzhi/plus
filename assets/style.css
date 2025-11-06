@@ -312,4 +312,28 @@ main{min-width:0}
 /* 顶部导航与容器对齐（可选，但建议一起改） */
 @media (min-width: 1280px){ .navbar{ padding:14px 24px; } }
 @media (min-width: 1920px){ .navbar{ padding:14px 32px; } }
+/* === 将左侧留白扩大为原来的 3.5 倍（右侧保持不变）=== */
+
+/* 基础（<992 以及 992–1279 的默认 padding-right: 24px）*/
+.container { padding-left: 84px; }              /* 24px × 3.5 = 84px */
+
+/* 1280–1439：原左/右 padding: 32px */
+@media (min-width:1280px) and (max-width:1439px){
+  .container { padding-left: 112px; }          /* 32px × 3.5 = 112px */
+}
+
+/* 1440–1599：原左/右 padding: 32px */
+@media (min-width:1440px) and (max-width:1599px){
+  .container { padding-left: 112px; }          /* 32px × 3.5 = 112px */
+}
+
+/* 1600–1919：原左/右 padding: 36px */
+@media (min-width:1600px) and (max-width:1919px){
+  .container { padding-left: 126px; }          /* 36px × 3.5 = 126px */
+}
+
+/* ≥1920：原左/右 padding: 48px（保留你的流式宽度设置）*/
+@media (min-width:1920px){
+  .container { padding-left: 168px; }          /* 48px × 3.5 = 168px */
+}
 
