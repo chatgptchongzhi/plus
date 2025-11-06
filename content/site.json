@@ -1,13 +1,21 @@
+
 {
   "siteTitle": "木子AI",
   "siteDesc": "ChatGPT / Sora / AI 工具教程与充值引导",
   "siteUrl": "https://<USERNAME>.github.io/plus/",
   "author": "木子",
   "email": "contact@muzi.com",
-  "wechatId": "muzi_ai",
+  
+  "wechatId": "ef98ee",
+  "wechat": {
+    "icon": "/plus/images/wechat-float.png",
+    "qrcode": "/plus/images/qrcode-wechat.png",
+    "text": "微信联系：ef98ee",
+    "position": { "right": 35, "bottom": 150 }
+  },
+
   "logo": "/plus/images/logo.png",
   "banner": "/plus/images/banner-plus.jpg",
-  "wechatQrcode": "/plus/images/qrcode-wechat.png",
 
   "nav": [
     {
