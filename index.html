@@ -6,19 +6,20 @@
   <title>木子AI</title>
   <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导" />
 
-  <!-- 统一前缀与版本工具：先定义，再用于注入 CSS/JS -->
+  <!-- 只保留一个link，不带?v -->
+  <link id="site-css" rel="stylesheet" href="/plus/assets/style.css">
+
+  <!-- 先定义工具函数，再给link注入时间戳 -->
   <script>
     const PREFIX = '/plus/';
     const BUILD_VERSION = Date.now();
     const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
   </script>
-
-  <!-- 仅保留 1 个样式链接，由脚本注入时间戳，避免 v=0 重复请求 -->
-  <link id="site-css" rel="stylesheet">
   <script>
     document.getElementById('site-css').href = url('assets/style.css');
   </script>
 </head>
+
 
 <body>
   <!-- 顶部导航 -->
