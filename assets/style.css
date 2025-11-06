@@ -274,3 +274,15 @@ main{min-width:0}
     top: 100%;                               /* 保持你当前的竖直间距 */
   }
 }
+新增
+/* === 顶部主菜单整体右移（远离 LOGO）=== */
+@media (min-width: 992px){
+  .navbar .nav{ padding-left: 28px; }   /* ← 改这里 */
+}
+@media (min-width: 1280px){
+  .navbar .nav{ padding-left: 40px; }   /* ← 1280+ 屏的值 */
+}
+@media (min-width: 1600px){
+  .navbar .nav{ padding-left: 56px; }   /* ← 1600+ 屏的值 */
+}
+
