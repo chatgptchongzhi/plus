@@ -1,19 +1,46 @@
-:root{--primary:#D32F2F;--text:#222;--muted:#666;--line:#eee;--bg:#fff;--shadow:0 2px 8px rgba(0,0,0,.05)}
-*{box-sizing:border-box}html,body{margin:0;padding:0;color:var(--text);font:16px/1.7 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,PingFang SC,Helvetica,Arial}
-a{color:inherit;text-decoration:none}img{max-width:100%;display:block}
+/* ==========================================================================
+/plus/assets/style.css  ——  统一样式（含两栏布局 + 侧栏粘滞两方块）
+========================================================================== */
+
+/* ===== 基础 ===== */
+:root{
+--primary:#D32F2F;
+--text:#222;
+--muted:#666;
+--line:#eee;
+--bg:#fff;
+--shadow:0 2px 8px rgba(0,0,0,.05);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;color:var(--text);font:16px/1.7 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,PingFang SC,Helvetica,Arial}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
 
 /* ===== Header / Nav ===== */
-.navbar{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:24px;padding:14px 60px}
+.navbar{
+position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line);
+display:flex;align-items:center;gap:24px;padding:14px 24px;
+}
+@media (min-width:1280px){ .navbar{padding:14px 32px} }
+@media (min-width:1920px){ .navbar{padding:14px 48px} }
+
 .logo{font-weight:800;color:var(--primary);font-size:20px}
 .nav-list{display:flex;gap:28px;margin:0;padding:0;list-style:none}
 .nav-item{position:relative;font-weight:700;font-size:18px}
 .nav-item>a{padding:8px 0;display:inline-block}
-.nav-item::after{content:"";display:inline-block;width:6px;height:6px;border-left:1.5px solid #888;border-bottom:1.5px solid #888;transform:rotate(-45deg);margin-left:6px;transition:transform .3s,border-color .3s;vertical-align:middle}
+.nav-item::after{
+content:"";display:inline-block;width:6px;height:6px;border-left:1.5px solid #888;border-bottom:1.5px solid #888;
+transform:rotate(-45deg);margin-left:6px;transition:transform .3s,border-color .3s;vertical-align:middle
+}
 .nav-item:hover::after{transform:rotate(135deg);border-color:var(--primary)}
-.submenu{position:absolute;left:0;top:100%;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:8px;padding:8px 10px;display:none;min-width:200px}
+.submenu{
+position:absolute;left:0;top:100%;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);
+border-radius:8px;padding:8px 10px;display:none;min-width:200px
+}
 .submenu a{display:block;padding:8px 10px;border-radius:6px;color:#333}
-.submenu a:hover{background:#fafafa;color:var(--primary)}
+.submenu a:hover
 .nav-item:hover .submenu{display:block}
+
 .search{margin-left:auto;background:#f5f5f5;border-radius:999px;padding:6px 12px;display:flex;align-items:center;gap:8px}
 .search input{border:none;background:transparent;outline:0;min-width:200px}
 
@@ -22,86 +49,77 @@ a{color:inherit;text-decoration:none}img{max-width:100%;display:block}
 #navList>li{flex:1 1 0;display:flex;align-items:center;justify-content:center;white-space:nowrap;margin:0}
 #navList>li>a{display:inline-flex;align-items:center;height:48px;line-height:48px;padding:0 12px}
 #navList>li .arrow{display:inline-block!important;margin-left:8px;vertical-align:middle;float:none!important;clear:none!important}
-#navList>li>a::after{content:"";display:inline-block;width:6px;height:6px;margin-left:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);vertical-align:middle}
-.navbar .container{max-width:1200px;margin:0 auto;width:100%}
+#navList>li>a::after{
+content:"";display:inline-block;width:6px;height:6px;margin-left:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);vertical-align:middle
+}
 
-/* ===== Layout（mobile-first，两栏比例按断点切换） ===== */
+/* ===== Layout / Container ===== */
+/* 1) 基础容器（所有屏幕） */
 .container{
-  display:grid;
-  grid-template-columns:1fr;       /* <992：单列 */
-  align-items:start;               /* 让侧栏顶部与主列对齐 */
-  gap:30px;
-  margin:24px auto;
-  padding:0 24px;                  /* 统一左右内边距，断点覆盖 */
+display:grid; gap:30px;
+margin:24px auto;
+padding:0 24px;
 }
 
-/* 平板：992–1279px → 70% / 30%，容器宽度 1160 */
-@media (min-width: 992px) and (max-width: 1279px){
-  .container{max-width:1160px;padding:0 24px;grid-template-columns:70% 30%;}
+/* 3) 两栏比例（<992 单列；≥992 70/30；≥1280 72/28） */
+.container{ grid-template-columns:1fr; }
+@media (min-width:992px){ .container{ grid-template-columns:70% 30%; } }
+@media (min-width:1280px){ .container{ grid-template-columns:72% 28%; } }
+
+/* 2) 断点与容器宽度 */
+@media (min-width:992px) and (max-width:1279px){
+.container{ max-width:1160px; padding:0 24px; }
+}
+@media (min-width:1280px) and (max-width:1439px){
+.container{ max-width:1320px; padding:0 32px; }
+}
+@media (min-width:1440px) and (max-width:1599px){
+.container{ max-width:1440px; padding:0 32px; }
+}
+@media (min-width:1600px) and (max-width:1919px){
+.container{ max-width:1560px; padding:0 36px; }
+}
+@media (min-width:1920px){
+.container{ max-width:none; width:calc(100% - 96px); padding:0 48px; }
 }
 
-/* 桌面：1280–1439 → 72% / 28%，容器宽度 1320 */
-@media (min-width: 1280px) and (max-width: 1439px){
-  .container{max-width:1320px;padding:0 32px;grid-template-columns:72% 28%;}
+main{min-width:0}
+.sidebar, aside{min-width:0}
+
+/* ===== 侧栏粘滞策略（A 方案） ===== */
+/* <992 关闭粘滞；≥992 开启；且取消侧栏内部滚动条 —— 全站只保留浏览器右侧全局滚动条 */
+.sidebar.sticky{
+position:static; height:auto; overflow:visible; padding-bottom:0;
+}
+@media (min-width:992px){
+.sidebar.sticky{
+position:sticky; top:100px;
+height:auto;                 /* 不人为限制高度 */
+max-height:none;
+overflow:visible !important; /* 关键：不出现内部滚动条 */
+padding-bottom:20px;
+}
 }
 
-/* 1440–1599：放宽容器，减少两侧空白 */
-@media (min-width: 1440px) and (max-width: 1599px){
-  .container{max-width:1440px;padding:0 32px;}
+/* 如果 JS/HTML 注入了专用粘滞容器，统一粘滞到 100px */
+.sidebar .side-pin,
+.sidebar .side-stick,
+.sidebar .side-fixed{          /* 兼容历史命名 */
+position:sticky; top:100px;
 }
 
-/* 1600–1919：观感更接近参考站 */
-@media (min-width: 1600px) and (max-width: 1919px){
-  .container{max-width:1560px;padding:0 36px;}
+/* 右侧“两个正方形容器”的通用样式 */
+.side-squares{display:flex;flex-direction:column;gap:20px}
+.side-square{
+background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:10px;
+width:100%; aspect-ratio:1 / 1;         /* 等比正方形 */
+overflow:hidden;
 }
 
-/* ≥1920：超宽屏流式布局 + 安全边距，避免大面积留白 */
-@media (min-width: 1920px){
-  .container{max-width:none;width:calc(100% - 96px);padding:0 48px;}
-}
-
-/* 顶部导航在大屏收紧内边距以对齐容器 */
-@media (min-width: 1280px){ .navbar{ padding:14px 32px; } }
-@media (min-width: 1920px){ .navbar{ padding:14px 48px; } }
-
-/* ===== 侧栏粘性（默认无内滚动条，只保留页面右侧全局滚动条） ===== */
-.sidebar.sticky, aside.sticky{ position:static; height:auto; overflow:visible; padding-bottom:0; }
-@media (min-width: 992px){
-  .sidebar.sticky, aside.sticky{
-    position:sticky; top:100px; height:auto; overflow:visible; padding-bottom:0; z-index:5;
-  }
-}
-
-/* ===== 右侧“两个正方形容器” —— 仅用 CSS，固定在视口右侧 ===== */
-/* 复用现有盒子：#adBox 和 #contactBox */
-@media (min-width: 992px){
-  /* 让侧栏列本身不占空间（避免与固定盒子重叠时产生内滚） */
-  .sidebar{min-height:0;}
-
-  /* 统一外观：正方形卡片 */
-  #adBox, #contactBox{
-    position:fixed;              /* 固定在视口，不随页面滚动 */
-    width:320px; height:320px;   /* 正方形 */
-    right:36px;                  /* 靠右的安全边距，随断点在下方再调 */
-    box-sizing:border-box;
-    overflow:hidden;
-  }
-  #adBox{ top:160px; }
-  #contactBox{ top:520px; }      /* 与上一个正方形留 40px 间距 */
-
-  /* 大屏时稍微向内缩进以贴齐容器视觉 */
-  @media (min-width:1280px){ #adBox,#contactBox{ right:32px; } }
-  @media (min-width:1600px){ #adBox,#contactBox{ right:36px; } }
-  @media (min-width:1920px){ #adBox,#contactBox{ right:48px; } }
-}
-
-/* 小屏恢复为普通流式盒子（不固定，不强制正方） */
-@media (max-width: 991px){
-  #adBox,#contactBox{ position:static; width:auto; height:auto; right:auto; top:auto; }
-}
-
-/* ===== Cards / Blocks ===== */
+/* 右侧已有卡片统一风格 */
 .card{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:10px;padding:16px;margin-bottom:20px}
+
+/* ===== Blocks / 推荐区 ===== */
 .block-title{display:flex;align-items:center;gap:8px;margin:0 0 12px}
 .block-title .bar{display:inline-block;width:4px;height:18px;background:var(--primary);border-radius:2px}
 .recommend-box .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px 20px}
@@ -127,7 +145,7 @@ a{color:inherit;text-decoration:none}img{max-width:100%;display:block}
 .pagination{display:flex;justify-content:center;gap:10px;margin:40px 0}
 .page-btn{border:1px solid #ccc;border-radius:8px;padding:6px 10px;background:#fff;cursor:pointer}
 .page-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.page-btn:hover{background:#f5f5f5}
+.page-btn:hover
 
 /* ===== Ads / CTA ===== */
 .ads{display:grid;gap:12px;margin:12px 0}
@@ -157,30 +175,30 @@ a{color:inherit;text-decoration:none}img{max-width:100%;display:block}
 
 /* ===== WeChat Floating Button ===== */
 .wechat-float{
-  position:fixed; z-index:9999; right:35px; bottom:150px;
-  width:56px; height:56px; border-radius:50%;
-  background:#09bb07; box-shadow:0 6px 20px rgba(0,0,0,.15);
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; user-select:none;
+position:fixed; z-index:9999; right:35px; bottom:150px;
+width:56px; height:56px; border-radius:50%;
+background:#09bb07; box-shadow:0 6px 20px rgba(0,0,0,.15);
+display:flex; align-items:center; justify-content:center;
+cursor:pointer; user-select:none;
 }
 .wechat-float img.icon{max-width:56px; max-height:56px; border-radius:50%; display:block;}
 .wechat-float .fallback{color:#fff; font-size:14px; font-weight:700; letter-spacing:1px;}
 .wechat-float .qr{
-  position:absolute; right:64px; bottom:0;
-  width:311px; height:403px; background:#fff; border-radius:8px;
-  box-shadow:0 10px 30px rgba(0,0,0,.2); padding:10px; display:none;
+position:absolute; right:64px; bottom:0;
+width:311px; height:403px; background:#fff; border-radius:8px;
+box-shadow:0 10px 30px rgba(0,0,0,.2); padding:10px; display:none;
 }
 .wechat-float .qr img{width:100%; height:100%; object-fit:contain; display:block;}
 .wechat-float.show .qr{display:block;}
 @media (max-width:768px){ .wechat-float{right:20px; bottom:100px;} }
 
-/* ===== Responsive tweaks for cards on small screens ===== */
-@media (max-width: 991px){
-  .recommend-box .grid-2{ grid-template-columns:1fr; }
-  .article-card{ flex-direction:column; }
-  .article-thumb{ width:100%; height:auto; }
-  .search input{ min-width:120px; }
+/* ===== Responsive tweaks ===== */
+@media (max-width:991px){
+.recommend-box .grid-2{ grid-template-columns:1fr; }
+.article-card{ flex-direction:column; }
+.article-thumb{ width:100%; height:auto; }
+.search input{ min-width:120px; }
 }
 
-/* 仅当你保留 <section class="main-col"> 时添加 */
-.container > .main-col { min-width: 0; }
+/* 保障主列在网格中不溢出 */
+.container > .main-col { min-width:0; }
