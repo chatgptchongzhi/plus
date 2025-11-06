@@ -6,36 +6,18 @@
   <title>木子AI</title>
   <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导" />
 
-  <!-- 统一版本号与路径 -->
+  <!-- 基础样式：先给一个占位版本号，稍后用 JS 注入时间戳 -->
+  <link id="site-css" rel="stylesheet" href="/plus/assets/style.css?v=0">
+
+  <!-- 统一的路径/版本工具 -->
   <script>
     const PREFIX = '/plus/';
     const BUILD_VERSION = Date.now();
     const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
   </script>
-
-  <!-- 动态加载样式与脚本：自动带版本号，避免缓存 -->
+  <!-- 让 CSS 也走时间戳，避免缓存 -->
   <script>
-    (function () {
-      // CSS
-      var css = document.createElement('link');
-      css.rel = 'stylesheet';
-      css.href = url('assets/style.css');
-      document.head.appendChild(css);
-
-      // 依赖库（如需）
-      ['assets/libs/marked.min.js','assets/libs/tocbot.min.js'].forEach(function (p) {
-        var s = document.createElement('script');
-        s.defer = true;
-        s.src = url(p);
-        document.head.appendChild(s);
-      });
-
-      // 首页主脚本
-      var main = document.createElement('script');
-      main.defer = true;
-      main.src = url('assets/main.js');
-      document.head.appendChild(main);
-    })();
+    document.getElementById('site-css').href = url('assets/style.css');
   </script>
 </head>
 
@@ -68,8 +50,8 @@
       <div id="pagination" class="pagination"></div>
     </main>
 
-    <!-- 右侧栏：统一两个正方形容器 -->
-    <aside id="sidebar" class="sidebar sticky">
+    <!-- 右侧栏：两个正方形容器 -->
+    <aside id="sidebar" class="sidebar sticky side-squares">
       <section class="card side-square" id="sideBox1"><!-- JS 注入内容 --></section>
       <section class="card side-square" id="sideBox2"><!-- JS 注入内容 --></section>
     </aside>
@@ -78,6 +60,11 @@
   <footer class="footer">
     © 2025 木子科技 · 本站内容仅供学习交流，侵权请联系删除 · <span id="siteEmail"></span>
   </footer>
+
+  <!-- 库 & 主逻辑（保持现有加载方式即可） -->
+  <script defer src="/plus/assets/libs/marked.min.js?v=0"></script>
+  <script defer src="/plus/assets/libs/tocbot.min.js?v=0"></script>
+  <script defer src="/plus/assets/main.js?v=0"></script>
 
   <!-- 全站微信悬浮按钮（自动注入） -->
   <script>
