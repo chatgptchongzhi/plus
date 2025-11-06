@@ -92,12 +92,13 @@ main{min-width:0}
 @media (min-width: 1280px){ .container{ grid-template-columns:72% 28%; } }
 
 /* 4) 侧栏粘性策略 */
-.sidebar.sticky, aside.sticky{ position:static; height:auto; overflow:visible; padding-bottom:0; }
 @media (min-width: 992px){
   .sidebar.sticky, aside.sticky{
-    position:sticky; top:100px;
-    height:calc(100vh - 140px);
-    overflow:auto; padding-bottom:20px;
+    position: sticky;
+    top: 100px;
+    height: auto;         /* 取消固定高度 */
+    overflow: visible;    /* 取消内层滚动条 */
+    padding-bottom: 0;
   }
 }
 
