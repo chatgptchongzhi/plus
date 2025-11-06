@@ -214,3 +214,46 @@ main{min-width:0}
 
 /* 保障主列在网格中不溢出 */
 .container > .main-col { min-width:0; }
+/* === 顶部导航：让主菜单在 LOGO 与搜索框之间均匀分布 === */
+
+/* 整体三段式：左_LOGO | 中_主菜单 | 右_搜索框 */
+.navbar{
+  display: flex;
+  align-items: center;
+}
+
+/* 中间主菜单这块占满中间的可用空间 */
+.navbar .nav{
+  flex: 1 1 auto;           /* 让主菜单区在 LOGO 与搜索之间伸展 */
+  min-width: 0;
+}
+
+/* 右侧搜索框保持固定宽度（可按需微调） */
+.navbar .search{
+  flex: 0 0 320px;          /* 你也可以改成 300/340 等 */
+  max-width: 420px;
+}
+
+/* 桌面端：均匀分布三个主菜单 */
+@media (min-width: 992px){
+  .nav-list{
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;  /* 关键：均匀分布，含两侧边距 */
+    align-items: center;
+    gap: 0;                          /* 避免 gap 影响均匀度 */
+  }
+  .nav-list > li{
+    white-space: nowrap;             /* 防止菜单文本换行挤压布局 */
+  }
+}
+
+/* 平板及以下：保持原来的自适应（可略有间距） */
+@media (max-width: 991.98px){
+  .nav-list{
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+}
