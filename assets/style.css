@@ -1,110 +1,104 @@
-/* /plus/assets/style.css */
-
-/* ===== CSS Variables & Base ===== */
-:root{
-  --primary:#D32F2F;
-  --text:#222;
-  --muted:#666;
-  --line:#eee;
-  --bg:#fff;
-  --shadow:0 2px 8px rgba(0,0,0,.05);
-}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;color:var(--text);font:16px/1.7 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,PingFang SC,Helvetica,Arial}
-a{color:inherit;text-decoration:none}
-img{max-width:100%;display:block}
+:root{--primary:#D32F2F;--text:#222;--muted:#666;--line:#eee;--bg:#fff;--shadow:0 2px 8px rgba(0,0,0,.05)}
+*{box-sizing:border-box}html,body{margin:0;padding:0;color:var(--text);font:16px/1.7 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,PingFang SC,Helvetica,Arial}
+a{color:inherit;text-decoration:none}img{max-width:100%;display:block}
 
 /* ===== Header / Nav ===== */
-.navbar{
-  position:sticky;top:0;z-index:30;
-  background:#fff;border-bottom:1px solid var(--line);
-  display:flex;align-items:center;gap:24px;
-  padding:14px 24px;
-}
+.navbar{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:24px;padding:14px 60px}
 .logo{font-weight:800;color:var(--primary);font-size:20px}
 .nav-list{display:flex;gap:28px;margin:0;padding:0;list-style:none}
 .nav-item{position:relative;font-weight:700;font-size:18px}
 .nav-item>a{padding:8px 0;display:inline-block}
-.nav-item::after{
-  content:"";display:inline-block;width:6px;height:6px;
-  border-left:1.5px solid #888;border-bottom:1.5px solid #888;
-  transform:rotate(-45deg);margin-left:6px;
-  transition:transform .3s,border-color .3s;vertical-align:middle
-}
+.nav-item::after{content:"";display:inline-block;width:6px;height:6px;border-left:1.5px solid #888;border-bottom:1.5px solid #888;transform:rotate(-45deg);margin-left:6px;transition:transform .3s,border-color .3s;vertical-align:middle}
 .nav-item:hover::after{transform:rotate(135deg);border-color:var(--primary)}
-.submenu{
-  position:absolute;left:0;top:100%;
-  background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);
-  border-radius:8px;padding:8px 10px;display:none;min-width:200px
-}
+.submenu{position:absolute;left:0;top:100%;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:8px;padding:8px 10px;display:none;min-width:200px}
 .submenu a{display:block;padding:8px 10px;border-radius:6px;color:#333}
 .submenu a:hover{background:#fafafa;color:var(--primary)}
 .nav-item:hover .submenu{display:block}
 .search{margin-left:auto;background:#f5f5f5;border-radius:999px;padding:6px 12px;display:flex;align-items:center;gap:8px}
 .search input{border:none;background:transparent;outline:0;min-width:200px}
 
-/* 顶部主导航：均分 + 箭头与文字同一行（去重后仅保留一份） */
+/* 让主导航等宽 + 文字与下拉箭头同一行 */
 #navList{display:flex;justify-content:space-between;align-items:center;gap:0;flex-wrap:nowrap}
 #navList>li{flex:1 1 0;display:flex;align-items:center;justify-content:center;white-space:nowrap;margin:0}
 #navList>li>a{display:inline-flex;align-items:center;height:48px;line-height:48px;padding:0 12px}
 #navList>li .arrow{display:inline-block!important;margin-left:8px;vertical-align:middle;float:none!important;clear:none!important}
-#navList>li>a::after{
-  content:"";display:inline-block;width:6px;height:6px;margin-left:8px;
-  border-right:2px solid currentColor;border-bottom:2px solid currentColor;
-  transform:rotate(45deg);vertical-align:middle
-}
+#navList>li>a::after{content:"";display:inline-block;width:6px;height:6px;margin-left:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);vertical-align:middle}
+.navbar .container{max-width:1200px;margin:0 auto;width:100%}
 
-/* ===== Layout：两栏比例 + 大屏容器宽度（按需求覆盖旧规则） ===== */
-
-/* 1) 基础容器（所有屏幕） */
+/* ===== Layout（mobile-first，两栏比例按断点切换） ===== */
 .container{
-  display:grid; gap:30px;
+  display:grid;
+  grid-template-columns:1fr;       /* <992：单列 */
+  align-items:start;               /* 让侧栏顶部与主列对齐 */
+  gap:30px;
   margin:24px auto;
-  padding:0 24px;
-  grid-template-columns:1fr;        /* <992：单列 */
+  padding:0 24px;                  /* 统一左右内边距，断点覆盖 */
 }
-main{min-width:0}
-.sidebar, aside{min-width:0}
 
-/* 2) 断点与容器宽度 */
+/* 平板：992–1279px → 70% / 30%，容器宽度 1160 */
 @media (min-width: 992px) and (max-width: 1279px){
-  .container{ max-width:1160px; padding:0 24px; grid-template-columns:70% 30%; }
+  .container{max-width:1160px;padding:0 24px;grid-template-columns:70% 30%;}
 }
+
+/* 桌面：1280–1439 → 72% / 28%，容器宽度 1320 */
 @media (min-width: 1280px) and (max-width: 1439px){
-  .container{ max-width:1320px; padding:0 32px; grid-template-columns:72% 28%; }
+  .container{max-width:1320px;padding:0 32px;grid-template-columns:72% 28%;}
 }
+
+/* 1440–1599：放宽容器，减少两侧空白 */
 @media (min-width: 1440px) and (max-width: 1599px){
-  .container{ max-width:1440px; padding:0 32px; }
+  .container{max-width:1440px;padding:0 32px;}
 }
+
+/* 1600–1919：观感更接近参考站 */
 @media (min-width: 1600px) and (max-width: 1919px){
-  .container{ max-width:1560px; padding:0 36px; }
+  .container{max-width:1560px;padding:0 36px;}
 }
+
+/* ≥1920：超宽屏流式布局 + 安全边距，避免大面积留白 */
 @media (min-width: 1920px){
-  .container{
-    max-width:none;
-    width:calc(100% - 96px);   /* 左右各 48px 安全边距 */
-    padding:0 48px;
-  }
+  .container{max-width:none;width:calc(100% - 96px);padding:0 48px;}
 }
 
-/* 3) 明确比例规则（如有其它规则冲突，以此为准） */
-@media (min-width: 992px){ .container{ grid-template-columns:70% 30%; } }
-@media (min-width: 1280px){ .container{ grid-template-columns:72% 28%; } }
-
-/* 4) 侧栏粘性策略 */
-@media (min-width: 992px){
-  .sidebar.sticky, aside.sticky{
-    position: sticky;
-    top: 100px;
-    height: auto;         /* 取消固定高度 */
-    overflow: visible;    /* 取消内层滚动条 */
-    padding-bottom: 0;
-  }
-}
-
-/* 5) 顶部导航在大屏时缩小内边距（与容器对齐） */
+/* 顶部导航在大屏收紧内边距以对齐容器 */
 @media (min-width: 1280px){ .navbar{ padding:14px 32px; } }
 @media (min-width: 1920px){ .navbar{ padding:14px 48px; } }
+
+/* ===== 侧栏粘性（默认无内滚动条，只保留页面右侧全局滚动条） ===== */
+.sidebar.sticky, aside.sticky{ position:static; height:auto; overflow:visible; padding-bottom:0; }
+@media (min-width: 992px){
+  .sidebar.sticky, aside.sticky{
+    position:sticky; top:100px; height:auto; overflow:visible; padding-bottom:0; z-index:5;
+  }
+}
+
+/* ===== 右侧“两个正方形容器” —— 仅用 CSS，固定在视口右侧 ===== */
+/* 复用现有盒子：#adBox 和 #contactBox */
+@media (min-width: 992px){
+  /* 让侧栏列本身不占空间（避免与固定盒子重叠时产生内滚） */
+  .sidebar{min-height:0;}
+
+  /* 统一外观：正方形卡片 */
+  #adBox, #contactBox{
+    position:fixed;              /* 固定在视口，不随页面滚动 */
+    width:320px; height:320px;   /* 正方形 */
+    right:36px;                  /* 靠右的安全边距，随断点在下方再调 */
+    box-sizing:border-box;
+    overflow:hidden;
+  }
+  #adBox{ top:160px; }
+  #contactBox{ top:520px; }      /* 与上一个正方形留 40px 间距 */
+
+  /* 大屏时稍微向内缩进以贴齐容器视觉 */
+  @media (min-width:1280px){ #adBox,#contactBox{ right:32px; } }
+  @media (min-width:1600px){ #adBox,#contactBox{ right:36px; } }
+  @media (min-width:1920px){ #adBox,#contactBox{ right:48px; } }
+}
+
+/* 小屏恢复为普通流式盒子（不固定，不强制正方） */
+@media (max-width: 991px){
+  #adBox,#contactBox{ position:static; width:auto; height:auto; right:auto; top:auto; }
+}
 
 /* ===== Cards / Blocks ===== */
 .card{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:10px;padding:16px;margin-bottom:20px}
@@ -116,7 +110,7 @@ main{min-width:0}
 .rec-item .title{font-size:20px;font-weight:700}
 .rec-meta{font-size:13px;color:#888}
 
-/* ===== Article List ===== */
+/* ===== Article list ===== */
 .article-list{display:flex;flex-direction:column;gap:40px}
 .article-card{display:flex;gap:24px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:10px;padding:16px}
 .article-thumb{width:260px;height:146px;border-radius:6px;object-fit:cover;transition:transform .2s}
@@ -141,7 +135,7 @@ main{min-width:0}
 .ad img{width:72px;height:48px;object-fit:cover;border-radius:6px}
 .ad .btn{margin-left:auto;background:#16c060;color:#fff;border-radius:8px;padding:8px 12px}
 
-/* ===== Article Page ===== */
+/* ===== Article page ===== */
 .breadcrumb{font-size:14px;color:#888;margin:8px 0 12px}
 .breadcrumb a{color:#666}
 .post-title{font-size:28px;margin:10px 0}
@@ -149,12 +143,11 @@ main{min-width:0}
 .post-content{max-width:700px}
 .post-content img{margin:16px auto;border-radius:10px;box-shadow:var(--shadow)}
 .post-content pre{background:#0f172a;color:#e5e7eb;padding:12px;border-radius:8px;overflow:auto}
-/* 目录锚点滚动留白，避免被 sticky 顶部遮住 */
+/* 目录锚点滚动时预留导航高度，避免被 sticky 顶部导航遮住 */
 .post-content h1,
 .post-content h2,
 .post-content h3,
-.post-content h4{ scroll-margin-top:90px; }
-
+.post-content h4 { scroll-margin-top: 90px; }
 .toc, #toc { font-size:14px; line-height:1.4 }
 .toc a, #toc a { display:block; padding:6px 2px; color:#555 }
 .toc a:hover, #toc a:hover { color:var(--primary) }
@@ -181,7 +174,7 @@ main{min-width:0}
 .wechat-float.show .qr{display:block;}
 @media (max-width:768px){ .wechat-float{right:20px; bottom:100px;} }
 
-/* ===== Small-screen tweaks ===== */
+/* ===== Responsive tweaks for cards on small screens ===== */
 @media (max-width: 991px){
   .recommend-box .grid-2{ grid-template-columns:1fr; }
   .article-card{ flex-direction:column; }
@@ -189,152 +182,5 @@ main{min-width:0}
   .search input{ min-width:120px; }
 }
 
-/* 兜底：当结构为 <div class="container"><main class="main-col">..</main><aside class="sidebar">..</aside></div> 时，确保主列宽度不溢出 */
+/* 仅当你保留 <section class="main-col"> 时添加 */
 .container > .main-col { min-width: 0; }
-/* === Sidebar 统一为两个正方形容器 + 可调左右留白 === */
-:root{
-  --container-width: 1100px;   /* 页面最大宽 */
-  --gap: 16px;                 /* 栅格间距 */
-  --gutter-left: 32px;         /* 左侧留白（可按你要的值改） */
-  --gutter-right: 32px;        /* 右侧留白（可按你要的值改） */
-  --sidebar-width: 320px;      /* 右侧栏宽度 */
-}
-
-/* 两栏网格：左主列 + 右侧栏 */
-.container{
-  max-width: var(--container-width);
-  margin: 22px auto;
-  padding-left: var(--gutter-left);
-  padding-right: var(--gutter-right);
-  display: grid;
-  grid-template-columns: minmax(0,1fr) var(--sidebar-width);
-  gap: var(--gap);
-}
-
-/* 右侧栏改成“上下两个格子” */
-.sidebar{
-  display: grid;
-  grid-template-rows: 1fr 1fr; /* 两个等高区域 */
-  gap: var(--gap);
-}
-
-/* 正方形容器：宽高比 1:1 */
-.sidebar .card.square{
-  aspect-ratio: 1 / 1;                 /* 正方形 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-/* 移动端自动改回单列（避免正方形太高） */
-@media (max-width: 1024px){
-  .container{
-    grid-template-columns: 1fr;
-  }
-  .sidebar{
-    grid-template-rows: auto;
-  }
-  .sidebar .card.square{
-    aspect-ratio: auto;
-    min-height: 220px; /* 给个下限高度，便于展示 */
-  }
-}
-/* === 右侧两个正方形容器 === */
-.side-square{
-  aspect-ratio: 1 / 1;                 /* 现代浏览器直接正方形 */
-  display:flex; align-items:flex-start; justify-content:flex-start;
-  overflow:hidden;
-}
-.side-square .toc{ max-height:100%; overflow:auto; }
-
-/* 让两个方块在窄屏单列时自动拉高内容，不强制正方形 */
-@media (max-width: 991px){
-  .side-square{ aspect-ratio: auto; }
-}
-
-/* === 外侧左右留白统一缩小（对齐你图二的红箭头）=== */
-@media (min-width: 1280px) and (max-width: 1439px){
-  .container{ padding:0 24px; }     /* 之前是 32px → 24px */
-  .navbar{ padding:14px 24px; }
-}
-@media (min-width: 1440px) and (max-width: 1599px){
-  .container{ padding:0 28px; }     /* 统一左右更紧凑 */
-  .navbar{ padding:14px 28px; }
-}
-@media (min-width: 1600px) and (max-width: 1919px){
-  .container{ padding:0 32px; }
-  .navbar{ padding:14px 32px; }
-}
-@media (min-width: 1920px){
-  .container{
-    max-width:none;
-    width:calc(100% - 96px);         /* 左右各 48px 安全边距（保持对称）*/
-    padding:0 48px;
-  }
-  .navbar{ padding:14px 48px; }
-}
-/* === 紧凑容器留白：减少左右空白 === */
-/* 基础：所有屏幕 */
-.container{
-  margin:24px auto;
-  padding:0 24px;         /* 统一左右 24px */
-}
-
-/* 992–1279：维持 70/30 比例，仅调容器宽度/内边距 */
-@media (min-width: 992px) and (max-width: 1279px){
-  .container{ max-width:1160px; padding:0 24px; }
-}
-
-/* 1280–1439（含 1366 宽）：让容器几乎铺满，左右各约 24px */
-@media (min-width: 1280px) and (max-width: 1439px){
-  .container{ max-width:1400px; padding:0 24px; }
-}
-
-/* 1440–1599：左右各约 24px */
-@media (min-width: 1440px) and (max-width: 1599px){
-  .container{ max-width:1480px; padding:0 24px; }
-}
-
-/* 1600–1919：左右各约 24px（比之前明显更紧凑） */
-@media (min-width: 1600px) and (max-width: 1919px){
-  .container{ max-width:1640px; padding:0 24px; }
-}
-
-/* ≥1920：流式 + 小边距，避免大片空白 */
-@media (min-width: 1920px){
-  .container{
-    max-width:none;
-    width:calc(100% - 64px);   /* 64px = 左右各 32px */
-    padding:0 32px;
-  }
-}
-
-/* 顶部导航与容器对齐（可选，但建议一起改） */
-@media (min-width: 1280px){ .navbar{ padding:14px 24px; } }
-@media (min-width: 1920px){ .navbar{ padding:14px 32px; } }
-/* === 将左侧留白扩大为原来的 3.5 倍（右侧保持不变）=== */
-
-/* 基础（<992 以及 992–1279 的默认 padding-right: 24px）*/
-.container { padding-left: 84px; }              /* 24px × 3.5 = 84px */
-
-/* 1280–1439：原左/右 padding: 32px */
-@media (min-width:1280px) and (max-width:1439px){
-  .container { padding-left: 112px; }          /* 32px × 3.5 = 112px */
-}
-
-/* 1440–1599：原左/右 padding: 32px */
-@media (min-width:1440px) and (max-width:1599px){
-  .container { padding-left: 112px; }          /* 32px × 3.5 = 112px */
-}
-
-/* 1600–1919：原左/右 padding: 36px */
-@media (min-width:1600px) and (max-width:1919px){
-  .container { padding-left: 126px; }          /* 36px × 3.5 = 126px */
-}
-
-/* ≥1920：原左/右 padding: 48px（保留你的流式宽度设置）*/
-@media (min-width:1920px){
-  .container { padding-left: 168px; }          /* 48px × 3.5 = 168px */
-}
-
