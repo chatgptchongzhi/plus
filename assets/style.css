@@ -123,34 +123,58 @@ a{color:inherit;text-decoration:none}img{max-width:100%;display:block}
 @media (max-width: 768px) {
   .wechat-float { right: 20px; bottom: 100px; }
 }
-/* === 均匀分布的主导航（等宽分栏）=== */
+/* 让主导航等宽 + 文字与下拉箭头同一行 */
 #navList{
-  display: flex;
-  align-items: center;             /* 垂直居中 */
-  justify-content: space-between;  /* 等距铺满一行 */
-  flex-wrap: nowrap;
-  gap: 0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:nowrap;             /* 不允许换行 */
 }
-
 #navList > li{
-  flex: 1 1 0;                     /* 等宽 */
-  text-align: center;              /* 文本居中 */
-  margin: 0;                       /* 避免左右外边距影响均匀 */
+  flex:1 1 0;
+  display:flex;                 /* li 自身也用 flex */
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;           /* 单个菜单不换行 */
+  margin:0;
 }
 
+/* 链接本身占一行，内容垂直居中 */
 #navList > li > a{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 16px;                 /* 需要更紧凑可减小 */
-  height: 48px;                    /* 与你导航高度一致 */
+  display:inline-flex;          /* 关键：让箭头与文字同行 */
+  align-items:center;
+  justify-content:center;
+  height:48px;                  /* 与你的导航高度一致 */
+  line-height:48px;
+  padding:0 16px;
 }
 
-/* 可选：限制整条导航最大宽度并居中 */
+/* 如果箭头是伪元素（常见） */
+#navList > li > a::after{
+  /* 你原来的箭头样式保持即可，只需保证不是 block */
+  display:inline-block;         /* 别用 block，避免另起一行 */
+  margin-left:8px;
+  vertical-align:middle;
+}
+
+/* 如果你用的是独立元素 .arrow（备选） */
+#navList > li .arrow{
+  display:inline-block;         /* 同行显示 */
+  margin-left:8px;
+  vertical-align:middle;
+}
+
+/* 一些主题会给箭头写成 block，这里强制覆盖 */
+#navList > li > a::after,
+#navList > li .arrow{
+  white-space:nowrap;
+}
+
+/* 可选：限制容器最大宽度并水平居中 */
 .navbar .container{
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
+  max-width:1200px;
+  margin:0 auto;
+  width:100%;
 }
 
 
