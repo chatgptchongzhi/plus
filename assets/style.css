@@ -239,3 +239,38 @@ main{min-width:0}
     min-height: 220px; /* 给个下限高度，便于展示 */
   }
 }
+/* === 右侧两个正方形容器 === */
+.side-square{
+  aspect-ratio: 1 / 1;                 /* 现代浏览器直接正方形 */
+  display:flex; align-items:flex-start; justify-content:flex-start;
+  overflow:hidden;
+}
+.side-square .toc{ max-height:100%; overflow:auto; }
+
+/* 让两个方块在窄屏单列时自动拉高内容，不强制正方形 */
+@media (max-width: 991px){
+  .side-square{ aspect-ratio: auto; }
+}
+
+/* === 外侧左右留白统一缩小（对齐你图二的红箭头）=== */
+@media (min-width: 1280px) and (max-width: 1439px){
+  .container{ padding:0 24px; }     /* 之前是 32px → 24px */
+  .navbar{ padding:14px 24px; }
+}
+@media (min-width: 1440px) and (max-width: 1599px){
+  .container{ padding:0 28px; }     /* 统一左右更紧凑 */
+  .navbar{ padding:14px 28px; }
+}
+@media (min-width: 1600px) and (max-width: 1919px){
+  .container{ padding:0 32px; }
+  .navbar{ padding:14px 32px; }
+}
+@media (min-width: 1920px){
+  .container{
+    max-width:none;
+    width:calc(100% - 96px);         /* 左右各 48px 安全边距（保持对称）*/
+    padding:0 48px;
+  }
+  .navbar{ padding:14px 48px; }
+}
+
