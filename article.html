@@ -5,17 +5,23 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>文章 - 木子AI</title>
   <link rel="stylesheet" href="/plus/assets/style.css?v=0">
-  <script>const PREFIX='/plus/';const BUILD_VERSION=Date.now();const url=p=>`${PREFIX}${p}?v=${BUILD_VERSION}`;</script>
+  <script>
+    const PREFIX='/plus/';
+    const BUILD_VERSION=Date.now();
+    const url=p=>`${PREFIX}${p}?v=${BUILD_VERSION}`;
+  </script>
 </head>
 <body>
+  <!-- 顶部导航 -->
   <header class="navbar shadow">
     <a class="logo" href="/plus/">木子AI</a>
     <nav><ul id="navList" class="nav-list"></ul></nav>
     <div class="search"><span class="icon">🔍</span><input id="searchJump" type="search" placeholder="搜索"></div>
   </header>
 
-  <main class="container">
-    <section class="main-col">
+  <!-- ✅ 两栏容器 -->
+  <div class="container">
+    <main class="main-col">
       <!-- 面包屑 -->
       <nav class="breadcrumb" aria-label="breadcrumb" id="breadcrumb"></nav>
 
@@ -31,34 +37,35 @@
 
       <!-- 上/下一篇 -->
       <div id="postNav" class="post-nav"></div>
-    </section>
+    </main>
 
+    <!-- 右侧栏 -->
     <aside class="sidebar sticky">
       <div class="card">
         <h3>目录</h3>
         <nav id="toc" class="toc"></nav>
       </div>
     </aside>
-  </main>
+  </div>
 
   <footer class="footer">
     © 2025 木子科技 · <span id="siteEmail"></span>
   </footer>
 
+  <!-- 库与文章页脚本 -->
   <script defer src="/plus/assets/libs/marked.min.js?v=0"></script>
   <script defer src="/plus/assets/libs/tocbot.min.js?v=0"></script>
   <script defer src="/plus/assets/article.js?v=2"></script>
 
+  <!-- 全站微信悬浮按钮（自动注入） -->
   <script>
-  // 统一的前缀（你的仓库在 /plus/ 子路径）
-  window.PREFIX = window.PREFIX || '/plus/';
-  (function () {
-    var s = document.createElement('script');
-    s.src = window.PREFIX + 'assets/wechat-float.js?v=' + Date.now(); // 每次刷新都取最新
-    s.defer = true;
-    document.head.appendChild(s);
-  })();
-</script>
-
+    window.PREFIX = window.PREFIX || '/plus/';
+    (function () {
+      var s = document.createElement('script');
+      s.src = window.PREFIX + 'assets/wechat-float.js?v=' + Date.now();
+      s.defer = true;
+      document.head.appendChild(s);
+    })();
+  </script>
 </body>
 </html>
