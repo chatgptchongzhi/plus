@@ -1,4 +1,5 @@
-// 文章页：加载 MD 或 body、渲染 TOC、Breadcrumb、Meta、上下篇
+// /plus/assets/article.js
+// 文章页：加载 MD 或 body、渲染 TOC、Breadcrumb、Meta、上下篇 + 全站微信悬浮按钮
 const q = (s, el = document) => el.querySelector(s);
 async function getJSON(p) { const r = await fetch(url(p)); if (!r.ok) throw new Error(p); return r.json(); }
 function getParam(k) { return new URLSearchParams(location.search).get(k) || ''; }
@@ -14,56 +15,65 @@ async function init() {
   POSTS = await getJSON('content/index.json');
   renderNav();
 
-  // ... 原有 init 末尾
-  const se = q('#siteEmail'); if (se) se.textContent = SITE.email || '';
+  // 2) 页脚邮箱（可选）
+  const se = q('#siteEmail'); 
+  if (se) se.textContent = SITE.email || '';
 
-  // 🔔 全站微信悬浮按钮
+  // 3) 全站微信悬浮按钮
   initWeChatFloat(SITE);
 
-
-  // 2) 取 slug
+  // 4) 取 slug
   const slug = getParam('slug');
-  if (!slug) { q('#postContent').innerHTML = '<p>缺少 slug 参数。</p>'; return; }
+  if (!slug) { 
+    q('#postContent').innerHTML = '<p>缺少 slug 参数。</p>'; 
+    return; 
+  }
 
-  // 3) 找到当前文章的 meta
+  // 5) 找到当前文章的 meta
   const meta = (POSTS || []).find(p => p.slug === slug);
-  if (!meta) { q('#postContent').innerHTML = '<p>文章不存在或已删除。</p>'; return; }
+  if (!meta) { 
+    q('#postContent').innerHTML = '<p>文章不存在或已删除。</p>'; 
+    return; 
+  }
 
-  // 4) 取正文：优先 index.json 的 body；没有再读 posts/<slug>.md
+  // 6) 取正文：优先 index.json 的 body；没有再读 posts/<slug>.md
   let md = (meta && meta.body) || '';
   let attrs = {};
   if (!md) {
     const res = await fetch(url(`content/posts/${slug}.md`));
-    if (!res.ok) { q('#postContent').innerHTML = '<p>正文缺失。</p>'; return; }
+    if (!res.ok) { 
+      q('#postContent').innerHTML = '<p>正文缺失。</p>'; 
+      return; 
+    }
     const raw = await res.text();
     const fm = parseFrontMatter(raw);
     attrs = fm.attrs || {};
     md = fm.content || raw;
   } else {
-    attrs = {}; // body 模式下头部信息从 meta 来
+    // body 模式下头部信息从 meta 来
+    attrs = {};
   }
 
-  // 5) 标题/时间等属性：body 优先模式用 meta，md 模式合并 front-matter
+  // 7) 标题/时间等属性
   const title = (attrs.title || meta.title || '文章');
   const date  = (attrs.date  || meta.date  || '');
   const merged = { ...meta, ...attrs, title, date };
 
-  // 6) Markdown -> HTML（marked 存在则用，否则走兜底）
-  const html = (window.marked && window.marked.parse) ? window.marked.parse(md) : mdToHtmlFallback(md);
+  // 8) Markdown -> HTML（marked 存在则用，否则兜底）
+  const html = (window.marked && window.marked.parse) 
+    ? window.marked.parse(md) 
+    : mdToHtmlFallback(md);
   q('#postTitle').textContent = title;
   q('#postContent').innerHTML = html;
 
-  // 7) 文章部件
+  // 9) 文章部件
   renderBreadcrumb(merged, slug);
   renderMetaBar(merged);
   renderTopAds();
   renderPrevNext(slug);
 
-  // 8) 右侧 TOC
+  // 10) 右侧 TOC
   buildTOC('#postContent', '#toc', (SITE.tocLevels || ['h2', 'h3']));
-
-  // 9) 页脚邮箱（可选）
-  const se = q('#siteEmail'); if (se) se.textContent = SITE.email || '';
 }
 
 // ============== 导航（含防闪退） ==============
@@ -191,6 +201,7 @@ function buildTOC(contentSel, tocSel, levels) {
     return `<a${pad} href="#${h.id}">${esc(h.textContent)}</a>`;
   }).join('');
 }
+
 // ============== 微信悬浮按钮（全站） ==============
 function initWeChatFloat(site) {
   try {
