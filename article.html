@@ -5,36 +5,18 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>文章 - 木子AI</title>
 
-  <!-- 统一版本号与路径 -->
+  <!-- 基础样式：先给一个占位版本号，稍后用 JS 注入时间戳 -->
+  <link id="site-css" rel="stylesheet" href="/plus/assets/style.css?v=0">
+
+  <!-- 统一的路径/版本工具 -->
   <script>
-    const PREFIX = '/plus/';
-    const BUILD_VERSION = Date.now();
-    const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
+    const PREFIX='/plus/';
+    const BUILD_VERSION=Date.now();
+    const url=p=>`${PREFIX}${p}?v=${BUILD_VERSION}`;
   </script>
-
-  <!-- 动态加载样式与脚本（自动带版本号，绕过缓存） -->
+  <!-- 让 CSS 也走时间戳，避免缓存 -->
   <script>
-    (function () {
-      // 1) 样式
-      var css = document.createElement('link');
-      css.rel = 'stylesheet';
-      css.href = url('assets/style.css');
-      document.head.appendChild(css);
-
-      // 2) 文章页依赖库
-      ['assets/libs/marked.min.js','assets/libs/tocbot.min.js'].forEach(function (p) {
-        var s = document.createElement('script');
-        s.defer = true;
-        s.src = url(p);
-        document.head.appendChild(s);
-      });
-
-      // 3) 文章页主脚本
-      var js = document.createElement('script');
-      js.defer = true;
-      js.src = url('assets/article.js');
-      document.head.appendChild(js);
-    })();
+    document.getElementById('site-css').href = url('assets/style.css');
   </script>
 </head>
 <body>
@@ -65,8 +47,8 @@
       <div id="postNav" class="post-nav"></div>
     </main>
 
-    <!-- 右侧栏：统一两个正方形容器（上：目录；下：广告/联系位） -->
-    <aside class="sidebar sticky">
+    <!-- 右侧栏：两个正方形容器（上：目录；下：推广/联系位） -->
+    <aside class="sidebar sticky side-squares">
       <section class="card side-square">
         <h3>目录</h3>
         <nav id="toc" class="toc"></nav>
@@ -78,6 +60,10 @@
   <footer class="footer">
     © 2025 木子科技 · <span id="siteEmail"></span>
   </footer>
+
+  <script defer src="/plus/assets/libs/marked.min.js?v=0"></script>
+  <script defer src="/plus/assets/libs/tocbot.min.js?v=0"></script>
+  <script defer src="/plus/assets/article.js?v=2"></script>
 
   <!-- 全站微信悬浮按钮（自动注入） -->
   <script>
