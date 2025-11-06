@@ -5,22 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>木子AI</title>
   <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导" />
-
-  <!-- 统一版本号：用于避免缓存 -->
+  <link rel="stylesheet" href="/plus/assets/style.css?v=0">
   <script>
     const PREFIX = '/plus/';
     const BUILD_VERSION = Date.now();
     const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
-  </script>
-
-  <!-- 动态加载 CSS（带时间戳，避免缓存旧样式） -->
-  <script>
-    (function(){
-      var link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = url('assets/style.css');      // /plus/assets/style.css?v=<ts>
-      document.head.appendChild(link);
-    })();
   </script>
 </head>
 
@@ -37,7 +26,7 @@
     </div>
   </header>
 
-  <!-- ✅ 两栏容器：与 style.css 的 .container + 主列(main) / 侧栏(aside) 完全对齐 -->
+  <!-- 两栏容器 -->
   <div class="container">
     <main class="main-col">
       <!-- 推荐区 -->
@@ -53,11 +42,10 @@
       <div id="pagination" class="pagination"></div>
     </main>
 
-    <!-- 右侧栏 -->
+    <!-- 右侧栏：统一两个正方形容器 -->
     <aside id="sidebar" class="sidebar sticky">
-      <section class="card" id="aboutBox"></section>
-      <section class="card" id="adBox"></section>
-      <section class="card" id="contactBox"></section>
+      <section class="card side-square" id="sideBox1"><!-- JS 注入内容 --></section>
+      <section class="card side-square" id="sideBox2"><!-- JS 注入内容 --></section>
     </aside>
   </div>
 
@@ -65,20 +53,10 @@
     © 2025 木子科技 · 本站内容仅供学习交流，侵权请联系删除 · <span id="siteEmail"></span>
   </footer>
 
-  <!-- 动态加载 JS（同样带版本号，避免缓存） -->
-  <script>
-    (function(){
-      ['assets/libs/marked.min.js',
-       'assets/libs/tocbot.min.js',
-       'assets/main.js'
-      ].forEach(function(p){
-        var s = document.createElement('script');
-        s.defer = true;
-        s.src = url(p);         // /plus/...?.v=<ts>
-        document.body.appendChild(s);
-      });
-    })();
-  </script>
+  <!-- 库 & 主逻辑 -->
+  <script defer src="/plus/assets/libs/marked.min.js?v=0"></script>
+  <script defer src="/plus/assets/libs/tocbot.min.js?v=0"></script>
+  <script defer src="/plus/assets/main.js?v=0"></script>
 
   <!-- 全站微信悬浮按钮（自动注入） -->
   <script>
