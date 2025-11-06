@@ -1,15 +1,16 @@
 /* ==========================================================================
-/plus/assets/style.css  ——  统一样式（含两栏布局 + 侧栏粘滞两方块）
-========================================================================== */
+   /plus/assets/style.css  —— 统一样式（两栏布局 + 侧栏粘滞两方块）
+   2025-11-06 调整：≥992px 仅将 .container 的右侧 padding 扩大为原来的 3 倍；左侧不变
+   ========================================================================== */
 
 /* ===== 基础 ===== */
 :root{
---primary:#D32F2F;
---text:#222;
---muted:#666;
---line:#eee;
---bg:#fff;
---shadow:0 2px 8px rgba(0,0,0,.05);
+  --primary:#D32F2F;
+  --text:#222;
+  --muted:#666;
+  --line:#eee;
+  --bg:#fff;
+  --shadow:0 2px 8px rgba(0,0,0,.05);
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;color:var(--text);font:16px/1.7 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,PingFang SC,Helvetica,Arial}
@@ -18,8 +19,8 @@ img{max-width:100%;display:block}
 
 /* ===== Header / Nav ===== */
 .navbar{
-position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line);
-display:flex;align-items:center;gap:24px;padding:14px 24px;
+  position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:24px;padding:14px 24px;
 }
 @media (min-width:1280px){ .navbar{padding:14px 32px} }
 @media (min-width:1920px){ .navbar{padding:14px 48px} }
@@ -29,16 +30,16 @@ display:flex;align-items:center;gap:24px;padding:14px 24px;
 .nav-item{position:relative;font-weight:700;font-size:18px}
 .nav-item>a{padding:8px 0;display:inline-block}
 .nav-item::after{
-content:"";display:inline-block;width:6px;height:6px;border-left:1.5px solid #888;border-bottom:1.5px solid #888;
-transform:rotate(-45deg);margin-left:6px;transition:transform .3s,border-color .3s;vertical-align:middle
+  content:"";display:inline-block;width:6px;height:6px;border-left:1.5px solid #888;border-bottom:1.5px solid #888;
+  transform:rotate(-45deg);margin-left:6px;transition:transform .3s,border-color .3s;vertical-align:middle
 }
 .nav-item:hover::after{transform:rotate(135deg);border-color:var(--primary)}
 .submenu{
-position:absolute;left:0;top:100%;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);
-border-radius:8px;padding:8px 10px;display:none;min-width:200px
+  position:absolute;left:0;top:100%;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);
+  border-radius:8px;padding:8px 10px;display:none;min-width:200px
 }
 .submenu a{display:block;padding:8px 10px;border-radius:6px;color:#333}
-.submenu a:hover
+.submenu a:hover{background:#fafafa;color:var(--primary)}
 .nav-item:hover .submenu{display:block}
 
 .search{margin-left:auto;background:#f5f5f5;border-radius:999px;padding:6px 12px;display:flex;align-items:center;gap:8px}
@@ -50,15 +51,15 @@ border-radius:8px;padding:8px 10px;display:none;min-width:200px
 #navList>li>a{display:inline-flex;align-items:center;height:48px;line-height:48px;padding:0 12px}
 #navList>li .arrow{display:inline-block!important;margin-left:8px;vertical-align:middle;float:none!important;clear:none!important}
 #navList>li>a::after{
-content:"";display:inline-block;width:6px;height:6px;margin-left:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);vertical-align:middle
+  content:"";display:inline-block;width:6px;height:6px;margin-left:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);vertical-align:middle
 }
 
 /* ===== Layout / Container ===== */
 /* 1) 基础容器（所有屏幕） */
 .container{
-display:grid; gap:30px;
-margin:24px auto;
-padding:0 24px;
+  display:grid; gap:30px;
+  margin:24px auto;
+  padding:0 24px;                 /* 基础：左右各 24px（<992 生效） */
 }
 
 /* 3) 两栏比例（<992 单列；≥992 70/30；≥1280 72/28） */
@@ -66,21 +67,31 @@ padding:0 24px;
 @media (min-width:992px){ .container{ grid-template-columns:70% 30%; } }
 @media (min-width:1280px){ .container{ grid-template-columns:72% 28%; } }
 
-/* 2) 断点与容器宽度 */
+/* 2) 断点与容器宽度（仅把右 padding 扩大为原来的 3 倍；左 padding 保持原值） */
 @media (min-width:992px) and (max-width:1279px){
-.container{ max-width:1160px; padding:0 24px; }
+  /* 原：padding: 0 24px;  → 左 24，右 72 */
+  .container{ max-width:1160px; padding-left:24px; padding-right:72px; }
 }
 @media (min-width:1280px) and (max-width:1439px){
-.container{ max-width:1320px; padding:0 32px; }
+  /* 原：padding: 0 32px;  → 左 32，右 96 */
+  .container{ max-width:1320px; padding-left:32px; padding-right:96px; }
 }
 @media (min-width:1440px) and (max-width:1599px){
-.container{ max-width:1440px; padding:0 32px; }
+  /* 原：padding: 0 32px;  → 左 32，右 96 */
+  .container{ max-width:1440px; padding-left:32px; padding-right:96px; }
 }
 @media (min-width:1600px) and (max-width:1919px){
-.container{ max-width:1560px; padding:0 36px; }
+  /* 原：padding: 0 36px;  → 左 36，右 108 */
+  .container{ max-width:1560px; padding-left:36px; padding-right:108px; }
 }
 @media (min-width:1920px){
-.container{ max-width:none; width:calc(100% - 96px); padding:0 48px; }
+  /* 原：width:calc(100% - 96px); padding:0 48px;
+     右侧 ×3：左 48 不变，右 144 → 两侧合计 192 → width 需改为 100% - 192px */
+  .container{
+    max-width:none;
+    width:calc(100% - 192px);
+    padding-left:48px; padding-right:144px;
+  }
 }
 
 main{min-width:0}
@@ -89,34 +100,35 @@ main{min-width:0}
 /* ===== 侧栏粘滞策略（A 方案） ===== */
 /* <992 关闭粘滞；≥992 开启；且取消侧栏内部滚动条 —— 全站只保留浏览器右侧全局滚动条 */
 .sidebar.sticky{
-position:static; height:auto; overflow:visible; padding-bottom:0;
+  position:static; height:auto; overflow:visible; padding-bottom:0;
 }
 @media (min-width:992px){
-.sidebar.sticky{
-position:sticky; top:100px;
-height:auto;                 /* 不人为限制高度 */
-max-height:none;
-overflow:visible !important; /* 关键：不出现内部滚动条 */
-padding-bottom:20px;
-}
+  .sidebar.sticky{
+    position:sticky; top:100px;
+    height:auto;
+    max-height:none;
+    overflow:visible !important;
+    padding-bottom:20px;
+    z-index:5;
+  }
 }
 
 /* 如果 JS/HTML 注入了专用粘滞容器，统一粘滞到 100px */
 .sidebar .side-pin,
 .sidebar .side-stick,
-.sidebar .side-fixed{          /* 兼容历史命名 */
-position:sticky; top:100px;
+.sidebar .side-fixed{
+  position:sticky; top:100px;
 }
 
-/* 右侧“两个正方形容器”的通用样式 */
+/* 右侧“两个正方形容器”的通用样式（若你在 HTML 中使用 .side-squares/.side-square） */
 .side-squares{display:flex;flex-direction:column;gap:20px}
 .side-square{
-background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:10px;
-width:100%; aspect-ratio:1 / 1;         /* 等比正方形 */
-overflow:hidden;
+  background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:10px;
+  width:100%; aspect-ratio:1 / 1;
+  overflow:hidden;
 }
 
-/* 右侧已有卡片统一风格 */
+/* ===== 卡片通用 ===== */
 .card{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:10px;padding:16px;margin-bottom:20px}
 
 /* ===== Blocks / 推荐区 ===== */
@@ -145,7 +157,7 @@ overflow:hidden;
 .pagination{display:flex;justify-content:center;gap:10px;margin:40px 0}
 .page-btn{border:1px solid #ccc;border-radius:8px;padding:6px 10px;background:#fff;cursor:pointer}
 .page-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.page-btn:hover
+.page-btn:hover{background:#f5f5f5}
 
 /* ===== Ads / CTA ===== */
 .ads{display:grid;gap:12px;margin:12px 0}
@@ -175,18 +187,18 @@ overflow:hidden;
 
 /* ===== WeChat Floating Button ===== */
 .wechat-float{
-position:fixed; z-index:9999; right:35px; bottom:150px;
-width:56px; height:56px; border-radius:50%;
-background:#09bb07; box-shadow:0 6px 20px rgba(0,0,0,.15);
-display:flex; align-items:center; justify-content:center;
-cursor:pointer; user-select:none;
+  position:fixed; z-index:9999; right:35px; bottom:150px;
+  width:56px; height:56px; border-radius:50%;
+  background:#09bb07; box-shadow:0 6px 20px rgba(0,0,0,.15);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; user-select:none;
 }
 .wechat-float img.icon{max-width:56px; max-height:56px; border-radius:50%; display:block;}
 .wechat-float .fallback{color:#fff; font-size:14px; font-weight:700; letter-spacing:1px;}
 .wechat-float .qr{
-position:absolute; right:64px; bottom:0;
-width:311px; height:403px; background:#fff; border-radius:8px;
-box-shadow:0 10px 30px rgba(0,0,0,.2); padding:10px; display:none;
+  position:absolute; right:64px; bottom:0;
+  width:311px; height:403px; background:#fff; border-radius:8px;
+  box-shadow:0 10px 30px rgba(0,0,0,.2); padding:10px; display:none;
 }
 .wechat-float .qr img{width:100%; height:100%; object-fit:contain; display:block;}
 .wechat-float.show .qr{display:block;}
@@ -194,10 +206,10 @@ box-shadow:0 10px 30px rgba(0,0,0,.2); padding:10px; display:none;
 
 /* ===== Responsive tweaks ===== */
 @media (max-width:991px){
-.recommend-box .grid-2{ grid-template-columns:1fr; }
-.article-card{ flex-direction:column; }
-.article-thumb{ width:100%; height:auto; }
-.search input{ min-width:120px; }
+  .recommend-box .grid-2{ grid-template-columns:1fr; }
+  .article-card{ flex-direction:column; }
+  .article-thumb{ width:100%; height:auto; }
+  .search input{ min-width:120px; }
 }
 
 /* 保障主列在网格中不溢出 */
