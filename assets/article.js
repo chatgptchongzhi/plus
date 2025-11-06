@@ -14,6 +14,13 @@ async function init() {
   POSTS = await getJSON('content/index.json');
   renderNav();
 
+  // ... 原有 init 末尾
+  const se = q('#siteEmail'); if (se) se.textContent = SITE.email || '';
+
+  // 🔔 全站微信悬浮按钮
+  initWeChatFloat(SITE);
+}
+
   // 2) 取 slug
   const slug = getParam('slug');
   if (!slug) { q('#postContent').innerHTML = '<p>缺少 slug 参数。</p>'; return; }
@@ -183,4 +190,61 @@ function buildTOC(contentSel, tocSel, levels) {
     const pad = tag === 'h3' ? ' style="padding-left:12px"' : '';
     return `<a${pad} href="#${h.id}">${esc(h.textContent)}</a>`;
   }).join('');
+}
+// ============== 微信悬浮按钮（全站） ==============
+function initWeChatFloat(site) {
+  try {
+    // 若已存在则不重复渲染
+    if (document.querySelector('.wechat-float')) return;
+
+    const cfg = site.wechat || {};
+    const icon = cfg.icon || '';            // e.g. /plus/images/wechat-float.png
+    const qr   = cfg.qrcode || '';          // e.g. /plus/images/qrcode-wechat.png
+    const txt  = cfg.text || ('微信：' + (site.wechatId || ''));
+    const pos  = cfg.position || { right: 35, bottom: 150 };
+
+    // 容器
+    const wrap = document.createElement('div');
+    wrap.className = 'wechat-float';
+    wrap.style.right  = (pos.right ?? 35) + 'px';
+    wrap.style.bottom = (pos.bottom ?? 150) + 'px';
+
+    // 图标或回退
+    if (icon) {
+      const im = document.createElement('img');
+      im.className = 'icon';
+      im.alt = 'WeChat';
+      im.src = icon;
+      // 图标加载失败 → 回退
+      im.onerror = () => { im.remove(); addFallback(); };
+      wrap.appendChild(im);
+    } else {
+      addFallback();
+    }
+    function addFallback() {
+      const s = document.createElement('span');
+      s.className = 'fallback';
+      s.textContent = '微信';
+      wrap.appendChild(s);
+    }
+
+    // 二维码面板（固定 311×403）
+    const panel = document.createElement('div');
+    panel.className = 'qr';
+    panel.innerHTML = qr ? `<img src="${qr}" alt="${esc(txt)}">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#888;">未配置二维码</div>`;
+    wrap.appendChild(panel);
+
+    // 交互：PC 悬停、移动端点击
+    let touchMode = false;
+    wrap.addEventListener('mouseenter', () => { if (!touchMode) wrap.classList.add('show'); });
+    wrap.addEventListener('mouseleave', () => { if (!touchMode) wrap.classList.remove('show'); });
+    wrap.addEventListener('click', () => {
+      touchMode = true;
+      wrap.classList.toggle('show');
+    });
+
+    document.body.appendChild(wrap);
+  } catch (e) {
+    console.error('WeChat float init error:', e);
+  }
 }
