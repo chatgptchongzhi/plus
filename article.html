@@ -48,5 +48,17 @@
   <script defer src="/plus/assets/libs/marked.min.js?v=0"></script>
   <script defer src="/plus/assets/libs/tocbot.min.js?v=0"></script>
   <script defer src="/plus/assets/article.js?v=0"></script>
+
+  <script>
+  // 统一的前缀（你的仓库在 /plus/ 子路径）
+  window.PREFIX = window.PREFIX || '/plus/';
+  (function () {
+    var s = document.createElement('script');
+    s.src = window.PREFIX + 'assets/wechat-float.js?v=' + Date.now(); // 每次刷新都取最新
+    s.defer = true;
+    document.head.appendChild(s);
+  })();
+</script>
+
 </body>
 </html>
