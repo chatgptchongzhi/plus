@@ -109,7 +109,7 @@ main{min-width:0}
   .sidebar.sticky{ position:static; top:auto; width:auto; max-height:none; overflow:visible; }
 }
 
-/* 桌面端：固定在视口右侧，随滚动始终可见 */
+/* 桌面端：固定在视口右侧，随滚动始终可见（基础版本） */
 @media (min-width: 992px){
   /* 主列让出空间，避免被固定侧栏覆盖 */
   .main-col{ margin-right: calc(var(--sbw) + 30px); } /* 30px 作间距 */
@@ -122,12 +122,9 @@ main{min-width:0}
     overflow: auto;
     z-index: 5;
   }
-  /* 与容器右 padding 对齐 */
-  @media (min-width:992px) and (max-width:1279px){ .sidebar.sticky{ right:72px; } }
-  @media (min-width:1280px) and (max-width:1439px){ .sidebar.sticky{ right:96px; } }
-  @media (min-width:1440px) and (max-width:1599px){ .sidebar.sticky{ right:96px; } }
-  @media (min-width:1600px) and (max-width:1919px){ .sidebar.sticky{ right:108px; } }
-  @media (min-width:1920px){                              .sidebar.sticky{ right:144px; } }
+  /* 与容器右 padding 对齐（基础版本） */
+  /* 注意：下面 Overrides 区会再用更高优先级+!important 精确覆盖 right 值 */
+  .sidebar.sticky{ right: 96px; }
 }
 
 /* 右侧“两块正方形容器” */
@@ -220,4 +217,36 @@ main{min-width:0}
   .article-card{ flex-direction:column; }
   .article-thumb{ width:100%; height:auto; }
   .search input{ min-width:120px; }
+}
+
+/* =========================================================
+   OVERRIDES（最后生效，确保真正应用） 
+   - 精确右边距对齐各断点 padding-right
+   - 强制 fixed 悬浮跟随，不再被早期样式覆盖
+   ========================================================= */
+
+/* 992–1279：容器 max-width:1160 / padding-right:72 */
+@media (min-width:992px) and (max-width:1279px){
+  .sidebar.sticky{ right:72px !important; position:fixed !important; }
+  .main-col{ margin-right: calc(var(--sbw) + 30px) !important; }
+}
+/* 1280–1439：padding-right:96 */
+@media (min-width:1280px) and (max-width:1439px){
+  .sidebar.sticky{ right:96px !important; position:fixed !important; }
+  .main-col{ margin-right: calc(var(--sbw) + 30px) !important; }
+}
+/* 1440–1599：padding-right:96 */
+@media (min-width:1440px) and (max-width:1599px){
+  .sidebar.sticky{ right:96px !important; position:fixed !important; }
+  .main-col{ margin-right: calc(var(--sbw) + 30px) !important; }
+}
+/* 1600–1919：padding-right:108 */
+@media (min-width:1600px) and (max-width:1919px){
+  .sidebar.sticky{ right:108px !important; position:fixed !important; }
+  .main-col{ margin-right: calc(var(--sbw) + 30px) !important; }
+}
+/* ≥1920：padding-right:144 */
+@media (min-width:1920px){
+  .sidebar.sticky{ right:144px !important; position:fixed !important; }
+  .main-col{ margin-right: calc(var(--sbw) + 30px) !important; }
 }
