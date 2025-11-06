@@ -5,29 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>文章 - 木子AI</title>
 
-  <!-- 基础样式：先给一个占位版本号，稍后用 JS 注入时间戳 -->
-<!-- 只保留 1 个 link，不带 ?v=0 -->
-<link id="site-css" rel="stylesheet" href="/plus/assets/style.css">
-
-<!-- 用我们已有的 url() 注入时间戳 -->
-<script>
-  // 如果页面里已经有：const PREFIX='/plus/'; const BUILD_VERSION=Date.now(); const url=p=>`${PREFIX}${p}?v=${BUILD_VERSION}`;
-  // 直接用 url() 即可
-  document.getElementById('site-css').href = url('assets/style.css');
-
-  /* 如果你的页面里没有上面的 url() 定义，请用这一行替代：
-  document.getElementById('site-css').href = '/plus/assets/style.css?v=' + Date.now();
-  */
-</script>
-
-
-  <!-- 统一的路径/版本工具 -->
+  <!-- 统一前缀与版本工具：先定义，再用于注入 CSS/JS -->
   <script>
-    const PREFIX='/plus/';
-    const BUILD_VERSION=Date.now();
-    const url=p=>`${PREFIX}${p}?v=${BUILD_VERSION}`;
+    const PREFIX = '/plus/';
+    const BUILD_VERSION = Date.now();
+    const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
   </script>
-  <!-- 让 CSS 也走时间戳，避免缓存 -->
+
+  <!-- 仅保留 1 个样式链接，由脚本注入时间戳，避免 v=0 缓存 -->
+  <link id="site-css" rel="stylesheet">
   <script>
     document.getElementById('site-css').href = url('assets/style.css');
   </script>
@@ -74,11 +60,23 @@
     © 2025 木子科技 · <span id="siteEmail"></span>
   </footer>
 
-  <script defer src="/plus/assets/libs/marked.min.js?v=0"></script>
-  <script defer src="/plus/assets/libs/tocbot.min.js?v=0"></script>
-  <script defer src="/plus/assets/article.js?v=2"></script>
+  <!-- 动态注入脚本（带时间戳）替代固定 ?v=0 -->
+  <script>
+    const JS_LIST = [
+      'assets/libs/marked.min.js',
+      'assets/libs/tocbot.min.js',
+      'assets/article.js?v=2' // 如需强制一次升级可保留 v=2；后续也可改为不带版本：'assets/article.js'
+    ];
+    JS_LIST.forEach(p => {
+      const s = document.createElement('script');
+      s.defer = true;
+      // 如果条目里已经自带 ?v=2 则直接拼前缀；否则用统一时间戳
+      s.src = p.includes('?') ? (PREFIX + p) : url(p);
+      document.head.appendChild(s);
+    });
+  </script>
 
-  <!-- 全站微信悬浮按钮（自动注入） -->
+  <!-- 全站微信悬浮按钮（自动注入，已防缓存） -->
   <script>
     window.PREFIX = window.PREFIX || '/plus/';
     (function () {
