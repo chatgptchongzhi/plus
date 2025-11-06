@@ -123,4 +123,34 @@ a{color:inherit;text-decoration:none}img{max-width:100%;display:block}
 @media (max-width: 768px) {
   .wechat-float { right: 20px; bottom: 100px; }
 }
+/* === 均匀分布的主导航（等宽分栏）=== */
+#navList{
+  display: flex;
+  align-items: center;             /* 垂直居中 */
+  justify-content: space-between;  /* 等距铺满一行 */
+  flex-wrap: nowrap;
+  gap: 0;
+}
+
+#navList > li{
+  flex: 1 1 0;                     /* 等宽 */
+  text-align: center;              /* 文本居中 */
+  margin: 0;                       /* 避免左右外边距影响均匀 */
+}
+
+#navList > li > a{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;                 /* 需要更紧凑可减小 */
+  height: 48px;                    /* 与你导航高度一致 */
+}
+
+/* 可选：限制整条导航最大宽度并居中 */
+.navbar .container{
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
 
