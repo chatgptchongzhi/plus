@@ -3,7 +3,7 @@
    2025-11-06
    - 修复：删除重复/冲突/无效规则与嵌套 @media 导致的解析中断
    - 布局：保留 <992 单列，992–1279 为 70/30，≥1280 为 72/28
-   - 容器：右 padding 放大（与你之前版本一致），并在右侧栏 fixed 时为主列让位
+   - 容器：右 padding 放大（与你之前版本一致）
    - 右侧栏：桌面端 “悬浮跟随”(position: fixed)，移动端不固定
    - 字体：整体缩小；仅“ChatGPT 使用必读文章”保持加粗；其余降粗
    - 导航：主菜单靠左，间距可调；可通过 padding-left 右移整体主菜单
@@ -109,10 +109,10 @@ main{min-width:0}
   .sidebar.sticky{ position:static; top:auto; width:auto; max-height:none; overflow:visible; }
 }
 
-/* 桌面端：固定在视口右侧，随滚动始终可见（基础版本） */
+/* 桌面端：固定在视口右侧，随滚动始终可见（保持主列宽度不变） */
 @media (min-width: 992px){
-  /* 主列让出空间，避免被固定侧栏覆盖 */
-  .main-col{ margin-right: calc(var(--sbw) + 30px); } /* 30px 作间距 */
+  /* ❌ 不再为主列让位，保持原网格下的主列宽度 */
+  .main-col{ margin-right: 0 !important; }
 
   .sidebar.sticky{
     position: fixed;
@@ -121,10 +121,8 @@ main{min-width:0}
     max-height: calc(100vh - 120px); /* 视口高度-顶部余量，避免超出 */
     overflow: auto;
     z-index: 5;
+    right: 96px;                     /* 默认值，具体断点在下方覆盖 */
   }
-  /* 与容器右 padding 对齐（基础版本） */
-  /* 注意：下面 Overrides 区会再用更高优先级+!important 精确覆盖 right 值 */
-  .sidebar.sticky{ right: 96px; }
 }
 
 /* 右侧“两块正方形容器” */
@@ -222,31 +220,32 @@ main{min-width:0}
 /* =========================================================
    OVERRIDES（最后生效，确保真正应用） 
    - 精确右边距对齐各断点 padding-right
-   - 强制 fixed 悬浮跟随，不再被早期样式覆盖
+   - 强制 fixed 悬浮跟随
+   - 主内容容器不缩小（不再让位）
    ========================================================= */
 
 /* 992–1279：容器 max-width:1160 / padding-right:72 */
 @media (min-width:992px) and (max-width:1279px){
   .sidebar.sticky{ right:72px !important; position:fixed !important; }
-  .main-col{ margin-right: calc(var(--sbw) + 30px) !important; }
+  .main-col{ margin-right:0 !important; }
 }
 /* 1280–1439：padding-right:96 */
 @media (min-width:1280px) and (max-width:1439px){
   .sidebar.sticky{ right:96px !important; position:fixed !important; }
-  .main-col{ margin-right: calc(var(--sbw) + 30px) !important; }
+  .main-col{ margin-right:0 !important; }
 }
 /* 1440–1599：padding-right:96 */
 @media (min-width:1440px) and (max-width:1599px){
   .sidebar.sticky{ right:96px !important; position:fixed !important; }
-  .main-col{ margin-right: calc(var(--sbw) + 30px) !important; }
+  .main-col{ margin-right:0 !important; }
 }
 /* 1600–1919：padding-right:108 */
 @media (min-width:1600px) and (max-width:1919px){
   .sidebar.sticky{ right:108px !important; position:fixed !important; }
-  .main-col{ margin-right: calc(var(--sbw) + 30px) !important; }
+  .main-col{ margin-right:0 !important; }
 }
 /* ≥1920：padding-right:144 */
 @media (min-width:1920px){
   .sidebar.sticky{ right:144px !important; position:fixed !important; }
-  .main-col{ margin-right: calc(var(--sbw) + 30px) !important; }
+  .main-col{ margin-right:0 !important; }
 }
