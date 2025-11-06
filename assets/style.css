@@ -352,4 +352,77 @@ body { font-size: 15px; }  /* 原 16px → 15px */
 
 /* 如果正文页的大标题也要去粗，可以打开下面一行（可选） */
 /* .post-title { font-weight: 600; } */
+/* =========================================================
+   A. 字体整体缩小（“ChatGPT 使用必读文章”也缩小，但仍加粗）
+   ========================================================= */
+
+/* 全站基准字号：16px → 15px */
+html, body { font-size: 15px; }
+
+/* “ChatGPT 使用必读文章” 标题：缩小但保留加粗 */
+.block-title {
+  font-size: 18px;     /* 之前更大，这里整体变小 */
+  font-weight: 800;    /* 仍然加粗 */
+}
+
+/* 推荐区每一项标题：缩小且不加粗 */
+.rec-item .title {
+  font-size: 16px;
+  font-weight: 400;    /* 不加粗 */
+}
+
+/* 列表页文章标题：缩小且不加粗 */
+.article-title {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+/* 摘要/元信息更小一点，层级更清晰 */
+.article-excerpt { font-size: 14px; }
+.article-meta    { font-size: 13px; }
+
+/* 标签再小一档 */
+.tag { font-size: 12px; }
+
+/* 详情页标题：同步变小且不加粗 */
+.post-title {
+  font-size: 22px;     /* 之前 24/28，这里也缩一档 */
+  font-weight: 400;    /* 不加粗 */
+}
+.post-content { font-size: 15px; }
+.meta-bar     { font-size: 13px; }
+.toc, #toc    { font-size: 13px; }
+
+/* =========================================================
+   B. 右侧栏：悬浮跟随 + 自适应宽度（与容器右 padding 对齐）
+   ========================================================= */
+
+:root{
+  --sbw-min: 300px;    /* 右侧栏最小宽度 */
+  --sbw-ideal: 22vw;   /* 理想宽度（随视口） */
+  --sbw-max: 380px;    /* 右侧栏最大宽度 */
+}
+
+@media (min-width: 992px){
+  /* 主列让出右侧栏空间，避免遮挡 */
+  .main-col{
+    margin-right: clamp(var(--sbw-min), var(--sbw-ideal), var(--sbw-max));
+  }
+
+  /* 悬浮跟随的右侧栏 */
+  .sidebar.sticky{
+    position: fixed;
+    top: 100px; /* 顶部距离，可按需调整 */
+    width: clamp(var(--sbw-min), var(--sbw-ideal), var(--sbw-max));
+    z-index: 5;
+  }
+
+  /* —— 与容器右内边距精准对齐（按你现有断点） —— */
+
+  /* 992–1279：容器 max-width:1160px；右 padding:72px */
+  @media (min-width: 992px) and (max-width: 1279px){
+    .sidebar.sticky{ right: max(24px, calc((100vw - 1160px)/2 + 72px)); }
+  }
+
+  /* 1280–1439：容器 max-wi*
 
