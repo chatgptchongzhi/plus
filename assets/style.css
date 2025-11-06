@@ -135,3 +135,5 @@ main{min-width:0}                       /* 文章区避免溢出 */
   .article-thumb{ width:100%; height:auto; }
   .search input{ min-width:120px; }
 }
+/* 仅当你保留 <section class="main-col"> 时添加 */
+.container > .main-col { min-width: 0; }
