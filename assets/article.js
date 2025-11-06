@@ -19,7 +19,7 @@ async function init() {
 
   // 🔔 全站微信悬浮按钮
   initWeChatFloat(SITE);
-}
+
 
   // 2) 取 slug
   const slug = getParam('slug');
