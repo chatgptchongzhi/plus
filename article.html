@@ -5,19 +5,20 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>文章 - 木子AI</title>
 
-  <!-- 统一前缀与版本工具：先定义，再用于注入 CSS/JS -->
-  <script>
-    const PREFIX = '/plus/';
-    const BUILD_VERSION = Date.now();
-    const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
-  </script>
+  <!-- 只保留一个link，不带?v -->
+  <link id="site-css" rel="stylesheet" href="/plus/assets/style.css">
 
-  <!-- 仅保留 1 个样式链接，由脚本注入时间戳，避免 v=0 缓存 -->
-  <link id="site-css" rel="stylesheet">
+  <!-- 先定义工具函数，再给link注入时间戳 -->
+  <script>
+    const PREFIX='/plus/';
+    const BUILD_VERSION=Date.now();
+    const url=p=>`${PREFIX}${p}?v=${BUILD_VERSION}`;
+  </script>
   <script>
     document.getElementById('site-css').href = url('assets/style.css');
   </script>
 </head>
+
 <body>
   <!-- 顶部导航 -->
   <header class="navbar shadow">
