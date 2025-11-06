@@ -28,8 +28,8 @@
     {
       "label": "ChatGPT使用指南",
       "children": [
-        { "label": "注册教程", "slug": "chatgpt-register-guide" },
-        { "label": "充值教程", "slug": "chatgpt-topup-guide" },
+        { "label": "IOS如何下载", "slug": "ios-download" },
+        { "label": "安卓如何下载", "slug": "android-download" },
         { "label": "虚拟卡教程", "slug": "virtual-card-guide" }
       ]
     },
