@@ -425,46 +425,43 @@ html, body { font-size: 15px; }
   }
 
   /* 1280–1439：容器 max-wi*
-/* ===== 右侧栏：列内“悬浮跟随”（不改主列宽度） ===== */
+/* ===== 修正：右侧栏悬浮跟随作用在 aside 本身（同层），而不是子元素 ===== */
 @media (min-width: 992px){
-  .sidebar.sticky .side-squares{
+  .sidebar.sticky.side-squares{
     position: sticky;
-    top: 100px;            /* 视需要可调，与顶部导航高度匹配 */
-  }
-  .sidebar.sticky{
-    overflow: visible !important;  /* 取消侧栏内部滚动条，只保留页面全局滚动条 */
+    top: 100px;                 /* 跟你的导航高度对齐，可微调 */
+    overflow: visible !important;
   }
 }
 
-/* 右侧栏：两个正方形容器（自适应侧栏宽度） */
-.side-squares{ display: flex; flex-direction: column; gap: 20px; }
+/* 右侧栏两个正方形容器（保持） */
+.side-squares{ display:flex; flex-direction:column; gap:20px; }
 .side-square{
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  overflow: hidden;
+  width:100%;
+  aspect-ratio:1 / 1;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:10px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
 }
 
-/* ===== 子菜单定位修正：贴齐主菜单正下方（不改竖直间距） ===== */
+/* 子菜单定位修正（保持） */
 .nav-item{ position: relative; }
 .submenu{
-  left: 0 !important;
-  right: auto !important;
-  transform: none !important;
+  left:0 !important;
+  right:auto !important;
+  transform:none !important;
 }
 
-/* ===== 字体整体收紧（主内容区尺寸不变） ===== */
-html, body{ font-size: 15px; }             /* 全站基准字体略缩小 */
-.article-title{ font-size: 16px; font-weight: 400; }   /* 列表标题不加粗 */
-.article-excerpt{ font-size: 14px; }
-.article-meta{ font-size: 13px; }
-.tag{ font-size: 12px; }
+/* 字体整体收紧（主内容容器尺寸不变） */
+html, body{ font-size:15px; }
+.article-title{ font-size:16px; font-weight:400; }
+.article-excerpt{ font-size:14px; }
+.article-meta{ font-size:13px; }
+.tag{ font-size:12px; }
 
-/* “ChatGPT 使用必读文章”标题：变小但保持加粗 */
-.recommend-box .block-title{ font-size: 18px; font-weight: 800; }
-.recommend-box .rec-item .title{ font-size: 16px; font-weight: 400; }
-.recommend-box .rec-meta{ font-size: 13px; }
-
+/* “ChatGPT 使用必读文章”标题：变小但仍加粗 */
+.recommend-box .block-title{ font-size:18px; font-weight:800; }
+.recommend-box .rec-item .title{ font-size:16px; font-weight:400; }
+.recommend-box .rec-meta{ font-size:13px; }
