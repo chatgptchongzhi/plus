@@ -1,6 +1,6 @@
 ---
 title: 虚拟卡教程：从原理到实操的系统指南（合法合规版）
-slug: ios-download
+slug: virtual-card-guide
 date: 2025-11-05
 tags: [ChatGPT, 代充]
 categories: [ChatGPT]
