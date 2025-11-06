@@ -273,4 +273,43 @@ main{min-width:0}
   }
   .navbar{ padding:14px 48px; }
 }
+/* === 紧凑容器留白：减少左右空白 === */
+/* 基础：所有屏幕 */
+.container{
+  margin:24px auto;
+  padding:0 24px;         /* 统一左右 24px */
+}
+
+/* 992–1279：维持 70/30 比例，仅调容器宽度/内边距 */
+@media (min-width: 992px) and (max-width: 1279px){
+  .container{ max-width:1160px; padding:0 24px; }
+}
+
+/* 1280–1439（含 1366 宽）：让容器几乎铺满，左右各约 24px */
+@media (min-width: 1280px) and (max-width: 1439px){
+  .container{ max-width:1400px; padding:0 24px; }
+}
+
+/* 1440–1599：左右各约 24px */
+@media (min-width: 1440px) and (max-width: 1599px){
+  .container{ max-width:1480px; padding:0 24px; }
+}
+
+/* 1600–1919：左右各约 24px（比之前明显更紧凑） */
+@media (min-width: 1600px) and (max-width: 1919px){
+  .container{ max-width:1640px; padding:0 24px; }
+}
+
+/* ≥1920：流式 + 小边距，避免大片空白 */
+@media (min-width: 1920px){
+  .container{
+    max-width:none;
+    width:calc(100% - 64px);   /* 64px = 左右各 32px */
+    padding:0 32px;
+  }
+}
+
+/* 顶部导航与容器对齐（可选，但建议一起改） */
+@media (min-width: 1280px){ .navbar{ padding:14px 24px; } }
+@media (min-width: 1920px){ .navbar{ padding:14px 32px; } }
 
