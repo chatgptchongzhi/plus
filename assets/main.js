@@ -1,5 +1,5 @@
 // /plus/assets/main.js
-// 首页：导航 / 推荐 / 列表 / 分页 / 搜索 / 右侧栏（统一两块正方形卡片）
+// 首页：导航 / 推荐 / 列表 / 分页 / 搜索 / 右侧栏（容错：search.json 缺失也能运行）
 
 const q  = (sel, el=document)=>el.querySelector(sel);
 const qa = (sel, el=document)=>[...el.querySelectorAll(sel)];
@@ -17,12 +17,21 @@ let SITE={}, POSTS=[], SEARCH=[];
 init().catch(e=>console.error(e));
 
 async function init(){
-  SITE   = await getJSON('content/site.json');
-  POSTS  = await getJSON('content/index.json');
-  SEARCH = await getJSON('content/search.json');
+  // 1) 基础数据
+  SITE  = await getJSON('content/site.json');
+  POSTS = await getJSON('content/index.json');
 
+  // 2) search.json 容错：缺失或语法错误都不阻塞页面
+  try {
+    SEARCH = await getJSON('content/search.json');
+  } catch (e) {
+    console.warn('[search.json] not found or invalid, fallback to []', e);
+    SEARCH = [];
+  }
+
+  // 3) 渲染
   renderNav();
-  renderSidebar();          // 两个正方形卡片
+  renderSidebar();
   renderWeChatFloat();
 
   renderRecommend();
@@ -47,7 +56,6 @@ function renderNav(){
     </li>`;
   }).join('');
 
-  // 防闪退：离开稍延迟隐藏；进入立即显示
   qa('.nav-item', ul).forEach(li=>{
     let t; const sub = q('.submenu', li);
     li.addEventListener('mouseleave',()=>{ t=setTimeout(()=>{ if(sub) sub.style.display='none'; },200); });
@@ -57,12 +65,18 @@ function renderNav(){
 
 /* ============ 推荐区：置顶优先，再按日期 ============ */
 function renderRecommend(){
-  const rec = [...POSTS]
-    .sort((a,b)=>(b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||''))
-    .slice(0, SITE.recommendCount||4);
-
   const grid = q('#recommendGrid');
   if(!grid) return;
+
+  const source = Array.isArray(POSTS) ? POSTS : [];
+  if (!source.length){
+    grid.innerHTML = '<div style="color:#999;padding:8px 0;">（暂无推荐内容）</div>';
+    return;
+  }
+
+  const rec = [...source]
+    .sort((a,b)=>(b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||''))
+    .slice(0, SITE.recommendCount||4);
 
   grid.innerHTML = rec.map(p=>`
     <a class="rec-item" href="${buildLink(p.slug)}">
@@ -79,7 +93,16 @@ function renderRecommend(){
 function renderListWithPagination(){
   const ps = Number(new URLSearchParams(location.search).get('page')||'1');
   const pageSize = SITE.pageSize || 8;
-  const sorted = [...POSTS].sort((a,b)=>(b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||''));
+  const source = Array.isArray(POSTS) ? POSTS : [];
+
+  if (!source.length){
+    const list = q('#articleList');
+    if (list) list.innerHTML = '<div style="color:#999;">（暂无文章或 index.json 加载失败）</div>';
+    const p = q('#pagination'); if(p) p.innerHTML='';
+    return;
+  }
+
+  const sorted = [...source].sort((a,b)=>(b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||''));
   const total = Math.ceil(sorted.length / pageSize);
   const start = (ps-1)*pageSize;
   const pageItems = sorted.slice(start, start+pageSize);
@@ -91,6 +114,12 @@ function renderListWithPagination(){
 function renderList(items){
   const list = q('#articleList');
   if(!list) return;
+
+  if (!items.length){
+    list.innerHTML = '<div style="color:#999;">（暂无文章）</div>';
+    return;
+  }
+
   list.innerHTML = items.map(p=>`
     <article class="article-card">
       <a href="${buildLink(p.slug)}">
@@ -122,45 +151,31 @@ function renderPagination(cur,total){
   c.innerHTML = html;
 }
 
-/* ============ 右侧栏：两个正方形卡片 ============ */
+/* ============ 右侧栏（两个容器，首页也保持） ============ */
 function renderSidebar(){
-  // 兼容：优先使用新版 #sideBox1/#sideBox2；若不存在，回退旧的 #aboutBox/#adBox/#contactBox
-  const box1 = q('#sideBox1') || q('#aboutBox');
-  const box2 = q('#sideBox2') || q('#adBox') || q('#contactBox');
+  const aboutBox   = q('#aboutBox');
+  const adBox      = q('#adBox');
+  const contactBox = q('#contactBox');
 
-  const aboutText = SITE.sidebar?.about || '专注 ChatGPT / Sora 教程与充值引导。';
-  const ad = SITE.sidebar?.ad || {};
-  const wxId = SITE.wechatId || '';
-  const qrcode = SITE.wechatQrcode || '/plus/images/qrcode-wechat.png';
-
-  if (box1) {
-    box1.innerHTML = `
-      <h3 style="margin-top:0;">关于本站</h3>
-      <div style="color:#555;">${esc(aboutText)}</div>
-    `;
+  if (aboutBox){
+    aboutBox.innerHTML = `<h3>关于本站</h3><div>${SITE.sidebar?.about || '专注 ChatGPT / Sora 教程与充值引导。'}</div>`;
   }
 
-  if (box2) {
-    // 优先展示推广位；若缺失则退化为“联系木子”
-    if (ad && (ad.title || ad.buttonLink)) {
-      box2.innerHTML = `
-        <h3 style="margin-top:0;">${esc(ad.title||'推广')}</h3>
-        <div class="ad" style="border:none;box-shadow:none;padding:0;">
-          <img src="${ad.image||'/plus/images/banner-plus.jpg'}" alt="">
-          <div>
-            <div>${esc(ad.title||'广告')}</div>
-            <div>${esc(ad.price||'')}</div>
-          </div>
-          <a class="btn" href="${ad.buttonLink||'#'}" target="_blank">${esc(ad.buttonText||'了解更多')}</a>
-        </div>
-      `;
-    } else {
-      box2.innerHTML = `
-        <h3 style="margin-top:0;">联系木子</h3>
-        <div>微信：${esc(wxId)}</div>
-        <img src="${qrcode}" alt="微信二维码">
-      `;
-    }
+  if (adBox){
+    const ad = SITE.sidebar?.ad || {};
+    adBox.innerHTML = `<h3>${esc(ad.title||'推广')}</h3>
+      <div class="ad">
+        <img src="${ad.image||'/plus/images/banner-plus.jpg'}" alt="">
+        <div><div>${esc(ad.title||'广告')}</div><div>${esc(ad.price||'')}</div></div>
+        <a class="btn" href="${ad.buttonLink||'#'}" target="_blank">${esc(ad.buttonText||'了解更多')}</a>
+      </div>`;
+  }
+
+  if (contactBox){
+    const c = SITE.sidebar?.contact || {};
+    contactBox.innerHTML = `<h3>${esc(c.title||'联系木子')}</h3>
+      <div>微信：${esc(SITE.wechatId||'')}</div>
+      <img src="${SITE.wechatQrcode||'/plus/images/qrcode-wechat.png'}" alt="微信二维码">`;
   }
 }
 
@@ -174,7 +189,7 @@ function bindSearch(){
     timer=setTimeout(()=>{
       const kw = (e.target.value||'').trim().toLowerCase();
       if(!kw){ renderListWithPagination(); return; }
-      const res = SEARCH.filter(s=>
+      const res = (SEARCH||[]).filter(s=>
         (s.title||'').toLowerCase().includes(kw) ||
         (s.excerpt||'').toLowerCase().includes(kw) ||
         (s.tags||[]).some(t=>t.toLowerCase().includes(kw))
@@ -185,7 +200,7 @@ function bindSearch(){
   });
 }
 
-/* ============ 悬浮微信按钮（仅首页占位图切换） ============ */
+/* ============ 悬浮微信按钮占位图（仅首页） ============ */
 function renderWeChatFloat(){
   const img = q('#wfImg');
   if(img) img.src = SITE.wechatQrcode || '/plus/images/qrcode-wechat.png';
