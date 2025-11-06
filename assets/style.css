@@ -254,3 +254,23 @@ main{min-width:0}
   margin-left:0 !important;
   margin-right:0 !important;
 }
+/* === 顶部主菜单：缩小间距 + 子菜单精准贴齐 === */
+@media (min-width: 992px){
+  /* 1) 主菜单改为靠左排布，缩小横向间距 */
+  .navbar .nav .nav-list{
+    justify-content: flex-start !important;  /* 不再均匀摊开 */
+    gap: 20px !important;                    /* <<< 间距值，想再紧就改成 16/18 */
+  }
+  .navbar .nav .nav-list > li{
+    flex: 0 0 auto !important;               /* 取消“等分拉伸” */
+  }
+
+  /* 2) 子菜单与主菜单左缘对齐（竖直距离不变） */
+  .navbar .nav .nav-list > li{ position: relative; }
+  .navbar .nav .nav-list > li .submenu{
+    left: 0 !important;                      /* 正对当前主菜单 */
+    right: auto !important;
+    transform: none !important;              /* 清掉 translateX(-50%) 之类偏移 */
+    top: 100%;                               /* 保持你当前的竖直间距 */
+  }
+}
