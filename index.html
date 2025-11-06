@@ -26,8 +26,9 @@
     </div>
   </header>
 
-  <main class="container">
-    <section class="main-col">
+  <!-- ✅ 两栏容器：与 style.css 的 .container + 主列(main) / 侧栏(aside) 完全对齐 -->
+  <div class="container">
+    <main class="main-col">
       <!-- 推荐区 -->
       <section id="recommend" class="card recommend-box">
         <h2 class="block-title"><i class="bar"></i>ChatGPT 使用必读文章</h2>
@@ -39,7 +40,7 @@
 
       <!-- 分页 -->
       <div id="pagination" class="pagination"></div>
-    </section>
+    </main>
 
     <!-- 右侧栏 -->
     <aside id="sidebar" class="sidebar sticky">
@@ -47,7 +48,7 @@
       <section class="card" id="adBox"></section>
       <section class="card" id="contactBox"></section>
     </aside>
-  </main>
+  </div>
 
   <footer class="footer">
     © 2025 木子科技 · 本站内容仅供学习交流，侵权请联系删除 · <span id="siteEmail"></span>
