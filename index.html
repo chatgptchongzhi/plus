@@ -5,11 +5,37 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>木子AI</title>
   <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导" />
-  <link rel="stylesheet" href="/plus/assets/style.css?v=2">
+
+  <!-- 统一版本号与路径 -->
   <script>
     const PREFIX = '/plus/';
     const BUILD_VERSION = Date.now();
     const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
+  </script>
+
+  <!-- 动态加载样式与脚本：自动带版本号，避免缓存 -->
+  <script>
+    (function () {
+      // CSS
+      var css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = url('assets/style.css');
+      document.head.appendChild(css);
+
+      // 依赖库（如需）
+      ['assets/libs/marked.min.js','assets/libs/tocbot.min.js'].forEach(function (p) {
+        var s = document.createElement('script');
+        s.defer = true;
+        s.src = url(p);
+        document.head.appendChild(s);
+      });
+
+      // 首页主脚本
+      var main = document.createElement('script');
+      main.defer = true;
+      main.src = url('assets/main.js');
+      document.head.appendChild(main);
+    })();
   </script>
 </head>
 
@@ -52,11 +78,6 @@
   <footer class="footer">
     © 2025 木子科技 · 本站内容仅供学习交流，侵权请联系删除 · <span id="siteEmail"></span>
   </footer>
-
-  <!-- 库 & 主逻辑 -->
-  <script defer src="/plus/assets/libs/marked.min.js?v=0"></script>
-  <script defer src="/plus/assets/libs/tocbot.min.js?v=0"></script>
-  <script defer src="/plus/assets/main.js?v=0"></script>
 
   <!-- 全站微信悬浮按钮（自动注入） -->
   <script>
