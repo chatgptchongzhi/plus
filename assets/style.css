@@ -176,5 +176,56 @@ a{color:inherit;text-decoration:none}img{max-width:100%;display:block}
   margin:0 auto;
   width:100%;
 }
+/* === 顶部主导航：均分 + 箭头与文字同一行 === */
+#navList{
+  display:flex;
+  justify-content:space-between;   /* 三个菜单均匀分布 */
+  align-items:center;
+  gap:0;
+  flex-wrap:nowrap;                 /* 禁止换行 */
+}
+
+#navList > li{
+  flex:1 1 0;
+  display:flex;                     /* 让文字与箭头在同一行 */
+  align-items:center;               /* 垂直居中 */
+  justify-content:center;           /* 水平居中 */
+  white-space:nowrap;
+}
+
+#navList > li > a{
+  display:inline-flex;
+  align-items:center;
+  height:48px;                      /* 与导航条高度一致 */
+  line-height:48px;
+  padding:0 12px;
+}
+
+/* 如果箭头是独立元素（<i class="arrow"> / <span class="arrow">） */
+#navList > li .arrow{
+  display:inline-block !important;  /* 不要单独占一行 */
+  margin-left:8px;
+  vertical-align:middle;
+  float:none !important;
+  clear:none !important;
+}
+
+/* 如果箭头是伪元素（a::after），统一样式 */
+#navList > li > a::after{
+  content:"";
+  display:inline-block;             /* 关键：不要用 block */
+  width:6px; height:6px;
+  margin-left:8px;
+  border-right:2px solid currentColor;
+  border-bottom:2px solid currentColor;
+  transform:rotate(45deg);
+  vertical-align:middle;
+}
+
+/* 兜底：任何把箭头挤到下一行的规则一律覆盖 */
+#navList > li .arrow,
+#navList > li > a::after{
+  white-space:nowrap;
+}
 
 
