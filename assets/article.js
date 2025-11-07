@@ -97,6 +97,10 @@ async function init(){
   renderTOC();
   renderPrevNext();
   renderBreadcrumb();       // 依赖 category/sections/tags 等
+
+  // ★ 补充：页脚邮箱赋值（与首页一致）
+  const emailEl = q('#siteEmail');
+  if (emailEl) emailEl.textContent = SITE.email || '';
 }
 
 /* ---------------- 面包屑（分类可点击过滤首页） ---------------- */
@@ -105,10 +109,16 @@ function renderBreadcrumb(){
 
   const siteName = SITE.title || '木子AI';
   const homeHref = `${PREFIX}`;
-  const cat =
-    (CUR && (CUR.category || CUR.section ||
-    (Array.isArray(CUR.categories)&&CUR.categories[0]) ||
-    (Array.isArray(CUR.tags)&&CUR.tags[0]))) || 'ChatGPT';
+
+  // 更稳健的分类选择优先级
+  const cat = (()=>{
+    if (!CUR) return 'ChatGPT';
+    if (CUR.category) return CUR.category;
+    if (Array.isArray(CUR.categories) && CUR.categories.length) return CUR.categories[0];
+    if (CUR.section) return CUR.section;
+    if (Array.isArray(CUR.tags) && CUR.tags.length) return CUR.tags[0];
+    return 'ChatGPT';
+  })();
 
   const title = CUR ? (CUR.title || CUR.slug || '') : document.title;
 
@@ -201,6 +211,8 @@ function renderTOC(){
 
   if (window.tocbot){
     try{
+      // 可选增强：重复进入时先销毁再初始化，避免重复目录
+      window.tocbot.destroy?.();
       window.tocbot.init({
         tocSelector: '#toc',
         contentSelector: '#postContent',
