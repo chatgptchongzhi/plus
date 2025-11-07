@@ -79,9 +79,9 @@
     ]
   },
 
-  "repo": {
-    "owner": "chatgptchongzhi",
-    "name": "plus",
-    "branch": "main"
-  }
+  /* —— 自动发现 posts 的必要配置 —— */
+  "autoDiscoverPosts": true,
+  "autoDiscoverCacheMinutes": 10,
+  "repo": "chatgptchongzhi/plus",
+  "branch": "main"
 }
