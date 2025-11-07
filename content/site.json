@@ -1,12 +1,13 @@
-
 {
+  "title": "木子AI",
   "siteTitle": "木子AI",
   "siteDesc": "ChatGPT / Sora / AI 工具教程与充值引导",
-  "siteUrl": "https://<USERNAME>.github.io/plus/",
+  "siteUrl": "https://chatgptchongzhi.github.io/plus/",
   "author": "木子",
   "email": "contact@muzi.com",
-  
+
   "wechatId": "ef98ee",
+  "wechatQrcode": "/plus/images/qrcode-wechat.png",
   "wechat": {
     "icon": "/plus/images/wechat-float.png",
     "qrcode": "/plus/images/qrcode-wechat.png",
@@ -45,7 +46,7 @@
   "recommendCount": 4,
   "pageSize": 8,
   "breadcrumbSeparator": "»",
-  "tocLevels": ["h2","h3"],
+  "tocLevels": ["h2", "h3"],
 
   "sidebar": {
     "about": "木子AI：专注 ChatGPT / Sora 教程与充值引导。",
@@ -76,5 +77,11 @@
         "image": "/plus/images/banner-plus.jpg"
       }
     ]
+  },
+
+  "repo": {
+    "owner": "chatgptchongzhi",
+    "name": "plus",
+    "branch": "main"
   }
 }
