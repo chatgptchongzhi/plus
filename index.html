@@ -6,15 +6,14 @@
   <title>木子AI</title>
   <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导" />
 
-  <!-- 只保留一个 link，不带 ?v；稍后用 JS 注入时间戳 -->
-  <link id="site-css" rel="stylesheet" href="/plus/assets/style.css">
+  <!-- 只保留一个 link；由 JS 统一注入时间戳避免缓存 -->
+  <link id="site-css" rel="stylesheet" href="/plus/assets/style.css" />
 
   <!-- 统一的路径/版本工具：先定义，再切换 CSS 到带时间戳的地址 -->
   <script>
     const PREFIX = '/plus/';
     const BUILD_VERSION = Date.now();
     const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
-    // 让 CSS 也走时间戳，规避缓存
     (function () {
       var link = document.getElementById('site-css');
       if (link) link.href = url('assets/style.css');
@@ -31,7 +30,7 @@
     </nav>
     <div class="search">
       <span class="icon">🔍</span>
-      <input id="searchInput" type="search" placeholder="请输入关键词">
+      <input id="searchInput" type="search" placeholder="请输入关键词" />
     </div>
   </header>
 
@@ -51,7 +50,7 @@
       <div id="pagination" class="pagination"></div>
     </main>
 
-    <!-- 右侧栏：两个正方形容器 -->
+    <!-- 右侧栏：两个正方形容器（随文档滚动；效果由 style.css 控制） -->
     <aside id="sidebar" class="sidebar sticky side-squares">
       <section class="card side-square" id="sideBox1"><!-- JS 注入内容 --></section>
       <section class="card side-square" id="sideBox2"><!-- JS 注入内容 --></section>
@@ -62,26 +61,47 @@
     © 2025 木子科技 · 本站内容仅供学习交流，侵权请联系删除 · <span id="siteEmail"></span>
   </footer>
 
+  <!-- 返回顶部按钮（样式已在 /plus/assets/style.css 中） -->
+  <div id="backToTop" aria-label="返回顶部" title="返回顶部">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 5l-7 7m7-7l7 7M12 5v14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
   <!-- 动态注入脚本（统一走 url()，避免固定 ?v=0） -->
   <script>
     (function () {
-      const jsList = [
-        'assets/libs/marked.min.js',
-        'assets/libs/tocbot.min.js',
-        'assets/main.js'
-      ];
-      jsList.forEach(p => {
+      // 核心脚本按依赖顺序加载
+      ['assets/libs/marked.min.js',
+       'assets/libs/tocbot.min.js',
+       'assets/main.js'
+      ].forEach(p => {
         const s = document.createElement('script');
         s.defer = true;
         s.src = url(p);
         document.head.appendChild(s);
       });
 
-      // 全站微信悬浮按钮（同样走 url()，与 CSS/JS 一致的缓存策略）
+      // 全站微信悬浮按钮（同样走 url()）
       const w = document.createElement('script');
       w.defer = true;
       w.src = url('assets/wechat-float.js');
       document.head.appendChild(w);
+    })();
+  </script>
+
+  <!-- 返回顶部逻辑（独立、零依赖） -->
+  <script>
+    (function () {
+      const btn = document.getElementById('backToTop');
+      if (!btn) return;
+      const onScroll = () => {
+        if (window.scrollY > 400) btn.classList.add('show');
+        else btn.classList.remove('show');
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      onScroll();
     })();
   </script>
 </body>
