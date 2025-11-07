@@ -1,6 +1,6 @@
 // /plus/assets/main.js
 // 首页：导航 / 推荐 / 列表（单一面板式文章流）/ 分页 / 搜索 / 右侧栏
-// 新增：可选“自动发现 posts”（GitHub API 扫描 content/posts/*.md），落盘缓存 + 回退到 index.json。
+// 要点：先渲染导航（避免因数据加载失败导致“导航空白”），其余保持现有自动发现与分页逻辑。
 
 /* ---------------- 工具 ---------------- */
 const q  = (sel, el=document)=>el.querySelector(sel);
@@ -30,47 +30,37 @@ function parseFrontMatter(mdText){
     const key = line.slice(0, idx).trim();
     let val = line.slice(idx+1).trim();
 
-    // 去掉首尾引号
     if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
       val = val.slice(1, -1);
     }
-
-    // 数组形式 [a, b]
     if (/^\[.*\]$/.test(val)) {
       fm[key] = val.replace(/^\[/,'').replace(/\]$/,'')
         .split(',').map(s=>s.trim().replace(/^['"]|['"]$/g,'')).filter(Boolean);
       return;
     }
-    // 逗号分隔 a, b
     if (val.includes(',') && (key==='tags' || key==='categories')) {
       fm[key] = val.split(',').map(s=>s.trim()).filter(Boolean);
       return;
     }
-    // 布尔/数字
     if (val === 'true')  { fm[key]=true;  return; }
     if (val === 'false') { fm[key]=false; return; }
-    if (!Number.isNaN(Number(val)) && val.trim() !== '') {
-      fm[key] = Number(val);
-      return;
-    }
+    if (!Number.isNaN(Number(val)) && val.trim() !== '') { fm[key] = Number(val); return; }
     fm[key] = val;
   });
 
-  const body = mdText.replace(re, ''); // 移除头部
+  const body = mdText.replace(re, '');
   return { fm, body };
 }
 
-/* 从 markdown 推断 excerpt（若无 fm.excerpt） */
 function deriveExcerptFromBody(body){
   if (!body) return '';
-  // 找第一段非空文本，去掉 Markdown 语法痕迹
   const p = body.split(/\n{2,}/).map(s=>s.trim()).find(s=>s && !/^#{1,6}\s+/.test(s));
   if (!p) return '';
   return p
-    .replace(/!\[[^\]]*\]\([^)]+\)/g,'')      // 图片
-    .replace(/\[[^\]]*\]\([^)]+\)/g,(m)=>m.replace(/\[|\]|\([^)]+\)/g,'')) // 链接文本
-    .replace(/`{1,3}[^`]+`{1,3}/g,'')         // 行内代码
-    .replace(/[*_~>#-]+/g,'')                 // 简单清理
+    .replace(/!\[[^\]]*\]\([^)]+\)/g,'')
+    .replace(/\[[^\]]*\]\([^)]+\)/g,(m)=>m.replace(/\[|\]|\([^)]+\)/g,''))
+    .replace(/`{1,3}[^`]+`{1,3}/g,'')
+    .replace(/[*_~>#-]+/g,'')
     .slice(0,140);
 }
 
@@ -82,21 +72,21 @@ init().catch(e=>console.error(e));
 /* ---------------- 入口 ---------------- */
 async function init(){
   // 1) 读取站点配置
-  SITE  = await getJSON('content/site.json').catch(()=>({}));
+  SITE = await getJSON('content/site.json').catch(()=>({}));
+
+  // ★ 先渲染导航，保证“主菜单立刻出现”
+  renderNav();
+
   const email = q('#siteEmail'); if (email) email.textContent = SITE.email || '';
 
-  // 2) 文章来源：优先 index.json；若 SITE.autoDiscoverPosts 则尝试 GitHub API 自动发现
+  // 2) 文章来源：index.json +（可选）自动发现 posts
   POSTS = await loadPosts();
 
   // 3) 搜索索引：优先 search.json；缺失则由 POSTS 生成
-  try {
-    SEARCH = await getJSON('content/search.json');
-  } catch (e) {
-    SEARCH = buildSearchFromPosts(POSTS);
-  }
+  try { SEARCH = await getJSON('content/search.json'); }
+  catch { SEARCH = buildSearchFromPosts(POSTS); }
 
-  // 4) 渲染
-  renderNav();
+  // 4) 渲染其它区域
   renderSidebar();
   renderWeChatFloat();
   renderRecommend();
@@ -107,27 +97,19 @@ async function init(){
 /* ---------------- 加载文章：index.json + 可选自动发现 ---------------- */
 async function loadPosts(){
   let indexPosts = [];
-  // 先尝试 index.json（即使后面要自动发现，也可用于兜底/去重）
-  try {
-    indexPosts = await getJSON('content/index.json');
-  } catch (_) {
-    indexPosts = [];
-  }
+  try { indexPosts = await getJSON('content/index.json'); } catch(_) { indexPosts = []; }
 
-  // 如果未开启自动发现，直接用 index.json
   if (!SITE.autoDiscoverPosts) {
     return normalizePosts(indexPosts);
   }
 
-  // 自动发现（GitHub API 扫描）
-  const repo   = SITE.repo   || '';     // e.g. "chatgptchongzhi/plus"
+  const repo   = SITE.repo   || '';
   const branch = SITE.branch || 'main';
   if (!/^[^\/]+\/[^\/]+$/.test(repo)) {
     console.warn('[autoDiscoverPosts] invalid repo, fallback to index.json');
     return normalizePosts(indexPosts);
   }
 
-  // 读取缓存
   const cacheMin = Math.max(1, Number(SITE.autoDiscoverCacheMinutes || 10));
   const cacheKey = `AUTO_POSTS_${repo}@${branch}`;
   try {
@@ -135,18 +117,14 @@ async function loadPosts(){
     if (raw) {
       const { ts, data } = JSON.parse(raw);
       if (Date.now() - ts < cacheMin * 60 * 1000) {
-        // 合并 index.json + 缓存（以 slug 去重，自动发现优先）
         return mergeBySlug(normalizePosts(data), normalizePosts(indexPosts));
       }
     }
   } catch(_) {}
 
-  // 真正扫描目录
   try {
     const discovered = await discoverPostsViaGitHub(repo, branch);
-    // 写缓存
     try { sessionStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: discovered })); } catch(_){}
-    // 合并并返回
     return mergeBySlug(normalizePosts(discovered), normalizePosts(indexPosts));
   } catch (e) {
     console.warn('[autoDiscoverPosts] failed, fallback to index.json', e);
@@ -154,7 +132,6 @@ async function loadPosts(){
   }
 }
 
-/* GitHub API 扫描 content/posts 目录，解析每篇 md 的 FM */
 async function discoverPostsViaGitHub(repo, branch='main'){
   const dirApi = `https://api.github.com/repos/${repo}/contents/content/posts?ref=${encodeURIComponent(branch)}`;
   const listRes = await fetch(dirApi);
@@ -163,17 +140,15 @@ async function discoverPostsViaGitHub(repo, branch='main'){
   const files = (Array.isArray(list)?list:[]).filter(it=>/\.md$/i.test(it.name));
 
   const posts = [];
-  // 逐篇取 raw 内容
   for (const f of files){
-    const name = f.name;                       // e.g. aaa-bbb.md
-    const slug = name.replace(/\.md$/i,'');    // 默认 slug
+    const name = f.name;
+    const slug = name.replace(/\.md$/i,'');
     const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/content/posts/${encodeURIComponent(name)}`;
     try{
       const res = await fetch(rawUrl);
       if (!res.ok) continue;
       const md = await res.text();
       const { fm, body } = parseFrontMatter(md);
-
       const p = {
         slug: fm.slug || slug,
         title: fm.title || slug,
@@ -192,7 +167,6 @@ async function discoverPostsViaGitHub(repo, branch='main'){
   return posts;
 }
 
-/* 规范化 post 字段；过滤无 slug 的项 */
 function normalizePosts(arr){
   return (Array.isArray(arr)?arr:[])
     .map(p=>({
@@ -210,16 +184,14 @@ function normalizePosts(arr){
     .filter(p=>p.slug);
 }
 
-/* 以 slug 合并：a 优先，b 兜底 */
 function mergeBySlug(a,b){
   const map = new Map();
-  for (const p of [...b, ...a]) { // 让 a 覆盖 b
+  for (const p of [...b, ...a]) {
     map.set(p.slug, { ...map.get(p.slug), ...p });
   }
   return [...map.values()];
 }
 
-/* 若没有 search.json，则用 POSTS 构建简单搜索索引 */
 function buildSearchFromPosts(posts){
   return (Array.isArray(posts)?posts:[]).map(p=>({
     slug: p.slug,
@@ -233,7 +205,8 @@ function buildSearchFromPosts(posts){
 function renderNav(){
   const ul = q('#navList');
   if(!ul) return;
-  ul.innerHTML = (SITE.nav||[]).map(group=>{
+  const groups = Array.isArray(SITE.nav)? SITE.nav : [];
+  ul.innerHTML = groups.map(group=>{
     const items = (group.children||[])
       .map(c=>`<a href="${buildLink(c.slug)}">${esc(c.label||c.slug)}</a>`)
       .join('');
@@ -250,7 +223,7 @@ function renderNav(){
   });
 }
 
-/* ---------------- 推荐区：置顶优先，再按日期 ---------------- */
+/* ---------------- 推荐区 ---------------- */
 function renderRecommend(){
   const grid = q('#recommendGrid'); if(!grid) return;
   const source = Array.isArray(POSTS) ? POSTS : [];
@@ -270,12 +243,10 @@ function renderRecommend(){
     </a>`).join('');
 }
 
-/* ---------------- 列表 + 分页（单一面板式文章流） ---------------- */
+/* ---------------- 列表 + 分页 ---------------- */
 function renderListWithPagination(){
   const qs = new URLSearchParams(location.search);
   const ps = Number(qs.get('page')||'1');
-
-  // 允许按分类过滤（来自面包屑点击）
   const categoryFilter = (qs.get('category')||'').trim().toLowerCase();
 
   let pageSize = Number(SITE.pageSize||8);
@@ -329,10 +300,8 @@ function renderList(items){
     </article>`).join('');
 }
 
-/* 稳健分页：数字 + 省略号；总页数<=1时隐藏容器 */
 function renderPagination(cur,total,categoryFilter){
   const c = q('#pagination'); if(!c) return;
-
   if(total<=1){ c.innerHTML=''; return; }
 
   const link = p => `${PREFIX}?page=${p}${categoryFilter?`&category=${encodeURIComponent(categoryFilter)}`:''}`;
@@ -356,7 +325,6 @@ function renderPagination(cur,total,categoryFilter){
   html += btn(Math.min(total, cur+1), '›', cur===total?'active-disabled':''); // 下一页
   c.innerHTML = html;
 
-  // 点击先回顶，再跳转，避免二页初始就显示“回到顶部”
   qa('.page-btn', c).forEach(a=>{
     const href = a.getAttribute('href');
     a.addEventListener('click', (e)=>{
@@ -369,8 +337,8 @@ function renderPagination(cur,total,categoryFilter){
 
 /* ---------------- 右侧栏 ---------------- */
 function renderSidebar(){
-  const aboutBox   = q('#aboutBox');
-  const adBox      = q('#adBox');
+  const aboutBox   = q('#sideBox1') || q('#aboutBox');
+  const adBox      = q('#sideBox2') || q('#adBox');
   const contactBox = q('#contactBox');
 
   if (aboutBox){
@@ -393,7 +361,7 @@ function renderSidebar(){
   }
 }
 
-/* ---------------- 搜索：输入时即时过滤 ---------------- */
+/* ---------------- 搜索 ---------------- */
 function bindSearch(){
   const i = q('#searchInput'); if(!i) return;
   let timer=null;
@@ -418,7 +386,7 @@ function bindSearch(){
   });
 }
 
-/* ---------------- 悬浮微信按钮占位图（仅首页） ---------------- */
+/* ---------------- 悬浮微信按钮（仅占位设置图） ---------------- */
 function renderWeChatFloat(){
   const img = q('#wfImg');
   if(img) img.src = SITE.wechatQrcode || '/plus/images/qrcode-wechat.png';
