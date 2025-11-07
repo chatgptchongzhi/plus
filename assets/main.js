@@ -179,7 +179,7 @@ async function discoverPostsViaGitHub(repo, branch = 'main', subdir = 'plus'){
   const tree = Array.isArray(j.tree) ? j.tree : [];
 
   // 2) 根据 subdir 计算前缀；subdir 为空时前缀就是 'content/posts/'
-  const base   = (subdir || '').replace(/^\/|\/$//g, '');               // '' 或 'plus'
+  const base   = (subdir || '').replace(/^\/|\/$/g, '');                // '' 或 'plus'
   const prefix = (base ? `${base}/` : '') + 'content/posts/';
 
   // 只保留 posts 下的 .md
