@@ -31,7 +31,7 @@ async function init(){
   renderWeChatFloat();
   renderRecommend();
   bindSearch();
-  renderListWithPagination();
+  renderListWithPagination(); // 支持 ?page= 与 ?category=
 
   const email = q('#siteEmail');
   if (email) email.textContent = SITE.email || '';
@@ -80,31 +80,46 @@ function renderRecommend(){
 
 /* ============ 列表 + 分页（单一面板式文章流） ============ */
 function renderListWithPagination(){
-  const ps = Number(new URLSearchParams(location.search).get('page')||'1');
+  const params = new URLSearchParams(location.search);
+  const ps = Number(params.get('page')||'1');
+  const catParam = (params.get('category')||'').trim().toLowerCase();
 
-  // —— 关键保险：pageSize 落在 [3,30]，避免“只有 1 页”导致不出分页
+  // —— 关键保险：pageSize 落在 [3,30]
   let pageSize = Number(SITE.pageSize||8);
   if (!Number.isFinite(pageSize)) pageSize = 8;
   pageSize = Math.min(30, Math.max(3, pageSize));
 
-  const source = Array.isArray(POSTS) ? POSTS : [];
+  const all = Array.isArray(POSTS) ? POSTS : [];
+  const sorted = [...all].sort((a,b)=>(b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||''));
+
+  // 支持从文章页面包屑跳转来的 ?category= 过滤（分类/分区/标签任一命中即可）
+  const filtered = catParam ? sorted.filter(p => matchCategory(p, catParam)) : sorted;
 
   const list = q('#articleList');
   if (list) list.classList.add('article-list');
 
-  if (!source.length){
-    if (list) list.innerHTML = '<div style="color:#999;">（暂无文章或 index.json 加载失败）</div>';
+  if (!filtered.length){
+    if (list) list.innerHTML = '<div style="color:#999;">（暂无文章）</div>';
     const p = q('#pagination'); if(p) p.innerHTML='';
     return;
   }
 
-  const sorted = [...source].sort((a,b)=>(b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||''));
-  const total = Math.ceil(sorted.length / pageSize);
+  const total = Math.ceil(filtered.length / pageSize);
   const start = (ps-1)*pageSize;
-  const pageItems = sorted.slice(start, start+pageSize);
+  const pageItems = filtered.slice(start, start+pageSize);
 
   renderList(pageItems);
-  renderPagination(ps,total);
+  renderPagination(ps,total, catParam ? {category:catParam} : null);
+}
+
+function matchCategory(p, cat){
+  const c = cat.toLowerCase();
+  const pool = [];
+  if (p.category) pool.push(String(p.category));
+  if (Array.isArray(p.categories)) pool.push(...p.categories.map(String));
+  if (p.section) pool.push(String(p.section));
+  if (Array.isArray(p.tags)) pool.push(...p.tags.map(String));
+  return pool.some(x => (x||'').toLowerCase() === c);
 }
 
 function renderList(items){
@@ -121,19 +136,23 @@ function renderList(items){
         <div class="article-excerpt">${esc(p.excerpt||'')}</div>
         <div class="article-meta"><span>${fmtDate(p.date)}</span><span>阅读 ${p.views??0}</span></div>
         <div class="article-tags">
-          ${(p.tags||[]).map(t=>`<a class="tag" href="${PREFIX}tags.html?tag=${encodeURIComponent(t)}">${esc('#'+t)}</a>`).join('')}
+          ${(p.tags||[]).map(t=>`<a class="tag" href="${PREFIX}?category=${encodeURIComponent(t)}">${esc('#'+t)}</a>`).join('')}
         </div>
       </div>
     </article>`).join('');
 }
 
 /* —— 稳健分页：数字 + 省略号；总页数<=1时隐藏容器 —— */
-function renderPagination(cur,total){
+function renderPagination(cur,total, extraQuery){
   const c = q('#pagination'); if(!c) return;
-
   if(total<=1){ c.innerHTML=''; return; }
 
-  const link = p => `${PREFIX}?page=${p}`;
+  const base = new URLSearchParams(extraQuery||{});
+  const link = p => {
+    const u = new URLSearchParams(base);
+    u.set('page', String(p));
+    return `${PREFIX}?${u.toString()}`;
+  };
   const btn  = (p,txt,cls='')=>`<a class="page-btn ${cls}" href="${link(p)}" data-page="${p}">${txt}</a>`;
   const ell  = `<span class="page-ellipsis">…</span>`;
 
@@ -155,7 +174,7 @@ function renderPagination(cur,total){
   html += btn(Math.min(total, cur+1), '›', cur===total?'active-disabled':''); // 下一页
   c.innerHTML = html;
 
-  // 点击先回顶，再跳转，避免二页初始就显示“回到顶部”
+  // 点击先回顶，再跳转，避免第二页初始就显示“回到顶部”
   qa('.page-btn', c).forEach(a=>{
     const href = a.getAttribute('href');
     a.addEventListener('click', (e)=>{
@@ -168,9 +187,10 @@ function renderPagination(cur,total){
 
 /* ============ 右侧栏 ============ */
 function renderSidebar(){
-  const aboutBox   = q('#aboutBox');
-  const adBox      = q('#adBox');
-  const contactBox = q('#contactBox');
+  // 兼容两种命名：aboutBox/adBox/contactBox 与 sideBox1/sideBox2
+  const aboutBox   = q('#aboutBox')   || q('#sideBox1');
+  const adBox      = q('#adBox')      || q('#sideBox2');
+  const contactBox = q('#contactBox'); // 可选
 
   if (aboutBox){
     aboutBox.innerHTML = `<h3>关于本站</h3><div>${SITE.sidebar?.about || '专注 ChatGPT / Sora 教程与充值引导。'}</div>`;
