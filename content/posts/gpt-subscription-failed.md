@@ -1,6 +1,6 @@
 ---
 title: ChatGPT 订阅失败怎么办？2000字终极排错与预防指南（含清单与模板）
-slug: gpt subscription failed
+slug: gpt-subscription-failed
 date: 2025-11-07
 tags: [ChatGPT, ChatGPT 订阅失败,ChatGPT Plus,chatgpt 充值失败]
 categories: [ChatGPT]
