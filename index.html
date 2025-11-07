@@ -6,7 +6,7 @@
   <title>木子AI</title>
   <meta name="description" content="ChatGPT / Sora / AI 工具教程与充值引导" />
 
-  <!-- 只保留一个 link；由 JS 统一注入时间戳避免缓存 -->
+  <!-- 单一样式入口；由 JS 统一注入时间戳避免缓存 -->
   <link id="site-css" rel="stylesheet" href="/plus/assets/style.css" />
 
   <!-- 统一的路径/版本工具：先定义，再切换 CSS 到带时间戳的地址 -->
@@ -15,8 +15,8 @@
     const BUILD_VERSION = Date.now();
     const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
     (function () {
-      var link = document.getElementById('site-css');
-      if (link) link.href = url('assets/style.css');
+      const link = document.getElementById('site-css');
+      if (link) link.href = url('assets/style.css'); // 防缓存：统一追加时间戳
     })();
   </script>
 </head>
@@ -26,7 +26,7 @@
   <header class="navbar shadow">
     <a class="logo" href="/plus/">木子AI</a>
     <nav class="nav">
-      <ul id="navList" class="nav-list"><!-- 由 JS 根据 site.json 渲染 --></ul>
+      <ul id="navList" class="nav-list"><!-- 由 JS 根据站点数据渲染 --></ul>
     </nav>
     <div class="search">
       <span class="icon">🔍</span>
@@ -38,19 +38,19 @@
   <div class="container">
     <main class="main-col">
       <!-- 推荐区 -->
-      <section id="recommend" class="card recommend-box">
-        <h2 class="block-title"><i class="bar"></i>ChatGPT 使用必读文章</h2>
+      <section id="recommend" class="card recommend-box" aria-labelledby="recommendTitle">
+        <h2 id="recommendTitle" class="block-title"><i class="bar"></i>ChatGPT 使用必读文章</h2>
         <div id="recommendGrid" class="grid-2"></div>
       </section>
 
-      <!-- 文章列表 -->
-      <section class="article-list" id="articleList"></section>
+      <!-- 文章列表：单一面板式文章流（父容器），所有条目由 assets/main.js 追加为 .article-card 行项 -->
+      <section class="article-list" id="articleList" aria-label="文章列表"></section>
 
       <!-- 分页 -->
-      <div id="pagination" class="pagination"></div>
+      <nav id="pagination" class="pagination" aria-label="分页导航"></nav>
     </main>
 
-    <!-- 右侧栏：两个正方形容器（随文档滚动；效果由 style.css 控制） -->
+    <!-- 右侧栏：两个正方形容器（随文档滚动；样式在 style.css） -->
     <aside id="sidebar" class="sidebar sticky side-squares">
       <section class="card side-square" id="sideBox1"><!-- JS 注入内容 --></section>
       <section class="card side-square" id="sideBox2"><!-- JS 注入内容 --></section>
@@ -61,7 +61,7 @@
     © 2025 木子科技 · 本站内容仅供学习交流，侵权请联系删除 · <span id="siteEmail"></span>
   </footer>
 
-  <!-- 返回顶部按钮（样式已在 /plus/assets/style.css 中） -->
+  <!-- 返回顶部按钮（样式在 /plus/assets/style.css） -->
   <div id="backToTop" aria-label="返回顶部" title="返回顶部">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M12 5l-7 7m7-7l7 7M12 5v14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -71,18 +71,16 @@
   <!-- 动态注入脚本（统一走 url()，避免固定 ?v=0） -->
   <script>
     (function () {
-      // 核心脚本按依赖顺序加载
-      ['assets/libs/marked.min.js',
-       'assets/libs/tocbot.min.js',
-       'assets/main.js'
-      ].forEach(p => {
+      // 首页不需要 marked / tocbot，移除避免冗余与潜在冲突
+      // 按依赖顺序加载：业务脚本 -> 全站挂件
+      ['assets/main.js'].forEach(p => {
         const s = document.createElement('script');
         s.defer = true;
         s.src = url(p);
         document.head.appendChild(s);
       });
 
-      // 全站微信悬浮按钮（同样走 url()）
+      // 全站微信悬浮按钮
       const w = document.createElement('script');
       w.defer = true;
       w.src = url('assets/wechat-float.js');
