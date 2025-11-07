@@ -24,8 +24,7 @@
   <!-- 顶部导航 -->
   <header class="navbar shadow">
     <a class="logo" href="/plus/">木子AI</a>
-    <!-- 重要：补上 class="nav"，以命中 .navbar .nav 的间距/右移规则 -->
-    <nav class="nav"><ul id="navList" class="nav-list"></ul></nav>
+    <nav><ul id="navList" class="nav-list"></ul></nav>
     <div class="search"><span class="icon">🔍</span><input id="searchJump" type="search" placeholder="搜索"></div>
   </header>
 
@@ -49,8 +48,8 @@
       <div id="postNav" class="post-nav"></div>
     </main>
 
-    <!-- 右侧栏：两个正方形容器（桌面端 fixed，移动端随文档；行为由 style.css 控制） -->
-    <aside class="sidebar sticky side-squares" id="sidebar">
+    <!-- 右侧栏：两个正方形容器（上：目录；下：推广/联系位） -->
+    <aside class="sidebar sticky side-squares">
       <section class="card side-square">
         <h3>目录</h3>
         <nav id="toc" class="toc"></nav>
@@ -63,7 +62,7 @@
     © 2025 木子科技 · <span id="siteEmail"></span>
   </footer>
 
-  <!-- 返回顶部按钮（样式在 /plus/assets/style.css 的 #backToTop） -->
+  <!-- 返回顶部按钮（样式在 /plus/assets/style.css 中的 #backToTop） -->
   <div id="backToTop" aria-label="返回顶部" title="返回顶部">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M12 5l-7 7m7-7l7 7M12 5v14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
