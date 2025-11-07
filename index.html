@@ -9,7 +9,7 @@
   <!-- 只保留一个 link；由 JS 统一注入时间戳避免缓存 -->
   <link id="site-css" rel="stylesheet" href="/plus/assets/style.css" />
 
-  <!-- 统一路径 & 版本工具（先定义，再切换 CSS 到带时间戳的地址） -->
+  <!-- 统一的路径/版本工具：先定义，再切换 CSS 到带时间戳的地址 -->
   <script>
     const PREFIX = '/plus/';
     const BUILD_VERSION = Date.now();
@@ -50,7 +50,7 @@
       <div id="pagination" class="pagination"></div>
     </main>
 
-    <!-- 右侧栏：两个正方形容器（桌面端 fixed，移动端跟随文档；行为由 style.css 控制） -->
+    <!-- 右侧栏：两个正方形容器（随文档滚动；效果由 style.css 控制） -->
     <aside id="sidebar" class="sidebar sticky side-squares">
       <section class="card side-square" id="sideBox1"><!-- JS 注入内容 --></section>
       <section class="card side-square" id="sideBox2"><!-- JS 注入内容 --></section>
@@ -72,10 +72,9 @@
   <script>
     (function () {
       // 核心脚本按依赖顺序加载
-      [
-        'assets/libs/marked.min.js',
-        'assets/libs/tocbot.min.js',
-        'assets/main.js'
+      ['assets/libs/marked.min.js',
+       'assets/libs/tocbot.min.js',
+       'assets/main.js'
       ].forEach(p => {
         const s = document.createElement('script');
         s.defer = true;
