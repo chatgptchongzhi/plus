@@ -43,7 +43,6 @@ body{ padding-top: var(--nav-h); }
   background:#fff; border-bottom:1px solid var(--line);
   display:flex; align-items:center; gap:24px;
   padding:14px 24px;
-  /* 与 --nav-h 对齐，保证高度稳定：行高(约32) + 上下内边距(28) ≈ 60，略放宽 */
   min-height: var(--nav-h);
 }
 @media (min-width:1280px){ .navbar{padding:14px 32px} }
@@ -56,6 +55,7 @@ body{ padding-top: var(--nav-h); }
 
 /* 主菜单 */
 .nav-list{display:flex;align-items:center;justify-content:flex-start;gap:20px;margin:0;padding:0;list-style:none}
+.nav-list a{ color: var(--text); } /* 显式保证菜单文字可见 */
 .nav-item{position:relative;font-weight:700;font-size:16px}
 .nav-item>a{padding:8px 0;display:inline-flex;align-items:center;gap:6px}
 .nav-item::after{
@@ -65,7 +65,7 @@ body{ padding-top: var(--nav-h); }
 .nav-item:hover::after{transform:rotate(135deg);border-color:var(--primary)}
 .submenu{
   position:absolute;left:0;top:100%;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);
-  border-radius:8px;padding:8px 10px;display:none;min-width:200px
+  border-radius:8px;padding:8px 10px;display:none;min-width:200px; z-index:1001;
 }
 .nav-item:hover .submenu{display:block}
 .submenu a{display:block;padding:8px 10px;border-radius:6px;color:#333}
