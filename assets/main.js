@@ -1,9 +1,23 @@
-/plus/assets/main.js
-```js
+// /plus/assets/main.js
 // 首页：导航 / 推荐 / 列表（单一面板式文章流）/ 分页 / 搜索 / 右侧栏
-// 支持“自动发现 posts”（GitHub API 扫描 plus/content/posts/*.md），与 index.json 合并去重。
-// 需在 content/site.json 中开启：autoDiscoverPosts:true，并配置 repo/branch，repoSubdir 默认从 PREFIX 推断为 "plus"
+// 自动发现 posts（GitHub API 扫描 plus/content/posts/*.md），与 index.json 合并去重。
+// 不再强依赖页面注入的 url()/PREFIX/BUILD_VERSION，内部自带兜底。
 
+/* ---------------- 安全 URL 工具（兜底） ---------------- */
+(function ensureGlobals(){
+  if (typeof window.BUILD_VERSION === 'undefined') {
+    window.BUILD_VERSION = Date.now();
+  }
+  if (typeof window.PREFIX !== 'string' || !/^\/.+\/$/.test(window.PREFIX)) {
+    // 默认按 /plus/ 作为站点子路径
+    window.PREFIX = '/plus/';
+  }
+  if (typeof window.url !== 'function') {
+    window.url = function(p){ return `${window.PREFIX}${p}?v=${window.BUILD_VERSION}`; };
+  }
+})();
+
+/* ---------------- 工具 ---------------- */
 const q  = (sel, el=document)=>el.querySelector(sel);
 const qa = (sel, el=document)=>[...el.querySelectorAll(sel)];
 
@@ -59,17 +73,21 @@ function deriveExcerptFromBody(body){
   const p = body.split(/\n{2,}/).map(s=>s.trim()).find(s=>s && !/^#{1,6}\s+/.test(s));
   if (!p) return '';
   return p
-    .replace(/!\[[^\]]*\]\([^)]+\)/g,'')                        // 图片
-    .replace(/\[[^\]]*\]\([^)]+\)/g,(m)=>m.replace(/\[|\]|\([^)]+\)/g,'')) // 链接仅留文本
-    .replace(/`{1,3}[^`]+`{1,3}/g,'')                           // 行内代码
-    .replace(/[*_~>#-]+/g,'')                                   // 其它标记
+    .replace(/!\[[^\]]*\]\([^)]+\)/g,'')
+    .replace(/\[[^\]]*\]\([^)]+\)/g,(m)=>m.replace(/\[|\]|\([^)]+\)/g,''))
+    .replace(/`{1,3}[^`]+`{1,3}/g,'')
+    .replace(/[*_~>#-]+/g,'')
     .slice(0,140);
 }
 
 /* ---------------- 全局状态 ---------------- */
 let SITE={}, POSTS=[], SEARCH=[];
 
-init().catch(e=>console.error(e));
+init().catch(e=>{
+  console.error('[main.init] failed:', e);
+  // 兜底：只用 index.json 渲染，避免整页空白
+  fallbackRenderWithIndexOnly().catch(err=>console.error('[fallback] failed:', err));
+});
 
 /* ---------------- 入口 ---------------- */
 async function init(){
@@ -84,6 +102,10 @@ async function init(){
   try { SEARCH = await getJSON('content/search.json'); }
   catch (_) { SEARCH = buildSearchFromPosts(POSTS); }
 
+  // 暴露，便于自检脚本查看
+  window.SITE = SITE;
+  window.POSTS = POSTS;
+
   // 4) 渲染
   renderNav();
   renderSidebar();
@@ -91,6 +113,15 @@ async function init(){
   renderRecommend();
   bindSearch();
   renderListWithPagination();
+}
+
+/* 兜底：只用 index.json 渲染首页（当 autoDiscover 出错时） */
+async function fallbackRenderWithIndexOnly(){
+  SITE  = await getJSON('content/site.json').catch(()=>({}));
+  POSTS = await getJSON('content/index.json').catch(()=>[]);
+  window.SITE = SITE;
+  window.POSTS = POSTS;
+  renderNav(); renderSidebar(); renderWeChatFloat(); renderRecommend(); bindSearch(); renderListWithPagination();
 }
 
 /* ---------------- 加载文章：index.json + 可选自动发现 ---------------- */
@@ -102,18 +133,16 @@ async function loadPosts(){
     return normalizePosts(indexPosts);
   }
 
-  const repo   = SITE.repo   || '';
+  const repo   = SITE.repo   || '';              // e.g. "chatgptchongzhi/plus"
   const branch = SITE.branch || 'main';
-  // 子目录（默认由 PREFIX 推断为 "plus"），用于 monorepo
-  const repoSubdir = (SITE.repoSubdir || String(typeof PREFIX==='string'?PREFIX:'/plus/'))
-                      .replace(/^\/|\/$/g,'');
+  // 必须为 "plus"（与你当前仓库子目录一致）
+  const repoSubdir = SITE.repoSubdir || (String(typeof PREFIX==='string'?PREFIX:'/plus/').replace(/^\/|\/$/g,''));
 
   if (!/^[^\/]+\/[^\/]+$/.test(repo) || !repoSubdir) {
     console.warn('[autoDiscoverPosts] invalid repo or subdir, fallback to index.json');
     return normalizePosts(indexPosts);
   }
 
-  // 读取 sessionStorage 缓存（默认 10 分钟）
   const cacheMin = Math.max(1, Number(SITE.autoDiscoverCacheMinutes || 10));
   const cacheKey = `AUTO_POSTS_${repo}@${branch}/${repoSubdir}`;
   try {
@@ -126,7 +155,6 @@ async function loadPosts(){
     }
   } catch(_) {}
 
-  // 真正扫描 GitHub 目录
   try {
     const discovered = await discoverPostsViaGitHub(repo, branch, repoSubdir);
     try { sessionStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: discovered })); } catch(_){}
@@ -137,9 +165,9 @@ async function loadPosts(){
   }
 }
 
-/* GitHub API 扫描 {subdir}/content/posts 目录，解析每篇 md 的 Front-Matter */
+/* GitHub API 扫描 plus/content/posts 目录，解析每篇 md 的 Front-Matter */
 async function discoverPostsViaGitHub(repo, branch='main', subdir='plus'){
-  const dirApi = `https://api.github.com/repos/${repo}/contents/${encodeURIComponent(subdir)}/content/posts?ref=${encodeURIComponent(branch)}&ts=${Date.now()}`;
+  const dirApi = `https://api.github.com/repos/${repo}/contents/${encodeURIComponent(subdir)}/content/posts?ref=${encodeURIComponent(branch)}`;
   const listRes = await fetch(dirApi, { cache: 'no-store' });
   if (!listRes.ok) throw new Error('GitHub API list failed: '+listRes.status);
   const list = await listRes.json();
@@ -149,8 +177,7 @@ async function discoverPostsViaGitHub(repo, branch='main', subdir='plus'){
   for (const f of files){
     const name = f.name;                       // e.g. hello.md
     const slug = name.replace(/\.md$/i,'');
-    // raw.githubusercontent 路径加时间戳避免 CDN 旧缓存
-    const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${encodeURIComponent(subdir)}/content/posts/${encodeURIComponent(name)}?ts=${Date.now()}`;
+    const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${encodeURIComponent(subdir)}/content/posts/${encodeURIComponent(name)}`;
     try{
       const res = await fetch(rawUrl, { cache: 'no-store' });
       if (!res.ok) continue;
@@ -158,6 +185,7 @@ async function discoverPostsViaGitHub(repo, branch='main', subdir='plus'){
       const { fm, body } = parseFrontMatter(md);
 
       const p = {
+        file: name,                             // ★ 记录原始 md 文件名，详情页可兜底用
         slug: fm.slug || slug,
         title: fm.title || slug,
         date: fm.date || '',
@@ -179,6 +207,7 @@ async function discoverPostsViaGitHub(repo, branch='main', subdir='plus'){
 function normalizePosts(arr){
   return (Array.isArray(arr)?arr:[])
     .map(p=>({
+      file: p.file || '',   // 允许后续兜底
       slug: p.slug || '',
       title: p.title || p.slug || '',
       date: p.date || '',
