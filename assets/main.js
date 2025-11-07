@@ -17,19 +17,12 @@ let SITE={}, POSTS=[], SEARCH=[];
 init().catch(e=>console.error(e));
 
 async function init(){
-  // 1) 基础数据
   SITE  = await getJSON('content/site.json');
   POSTS = await getJSON('content/index.json');
 
-  // 2) search.json 容错：缺失或语法错误都不阻塞页面
-  try {
-    SEARCH = await getJSON('content/search.json');
-  } catch (e) {
-    console.warn('[search.json] not found or invalid, fallback to []', e);
-    SEARCH = [];
-  }
+  try { SEARCH = await getJSON('content/search.json'); }
+  catch(e){ console.warn('[search.json] not found or invalid, fallback to []'); SEARCH=[]; }
 
-  // 3) 渲染
   renderNav();
   renderSidebar();
   renderWeChatFloat();
@@ -42,7 +35,7 @@ async function init(){
   if (email) email.textContent = SITE.email || '';
 }
 
-/* ============ 导航 + 防闪退二级菜单 ============ */
+/* ============ 导航 ============ */
 function renderNav(){
   const ul = q('#navList');
   if(!ul) return;
@@ -63,16 +56,11 @@ function renderNav(){
   });
 }
 
-/* ============ 推荐区：置顶优先，再按日期 ============ */
+/* ============ 推荐区 ============ */
 function renderRecommend(){
-  const grid = q('#recommendGrid');
-  if(!grid) return;
-
+  const grid = q('#recommendGrid'); if(!grid) return;
   const source = Array.isArray(POSTS) ? POSTS : [];
-  if (!source.length){
-    grid.innerHTML = '<div style="color:#999;padding:8px 0;">（暂无推荐内容）</div>';
-    return;
-  }
+  if (!source.length){ grid.innerHTML = '<div style="color:#999;padding:8px 0;">（暂无推荐内容）</div>'; return; }
 
   const rec = [...source]
     .sort((a,b)=>(b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||''))
@@ -85,8 +73,7 @@ function renderRecommend(){
         <div class="title">${esc(p.title)}</div>
         <div class="rec-meta">${fmtDate(p.date)} · 阅读 ${p.views??0}</div>
       </div>
-    </a>
-  `).join('');
+    </a>`).join('');
 }
 
 /* ============ 列表 + 分页（单一面板式文章流） ============ */
@@ -96,7 +83,7 @@ function renderListWithPagination(){
   const source = Array.isArray(POSTS) ? POSTS : [];
 
   const list = q('#articleList');
-  if (list) list.classList.add('article-list'); // 强制确保为单一父容器（与 CSS 面板样式对齐）
+  if (list) list.classList.add('article-list');
 
   if (!source.length){
     if (list) list.innerHTML = '<div style="color:#999;">（暂无文章或 index.json 加载失败）</div>';
@@ -114,15 +101,9 @@ function renderListWithPagination(){
 }
 
 function renderList(items){
-  const list = q('#articleList');
-  if(!list) return;
+  const list = q('#articleList'); if(!list) return;
+  if (!items.length){ list.innerHTML = '<div style="color:#999;">（暂无文章）</div>'; return; }
 
-  if (!items.length){
-    list.innerHTML = '<div style="color:#999;">（暂无文章）</div>';
-    return;
-  }
-
-  // 单一父容器内渲染“行项”（媒体对象），不再包独立卡片容器
   list.innerHTML = items.map(p=>`
     <article class="article-card">
       <a class="article-thumb-link" href="${buildLink(p.slug)}" aria-label="${esc(p.title)}">
@@ -131,30 +112,56 @@ function renderList(items){
       <div class="article-content">
         <a class="article-title" href="${buildLink(p.slug)}">${esc(p.title)}</a>
         <div class="article-excerpt">${esc(p.excerpt||'')}</div>
-        <div class="article-meta">
-          <span>${fmtDate(p.date)}</span><span>阅读 ${p.views??0}</span>
-        </div>
+        <div class="article-meta"><span>${fmtDate(p.date)}</span><span>阅读 ${p.views??0}</span></div>
         <div class="article-tags">
           ${(p.tags||[]).map(t=>`<a class="tag" href="${PREFIX}tags.html?tag=${encodeURIComponent(t)}">${esc('#'+t)}</a>`).join('')}
         </div>
       </div>
-    </article>
-  `).join('');
+    </article>`).join('');
 }
 
+/* 页码：数字+省略形式（如 1 2 … 10 11 … 101） */
 function renderPagination(cur,total){
-  const c = q('#pagination');
-  if(!c) return;
+  const c = q('#pagination'); if(!c) return;
   if(total<=1){ c.innerHTML=''; return; }
-  const btn = (p,txt,cls='')=>`<a class="page-btn ${cls}" href="${PREFIX}?page=${p}">${txt}</a>`;
+
+  const btn = (p,txt,cls='')=>`<a class="page-btn ${cls}" href="${PREFIX}?page=${p}" data-page="${p}">${txt}</a>`;
+  const ell = `<span class="page-ellipsis">…</span>`;
+
+  // 生成页码序列（窗口大小 5）
+  const pages = [];
+  const windowSize = 5;
+  const add = p => { if(p>=1 && p<=total && !pages.includes(p)) pages.push(p); };
+
+  add(1); add(2);
+  for(let i=cur-2;i<=cur+2;i++) add(i);
+  add(total-1); add(total);
+  pages.sort((a,b)=>a-b);
+
   let html = '';
-  if(cur>1) html += btn(cur-1,'上一页');
-  for(let i=1;i<=total;i++) html += btn(i,i, i===cur?'active':'');
-  if(cur<total) html += btn(cur+1,'下一页');
+  // 上一页
+  html += btn(Math.max(1, cur-1), '‹', cur===1?'disabled':'');
+  // 数字 + 省略
+  for(let i=0;i<pages.length;i++){
+    const p = pages[i], prev = pages[i-1];
+    if(i>0 && p-prev>1) html += ell;
+    html += btn(p, p, p===cur?'active':'');
+  }
+  // 下一页
+  html += btn(Math.min(total, cur+1), '›', cur===total?'disabled':'');
   c.innerHTML = html;
+
+  // 交互：点击页码前先滚到顶部，避免“第二页刚进来就出现大箭头”
+  qa('.page-btn', c).forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      window.scrollTo(0,0);
+      location.href = a.getAttribute('href');
+    });
+  });
 }
 
-/* ============ 右侧栏（两个容器，首页也保持） ============ */
+/* ============ 右侧栏 ============ */
 function renderSidebar(){
   const aboutBox   = q('#aboutBox');
   const adBox      = q('#adBox');
@@ -163,7 +170,6 @@ function renderSidebar(){
   if (aboutBox){
     aboutBox.innerHTML = `<h3>关于本站</h3><div>${SITE.sidebar?.about || '专注 ChatGPT / Sora 教程与充值引导。'}</div>`;
   }
-
   if (adBox){
     const ad = SITE.sidebar?.ad || {};
     adBox.innerHTML = `<h3>${esc(ad.title||'推广')}</h3>
@@ -173,7 +179,6 @@ function renderSidebar(){
         <a class="btn" href="${ad.buttonLink||'#'}" target="_blank">${esc(ad.buttonText||'了解更多')}</a>
       </div>`;
   }
-
   if (contactBox){
     const c = SITE.sidebar?.contact || {};
     contactBox.innerHTML = `<h3>${esc(c.title||'联系木子')}</h3>
@@ -182,10 +187,9 @@ function renderSidebar(){
   }
 }
 
-/* ============ 搜索（输入时即时过滤） ============ */
+/* ============ 搜索（输入即过滤） ============ */
 function bindSearch(){
-  const i = q('#searchInput');
-  if(!i) return;
+  const i = q('#searchInput'); if(!i) return;
   let timer=null;
   i.addEventListener('input', e=>{
     clearTimeout(timer);
