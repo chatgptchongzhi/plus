@@ -64,5 +64,11 @@
   "excerpt": "虚拟卡教程：从原理到实操的系统指南（合法合规版）。",
   "top": false,
   "views": 0
- }
+  },
+{
+  "slug": "chatgpt-payment-failed-troubleshooting",
+  "title": "ChatGPT 充值失败解决方案：AVS、3DS、BIN、MCC 一次说清",
+  "date": "2025-11-05",
+  "cover": "/plus/images/banner-plus.jpg"
+}
 ]
