@@ -1,9 +1,9 @@
 /* ==========================================================================
-   /plus/assets/style.css  —— 统一样式（两栏布局 + 右侧栏随文档滚动 + 返回顶部按钮）
+   /plus/assets/style.css  —— 两栏布局 + 右侧栏 fixed（桌面）+ 返回顶部按钮
    2025-11-07
-   - 右侧栏改为随全局滚动（取消所有 fixed/position:right 覆盖）
-   - 左侧页边距 = 当前基础值 × 3（不改变主内容区盒子宽度）
-   - 添加返回顶部按钮样式（#backToTop）
+   - 右侧栏：桌面端 position: fixed；移动端不固定
+   - 清理：移除会把 fixed 变回 static 的覆盖/重复规则
+   - 保留：左侧页边距三倍化、不改主内容盒宽度；返回顶部按钮样式
    ========================================================================== */
 
 /* ===== 基础变量 ===== */
@@ -15,10 +15,10 @@
   --bg:#fff;
   --shadow:0 2px 8px rgba(0,0,0,.05);
 
-  /* 右侧栏宽度（保留变量以备后续需要） */
+  /* 右侧栏宽度（桌面） */
   --sbw: 340px;
 
-  /* 左侧基础间距（随后在断点里覆盖），用于三倍放大 */
+  /* 左侧基础间距（用于三倍放大） */
   --left-gap-base: 24px;
 }
 /* 断点下动态定义基础左间距 */
@@ -106,24 +106,34 @@ main{min-width:0}
 /* 保障主列在网格中不溢出 */
 .container > .main-col { min-width:0; }
 
-/* ===== 右侧栏：随页面滚动（取消 fixed） ===== */
-/* 移动端 */
+/* ===== 右侧栏：移动端非固定 / 桌面端 fixed ===== */
+/* 移动端：不固定 */
 @media (max-width: 991.98px){
-  .sidebar.sticky{ position:static; top:auto; width:100%; max-height:none; overflow:visible; }
-}
-/* 桌面端：同样保持随文档滚动 */
-@media (min-width: 992px){
-  .main-col{ margin-right: 0 !important; }   /* 清除旧版为 fixed 让位的外边距 */
   .sidebar.sticky{
-    position: static !important;
-    top: auto !important;
-    right: auto !important;
-    width: 100% !important;
-    max-height: none !important;
-    overflow: visible !important;
-    z-index: auto !important;
+    position:static; top:auto; right:auto; width:100%;
+    max-height:none; overflow:visible; z-index:auto;
   }
 }
+/* 桌面端：固定在视口右侧，滚动始终可见 */
+@media (min-width: 992px){
+  /* 主列让出右侧栏宽度，避免遮挡 */
+  .main-col{ margin-right: calc(var(--sbw) + 30px); } /* 30px 作间距 */
+
+  .sidebar.sticky{
+    position: fixed;
+    top: 100px;                      /* 与导航高度配合，可微调 */
+    width: var(--sbw);
+    max-height: calc(100vh - 120px); /* 视口高度-顶部余量，避免超出 */
+    overflow: auto;
+    z-index: 5;
+  }
+}
+/* 与容器右 padding 对齐（断点 right 值） */
+@media (min-width:992px) and (max-width:1279px){ .sidebar.sticky{ right:72px;  } }
+@media (min-width:1280px) and (max-width:1439px){ .sidebar.sticky{ right:96px;  } }
+@media (min-width:1440px) and (max-width:1599px){ .sidebar.sticky{ right:96px;  } }
+@media (min-width:1600px) and (max-width:1919px){ .sidebar.sticky{ right:108px; } }
+@media (min-width:1920px){                              .sidebar.sticky{ right:144px; } }
 
 /* 右侧“两块正方形容器” */
 .side-squares{ display:flex; flex-direction:column; gap:20px; }
@@ -209,7 +219,7 @@ main{min-width:0}
 .wechat-float.show .qr{display:block;}
 @media (max-width:768px){ .wechat-float{right:20px; bottom:100px;} }
 
-/* ===== 返回顶部按钮（样式就绪；HTML+JS 见说明） ===== */
+/* ===== 返回顶部按钮（样式就绪；HTML+JS 见页面） ===== */
 #backToTop{
   position:fixed; right:28px; bottom:28px; z-index:10000;
   width:48px; height:48px; border-radius:12px;
