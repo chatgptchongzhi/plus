@@ -1,5 +1,5 @@
 // /plus/assets/main.js
-// 首页：导航 / 推荐 / 列表 / 分页 / 搜索 / 右侧栏（容错：search.json 缺失也能运行）
+// 首页：导航 / 推荐 / 列表（单一面板式文章流）/ 分页 / 搜索 / 右侧栏（容错：search.json 缺失也能运行）
 
 const q  = (sel, el=document)=>el.querySelector(sel);
 const qa = (sel, el=document)=>[...el.querySelectorAll(sel)];
@@ -10,7 +10,7 @@ async function getJSON(path){
   return r.json();
 }
 function esc(s){return (s??'').toString().replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))}
-function fmtDate(s){return s}
+function fmtDate(s){return s || '';}
 function buildLink(slug){return `${PREFIX}article.html?v=${BUILD_VERSION}&slug=${encodeURIComponent(slug)}`}
 
 let SITE={}, POSTS=[], SEARCH=[];
@@ -89,14 +89,16 @@ function renderRecommend(){
   `).join('');
 }
 
-/* ============ 列表 + 分页 ============ */
+/* ============ 列表 + 分页（单一面板式文章流） ============ */
 function renderListWithPagination(){
   const ps = Number(new URLSearchParams(location.search).get('page')||'1');
   const pageSize = SITE.pageSize || 8;
   const source = Array.isArray(POSTS) ? POSTS : [];
 
+  const list = q('#articleList');
+  if (list) list.classList.add('article-list'); // 强制确保为单一父容器（与 CSS 面板样式对齐）
+
   if (!source.length){
-    const list = q('#articleList');
     if (list) list.innerHTML = '<div style="color:#999;">（暂无文章或 index.json 加载失败）</div>';
     const p = q('#pagination'); if(p) p.innerHTML='';
     return;
@@ -120,9 +122,10 @@ function renderList(items){
     return;
   }
 
+  // 单一父容器内渲染“行项”（媒体对象），不再包独立卡片容器
   list.innerHTML = items.map(p=>`
     <article class="article-card">
-      <a href="${buildLink(p.slug)}">
+      <a class="article-thumb-link" href="${buildLink(p.slug)}" aria-label="${esc(p.title)}">
         <img class="article-thumb" src="${p.cover||'/plus/images/banner-plus.jpg'}" alt="${esc(p.title)}">
       </a>
       <div class="article-content">
