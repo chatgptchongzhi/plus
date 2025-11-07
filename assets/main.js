@@ -136,7 +136,10 @@ async function loadPosts(){
   const repo   = SITE.repo   || '';              // e.g. "chatgptchongzhi/plus"
   const branch = SITE.branch || 'main';
   // 必须为 "plus"（与你当前仓库子目录一致）
-  const repoSubdir = SITE.repoSubdir || (String(typeof PREFIX==='string'?PREFIX:'/plus/').replace(/^\/|\/$/g,''));
+  const repoSubdir = (SITE.repoSubdir === undefined
+  ? String(typeof PREFIX==='string'?PREFIX:'/plus/').replace(/^\/|\/$/g,'')
+  : SITE.repoSubdir);  // 允许空字符串 ""，不回退
+
 
   if (!/^[^\/]+\/[^\/]+$/.test(repo) || !repoSubdir) {
     console.warn('[autoDiscoverPosts] invalid repo or subdir, fallback to index.json');
