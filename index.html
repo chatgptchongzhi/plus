@@ -25,21 +25,21 @@
   <!-- 顶部导航 -->
   <header class="navbar shadow">
     <a class="logo" href="/plus/">木子AI</a>
-    <nav class="nav">
+    <nav class="nav" aria-label="主导航">
       <ul id="navList" class="nav-list"><!-- 由 JS 根据站点数据渲染 --></ul>
     </nav>
     <div class="search">
-      <span class="icon">🔍</span>
-      <input id="searchInput" type="search" placeholder="请输入关键词" />
+      <span class="icon" aria-hidden="true">🔍</span>
+      <input id="searchInput" type="search" placeholder="请输入关键词" aria-label="站内搜索" />
     </div>
   </header>
 
   <!-- 两栏容器 -->
   <div class="container">
-    <main class="main-col">
+    <main class="main-col" role="main">
       <!-- 推荐区 -->
       <section id="recommend" class="card recommend-box" aria-labelledby="recommendTitle">
-        <h2 id="recommendTitle" class="block-title"><i class="bar"></i>ChatGPT 使用必读文章</h2>
+        <h2 id="recommendTitle" class="block-title"><i class="bar" aria-hidden="true"></i>ChatGPT 使用必读文章</h2>
         <div id="recommendGrid" class="grid-2"></div>
       </section>
 
@@ -51,7 +51,7 @@
     </main>
 
     <!-- 右侧栏：两个正方形容器（随文档滚动；样式在 style.css） -->
-    <aside id="sidebar" class="sidebar sticky side-squares">
+    <aside id="sidebar" class="sidebar sticky side-squares" aria-label="侧栏">
       <section class="card side-square" id="sideBox1"><!-- JS 注入内容 --></section>
       <section class="card side-square" id="sideBox2"><!-- JS 注入内容 --></section>
     </aside>
@@ -71,7 +71,7 @@
   <!-- 动态注入脚本（统一走 url()，避免固定 ?v=0） -->
   <script>
     (function () {
-      // 首页不需要 marked / tocbot，移除避免冗余与潜在冲突
+      // 首页不需要 marked / tocbot，避免冗余与潜在冲突
       // 按依赖顺序加载：业务脚本 -> 全站挂件
       ['assets/main.js'].forEach(p => {
         const s = document.createElement('script');
