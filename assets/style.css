@@ -50,7 +50,14 @@ body{ padding-top: var(--nav-h); }
 
 .logo{font-weight:800;color:var(--primary);font-size:18px}
 .nav{ flex:1 1 auto; min-width:0; }
-.search{margin-left:auto;background:#f5f5f5;border-radius:999px;padding:6px 12px;display:flex;align-items:center;gap:8px}
+
+/* 搜索框：保持在右，但“向左边偏移一点”——通过增加右外边距实现 */
+.search{
+  margin-left:auto;
+  margin-right: 36px; /* ← 原来紧贴右侧，这里左移一些 */
+  background:#f5f5f5;border-radius:999px;padding:6px 12px;display:flex;align-items:center;gap:8px
+}
+@media (min-width:1600px){ .search{ margin-right: 52px; } } /* 大屏再左移一点 */
 .search input{border:none;background:transparent;outline:0;min-width:200px}
 
 /* 主菜单 */
@@ -140,7 +147,7 @@ main{min-width:0}
 /* ===== 首页文章列表 —— 单一面板式文章流 ===== */
 .article-list{
   background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow);
-  padding:4px 16px; /* 顶底的间距由每条 item 控制 */
+  padding:4px 16px;
 }
 .article-card{
   display:grid; grid-template-columns:260px 1fr; column-gap:24px;
@@ -148,7 +155,11 @@ main{min-width:0}
 }
 .article-card + .article-card{ border-top:1px solid var(--line); }
 .article-thumb{ width:260px; height:146px; border-radius:8px; object-fit:cover; }
-.article-title{ display:block; font-size:18px; margin:0 0 8px; font-weight:700; }
+
+/* ←← 这里把首页文章列表区标题加大一些 */
+.article-title{ display:block; font-size:20px; margin:0 0 8px; font-weight:700; }
+@media (max-width:991.98px){ .article-title{ font-size:18px; } }
+
 .article-title:hover{ color:var(--primary); }
 .article-excerpt{ font-size:14px; color:#555; margin:6px 0 10px; }
 .article-meta{ font-size:12px; color:#888; display:flex; gap:16px; flex-wrap:wrap; }
@@ -208,5 +219,5 @@ main{min-width:0}
   opacity:0; pointer-events:none; transform:translateY(10px);
   transition:opacity .25s ease, transform .25s ease;
 }
-#backToTop svg{ width:24px; height:24px; flex:0 0 24px; }  /* ← 锁定图标尺寸，避免“巨大箭头” */
+#backToTop svg{ width:24px; height:24px; flex:0 0 24px; }
 #backToTop.show{ opacity:1; pointer-events:auto; transform:translateY(0); }
