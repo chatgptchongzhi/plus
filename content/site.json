@@ -82,5 +82,6 @@
   "autoDiscoverPosts": true,
   "autoDiscoverCacheMinutes": 10,
   "repo": "chatgptchongzhi/plus",
-  "branch": "main"
+  "branch": "main",
+  "repoSubdir": "plus"
 }
