@@ -1,12 +1,14 @@
+/plus/assets/main.js
+```js
 // 首页：导航 / 推荐 / 列表（单一面板式文章流）/ 分页 / 搜索 / 右侧栏
 // 支持“自动发现 posts”（GitHub API 扫描 plus/content/posts/*.md），与 index.json 合并去重。
-// 需在 content/site.json 中开启：autoDiscoverPosts:true，并配置 repo/branch/repoSubdir(=plus)
+// 需在 content/site.json 中开启：autoDiscoverPosts:true，并配置 repo/branch，repoSubdir 默认从 PREFIX 推断为 "plus"
 
 const q  = (sel, el=document)=>el.querySelector(sel);
 const qa = (sel, el=document)=>[...el.querySelectorAll(sel)];
 
 async function getJSON(path){
-  const r = await fetch(url(path));
+  const r = await fetch(url(path), { cache: 'no-store' });
   if(!r.ok) throw new Error(path+' load failed');
   return r.json();
 }
@@ -57,10 +59,10 @@ function deriveExcerptFromBody(body){
   const p = body.split(/\n{2,}/).map(s=>s.trim()).find(s=>s && !/^#{1,6}\s+/.test(s));
   if (!p) return '';
   return p
-    .replace(/!\[[^\]]*\]\([^)]+\)/g,'')
-    .replace(/\[[^\]]*\]\([^)]+\)/g,(m)=>m.replace(/\[|\]|\([^)]+\)/g,''))
-    .replace(/`{1,3}[^`]+`{1,3}/g,'')
-    .replace(/[*_~>#-]+/g,'')
+    .replace(/!\[[^\]]*\]\([^)]+\)/g,'')                        // 图片
+    .replace(/\[[^\]]*\]\([^)]+\)/g,(m)=>m.replace(/\[|\]|\([^)]+\)/g,'')) // 链接仅留文本
+    .replace(/`{1,3}[^`]+`{1,3}/g,'')                           // 行内代码
+    .replace(/[*_~>#-]+/g,'')                                   // 其它标记
     .slice(0,140);
 }
 
@@ -100,16 +102,18 @@ async function loadPosts(){
     return normalizePosts(indexPosts);
   }
 
-  const repo   = SITE.repo   || '';              // e.g. "chatgptchongzhi/plus"
+  const repo   = SITE.repo   || '';
   const branch = SITE.branch || 'main';
-  // 子目录（必须为 "plus"），若未显式配置则按 PREFIX 推断
-  const repoSubdir = SITE.repoSubdir || (String(typeof PREFIX==='string'?PREFIX:'/plus/').replace(/^\/|\/$/g,''));
+  // 子目录（默认由 PREFIX 推断为 "plus"），用于 monorepo
+  const repoSubdir = (SITE.repoSubdir || String(typeof PREFIX==='string'?PREFIX:'/plus/'))
+                      .replace(/^\/|\/$/g,'');
 
   if (!/^[^\/]+\/[^\/]+$/.test(repo) || !repoSubdir) {
     console.warn('[autoDiscoverPosts] invalid repo or subdir, fallback to index.json');
     return normalizePosts(indexPosts);
   }
 
+  // 读取 sessionStorage 缓存（默认 10 分钟）
   const cacheMin = Math.max(1, Number(SITE.autoDiscoverCacheMinutes || 10));
   const cacheKey = `AUTO_POSTS_${repo}@${branch}/${repoSubdir}`;
   try {
@@ -122,6 +126,7 @@ async function loadPosts(){
     }
   } catch(_) {}
 
+  // 真正扫描 GitHub 目录
   try {
     const discovered = await discoverPostsViaGitHub(repo, branch, repoSubdir);
     try { sessionStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: discovered })); } catch(_){}
@@ -132,10 +137,10 @@ async function loadPosts(){
   }
 }
 
-/* GitHub API 扫描 plus/content/posts 目录，解析每篇 md 的 Front-Matter */
+/* GitHub API 扫描 {subdir}/content/posts 目录，解析每篇 md 的 Front-Matter */
 async function discoverPostsViaGitHub(repo, branch='main', subdir='plus'){
-  const dirApi = `https://api.github.com/repos/${repo}/contents/${encodeURIComponent(subdir)}/content/posts?ref=${encodeURIComponent(branch)}`;
-  const listRes = await fetch(dirApi);
+  const dirApi = `https://api.github.com/repos/${repo}/contents/${encodeURIComponent(subdir)}/content/posts?ref=${encodeURIComponent(branch)}&ts=${Date.now()}`;
+  const listRes = await fetch(dirApi, { cache: 'no-store' });
   if (!listRes.ok) throw new Error('GitHub API list failed: '+listRes.status);
   const list = await listRes.json();
   const files = (Array.isArray(list)?list:[]).filter(it=>/\.md$/i.test(it.name));
@@ -144,9 +149,10 @@ async function discoverPostsViaGitHub(repo, branch='main', subdir='plus'){
   for (const f of files){
     const name = f.name;                       // e.g. hello.md
     const slug = name.replace(/\.md$/i,'');
-    const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${encodeURIComponent(subdir)}/content/posts/${encodeURIComponent(name)}`;
+    // raw.githubusercontent 路径加时间戳避免 CDN 旧缓存
+    const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${encodeURIComponent(subdir)}/content/posts/${encodeURIComponent(name)}?ts=${Date.now()}`;
     try{
-      const res = await fetch(rawUrl);
+      const res = await fetch(rawUrl, { cache: 'no-store' });
       if (!res.ok) continue;
       const md = await res.text();
       const { fm, body } = parseFrontMatter(md);
@@ -212,7 +218,7 @@ function renderNav(){
   if(!ul) return;
   const groups = SITE.nav || [];
   if (!Array.isArray(groups) || groups.length===0){
-    ul.innerHTML = ''; // 没有导航数据不输出空壳
+    ul.innerHTML = '';
     return;
   }
   ul.innerHTML = groups.map(group=>{
