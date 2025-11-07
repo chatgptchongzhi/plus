@@ -1,12 +1,10 @@
 /* ==========================================================================
-   /plus/assets/style.css  —— 统一样式（两栏布局 + 右侧栏随文档滚动 + 返回顶部按钮）
-   2025-11-07
-   - 字体整体缩小（布局与定位保持不变）
-   - 右侧栏随全局滚动
-   - 左侧页边距 = 当前基础值 × 3（不改变主内容区盒子宽度）
-   - 返回顶部按钮样式（#backToTop）
-   - 首页文章区：独立卡片 -> 单一面板式文章流
-   - 新增：导航栏全站固定在顶部（fixed），文章页也固定
+   统一样式（两栏布局 + 右侧栏随文档滚动 + 返回顶部按钮）
+   2025-11-07 最终版（清单ID：4427108）
+   - 导航栏全站固定在顶部（首页 & 文章页）
+   - 主菜单文字可见且不丢失
+   - 搜索框向左微调
+   - 首页文章区标题稍微变大
    ========================================================================== */
 
 /* ===== 基础变量 ===== */
@@ -18,8 +16,7 @@
   --bg:#fff;
   --shadow:0 2px 8px rgba(0,0,0,.05);
 
-  --sbw: 340px;               /* 右侧栏预留变量 */
-  --left-gap-base: 24px;      /* 左侧基础间距（断点里覆盖） */
+  --left-gap-base: 24px;
 
   /* 固定导航高度（用于给 body 让位，避免内容被遮挡） */
   --nav-h: 64px;
@@ -34,10 +31,9 @@ html,body{margin:0;padding:0;color:var(--text);font:14px/1.7 -apple-system,Blink
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 
-/* 让出固定导航的高度（所有页面生效） */
 body{ padding-top: var(--nav-h); }
 
-/* ===== Header / Nav（改为 fixed） ===== */
+/* ===== Header / Nav（fixed） ===== */
 .navbar{
   position:fixed; top:0; left:0; right:0; z-index:1000;
   background:#fff; border-bottom:1px solid var(--line);
@@ -50,14 +46,13 @@ body{ padding-top: var(--nav-h); }
 
 .logo{font-weight:800;color:var(--primary);font-size:18px}
 .nav{ flex:1 1 auto; min-width:0; }
-
-/* 搜索框：保持在右，但“向左边偏移一点”——通过增加右外边距实现 */
+/* —— 搜索框：向左微调（减少贴右边的距离） —— */
 .search{
   margin-left:auto;
-  margin-right: 36px; /* ← 原来紧贴右侧，这里左移一些 */
-  background:#f5f5f5;border-radius:999px;padding:6px 12px;display:flex;align-items:center;gap:8px
+  margin-right:16px;            /* ⬅ 微调向左 */
+  background:#f5f5f5;border-radius:999px;padding:6px 12px;
+  display:flex;align-items:center;gap:8px
 }
-@media (min-width:1600px){ .search{ margin-right: 52px; } } /* 大屏再左移一点 */
 .search input{border:none;background:transparent;outline:0;min-width:200px}
 
 /* 主菜单 */
@@ -112,7 +107,7 @@ main{min-width:0}
 .sidebar, aside{min-width:0}
 .container > .main-col { min-width:0; }
 
-/* ===== 右侧栏随文档滚动 ===== */
+/* ===== 右侧栏随文档滚动（不再 fixed） ===== */
 @media (max-width: 991.98px){
   .sidebar.sticky{ position:static; top:auto; width:100%; max-height:none; overflow:visible; }
 }
@@ -155,11 +150,8 @@ main{min-width:0}
 }
 .article-card + .article-card{ border-top:1px solid var(--line); }
 .article-thumb{ width:260px; height:146px; border-radius:8px; object-fit:cover; }
-
-/* ←← 这里把首页文章列表区标题加大一些 */
+/* —— 标题稍微大一些 —— */
 .article-title{ display:block; font-size:20px; margin:0 0 8px; font-weight:700; }
-@media (max-width:991.98px){ .article-title{ font-size:18px; } }
-
 .article-title:hover{ color:var(--primary); }
 .article-excerpt{ font-size:14px; color:#555; margin:6px 0 10px; }
 .article-meta{ font-size:12px; color:#888; display:flex; gap:16px; flex-wrap:wrap; }
