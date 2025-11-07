@@ -21,11 +21,12 @@
 </head>
 
 <body>
-  <!-- 顶部导航 -->
+  <!-- 顶部导航（修复：给 nav 补上 class="nav"） -->
   <header class="navbar shadow">
     <a class="logo" href="/plus/">木子AI</a>
-    <nav><ul id="navList" class="nav-list"></ul></nav>
-    <div class="search"><span class="icon">🔍</span><input id="searchJump" type="search" placeholder="搜索"></div>
+    <nav class="nav"><ul id="navList" class="nav-list"></ul></nav>
+    <!-- 修复：搜索框 id 与首页保持一致，便于脚本复用 -->
+    <div class="search"><span class="icon">🔍</span><input id="searchInput" type="search" placeholder="搜索"></div>
   </header>
 
   <!-- 两栏容器 -->
