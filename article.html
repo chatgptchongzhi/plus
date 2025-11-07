@@ -5,17 +5,18 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>文章 - 木子AI</title>
 
-  <!-- 只保留一个link，不带?v -->
-  <link id="site-css" rel="stylesheet" href="/plus/assets/style.css">
+  <!-- 只保留一个 link，不带 ?v；稍后用 JS 注入时间戳规避缓存 -->
+  <link id="site-css" rel="stylesheet" href="/plus/assets/style.css" />
 
-  <!-- 先定义工具函数，再给link注入时间戳 -->
+  <!-- 统一路径/版本工具：先定义，再切换 CSS 到带时间戳的地址 -->
   <script>
-    const PREFIX='/plus/';
-    const BUILD_VERSION=Date.now();
-    const url=p=>`${PREFIX}${p}?v=${BUILD_VERSION}`;
-  </script>
-  <script>
-    document.getElementById('site-css').href = url('assets/style.css');
+    const PREFIX = '/plus/';
+    const BUILD_VERSION = Date.now();
+    const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
+    (function () {
+      var link = document.getElementById('site-css');
+      if (link) link.href = url('assets/style.css');
+    })();
   </script>
 </head>
 
@@ -61,30 +62,47 @@
     © 2025 木子科技 · <span id="siteEmail"></span>
   </footer>
 
-  <!-- 动态注入脚本（带时间戳）替代固定 ?v=0 -->
+  <!-- 返回顶部按钮（样式在 /plus/assets/style.css 中的 #backToTop） -->
+  <div id="backToTop" aria-label="返回顶部" title="返回顶部">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 5l-7 7m7-7l7 7M12 5v14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <!-- 动态注入脚本（统一走 url()，避免固定版本号），保持依赖顺序 -->
   <script>
-    const JS_LIST = [
-      'assets/libs/marked.min.js',
-      'assets/libs/tocbot.min.js',
-      'assets/article.js?v=2' // 如需强制一次升级可保留 v=2；后续也可改为不带版本：'assets/article.js'
-    ];
-    JS_LIST.forEach(p => {
-      const s = document.createElement('script');
-      s.defer = true;
-      // 如果条目里已经自带 ?v=2 则直接拼前缀；否则用统一时间戳
-      s.src = p.includes('?') ? (PREFIX + p) : url(p);
-      document.head.appendChild(s);
-    });
+    (function () {
+      [
+        'assets/libs/marked.min.js',
+        'assets/libs/tocbot.min.js',
+        'assets/article.js'
+      ].forEach(p => {
+        const s = document.createElement('script');
+        s.defer = true;
+        s.src = url(p);
+        document.head.appendChild(s);
+      });
+
+      // 全站微信悬浮按钮（同样走 url()）
+      const w = document.createElement('script');
+      w.defer = true;
+      w.src = url('assets/wechat-float.js');
+      document.head.appendChild(w);
+    })();
   </script>
 
-  <!-- 全站微信悬浮按钮（自动注入，已防缓存） -->
+  <!-- 返回顶部逻辑（独立、零依赖） -->
   <script>
-    window.PREFIX = window.PREFIX || '/plus/';
     (function () {
-      var s = document.createElement('script');
-      s.src = window.PREFIX + 'assets/wechat-float.js?v=' + Date.now();
-      s.defer = true;
-      document.head.appendChild(s);
+      const btn = document.getElementById('backToTop');
+      if (!btn) return;
+      const onScroll = () => {
+        if (window.scrollY > 400) btn.classList.add('show');
+        else btn.classList.remove('show');
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      onScroll();
     })();
   </script>
 </body>
