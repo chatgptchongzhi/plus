@@ -17,16 +17,18 @@ let SITE={}, POSTS=[], SEARCH=[];
 init().catch(e=>console.error(e));
 
 async function init(){
+  // 基础数据
   SITE  = await getJSON('content/site.json');
   POSTS = await getJSON('content/index.json');
 
+  // search.json 容错
   try { SEARCH = await getJSON('content/search.json'); }
   catch(e){ console.warn('[search.json] not found or invalid, fallback to []'); SEARCH=[]; }
 
+  // 渲染
   renderNav();
   renderSidebar();
   renderWeChatFloat();
-
   renderRecommend();
   bindSearch();
   renderListWithPagination();
@@ -79,7 +81,12 @@ function renderRecommend(){
 /* ============ 列表 + 分页（单一面板式文章流） ============ */
 function renderListWithPagination(){
   const ps = Number(new URLSearchParams(location.search).get('page')||'1');
-  const pageSize = SITE.pageSize || 8;
+
+  // —— 关键保险：pageSize 落在 [3,30]，避免“只有 1 页”导致不出分页
+  let pageSize = Number(SITE.pageSize||8);
+  if (!Number.isFinite(pageSize)) pageSize = 8;
+  pageSize = Math.min(30, Math.max(3, pageSize));
+
   const source = Array.isArray(POSTS) ? POSTS : [];
 
   const list = q('#articleList');
@@ -120,43 +127,41 @@ function renderList(items){
     </article>`).join('');
 }
 
-/* 页码：数字+省略形式（如 1 2 … 10 11 … 101） */
+/* —— 稳健分页：数字 + 省略号；总页数<=1时隐藏容器 —— */
 function renderPagination(cur,total){
   const c = q('#pagination'); if(!c) return;
+
   if(total<=1){ c.innerHTML=''; return; }
 
-  const btn = (p,txt,cls='')=>`<a class="page-btn ${cls}" href="${PREFIX}?page=${p}" data-page="${p}">${txt}</a>`;
-  const ell = `<span class="page-ellipsis">…</span>`;
+  const link = p => `${PREFIX}?page=${p}`;
+  const btn  = (p,txt,cls='')=>`<a class="page-btn ${cls}" href="${link(p)}" data-page="${p}">${txt}</a>`;
+  const ell  = `<span class="page-ellipsis">…</span>`;
 
-  // 生成页码序列（窗口大小 5）
+  // 页码窗口（current±2）+ 两端保留
   const pages = [];
-  const windowSize = 5;
   const add = p => { if(p>=1 && p<=total && !pages.includes(p)) pages.push(p); };
-
   add(1); add(2);
   for(let i=cur-2;i<=cur+2;i++) add(i);
   add(total-1); add(total);
   pages.sort((a,b)=>a-b);
 
   let html = '';
-  // 上一页
-  html += btn(Math.max(1, cur-1), '‹', cur===1?'disabled':'');
-  // 数字 + 省略
+  html += btn(Math.max(1, cur-1), '‹', cur===1?'active-disabled':'');   // 上一页
   for(let i=0;i<pages.length;i++){
     const p = pages[i], prev = pages[i-1];
     if(i>0 && p-prev>1) html += ell;
     html += btn(p, p, p===cur?'active':'');
   }
-  // 下一页
-  html += btn(Math.min(total, cur+1), '›', cur===total?'disabled':'');
+  html += btn(Math.min(total, cur+1), '›', cur===total?'active-disabled':''); // 下一页
   c.innerHTML = html;
 
-  // 交互：点击页码前先滚到顶部，避免“第二页刚进来就出现大箭头”
+  // 点击先回顶，再跳转，避免二页初始就显示“回到顶部”
   qa('.page-btn', c).forEach(a=>{
+    const href = a.getAttribute('href');
     a.addEventListener('click', (e)=>{
       e.preventDefault();
       window.scrollTo(0,0);
-      location.href = a.getAttribute('href');
+      location.href = href;
     });
   });
 }
@@ -187,7 +192,7 @@ function renderSidebar(){
   }
 }
 
-/* ============ 搜索（输入即过滤） ============ */
+/* ============ 搜索 ============ */
 function bindSearch(){
   const i = q('#searchInput'); if(!i) return;
   let timer=null;
@@ -202,7 +207,7 @@ function bindSearch(){
         (s.tags||[]).some(t=>t.toLowerCase().includes(kw))
       ).map(s=>POSTS.find(p=>p.slug===s.slug)).filter(Boolean);
       renderList(res);
-      const p = q('#pagination'); if(p) p.innerHTML='';
+      const p = q('#pagination'); if(p) p.innerHTML='';  // 搜索时隐藏分页
     }, 300);
   });
 }
