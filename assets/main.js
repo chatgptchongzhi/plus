@@ -1,8 +1,7 @@
-// /plus/assets/main.js
 // 首页：导航 / 推荐 / 列表（单一面板式文章流）/ 分页 / 搜索 / 右侧栏
-// 要点：先渲染导航（避免因数据加载失败导致“导航空白”），其余保持现有自动发现与分页逻辑。
+// 支持“自动发现 posts”（GitHub API 扫描 plus/content/posts/*.md），与 index.json 合并去重。
+// 需在 content/site.json 中开启：autoDiscoverPosts:true，并配置 repo/branch/repoSubdir(=plus)
 
-/* ---------------- 工具 ---------------- */
 const q  = (sel, el=document)=>el.querySelector(sel);
 const qa = (sel, el=document)=>[...el.querySelectorAll(sel)];
 
@@ -15,7 +14,7 @@ function esc(s){return (s??'').toString().replace(/[&<>"']/g,m=>({ '&':'&amp;','
 function fmtDate(s){return s || '';}
 function buildLink(slug){return `${PREFIX}article.html?v=${BUILD_VERSION}&slug=${encodeURIComponent(slug)}`}
 
-/* Front-Matter 解析：返回 { fm, body } */
+/* -------- Front-Matter 解析：返回 { fm, body } -------- */
 function parseFrontMatter(mdText){
   if (!mdText) return { fm:{}, body:'' };
   const re = /^---\s*[\r\n]+([\s\S]*?)\r?\n---\s*[\r\n]*/;
@@ -52,6 +51,7 @@ function parseFrontMatter(mdText){
   return { fm, body };
 }
 
+/* 从 markdown 推断 excerpt（若无 fm.excerpt） */
 function deriveExcerptFromBody(body){
   if (!body) return '';
   const p = body.split(/\n{2,}/).map(s=>s.trim()).find(s=>s && !/^#{1,6}\s+/.test(s));
@@ -72,21 +72,18 @@ init().catch(e=>console.error(e));
 /* ---------------- 入口 ---------------- */
 async function init(){
   // 1) 读取站点配置
-  SITE = await getJSON('content/site.json').catch(()=>({}));
-
-  // ★ 先渲染导航，保证“主菜单立刻出现”
-  renderNav();
-
+  SITE  = await getJSON('content/site.json').catch(()=>({}));
   const email = q('#siteEmail'); if (email) email.textContent = SITE.email || '';
 
-  // 2) 文章来源：index.json +（可选）自动发现 posts
+  // 2) 文章来源：index.json +（可选）自动发现
   POSTS = await loadPosts();
 
   // 3) 搜索索引：优先 search.json；缺失则由 POSTS 生成
   try { SEARCH = await getJSON('content/search.json'); }
-  catch { SEARCH = buildSearchFromPosts(POSTS); }
+  catch (_) { SEARCH = buildSearchFromPosts(POSTS); }
 
-  // 4) 渲染其它区域
+  // 4) 渲染
+  renderNav();
   renderSidebar();
   renderWeChatFloat();
   renderRecommend();
@@ -103,15 +100,18 @@ async function loadPosts(){
     return normalizePosts(indexPosts);
   }
 
-  const repo   = SITE.repo   || '';
+  const repo   = SITE.repo   || '';              // e.g. "chatgptchongzhi/plus"
   const branch = SITE.branch || 'main';
-  if (!/^[^\/]+\/[^\/]+$/.test(repo)) {
-    console.warn('[autoDiscoverPosts] invalid repo, fallback to index.json');
+  // 子目录（必须为 "plus"），若未显式配置则按 PREFIX 推断
+  const repoSubdir = SITE.repoSubdir || (String(typeof PREFIX==='string'?PREFIX:'/plus/').replace(/^\/|\/$/g,''));
+
+  if (!/^[^\/]+\/[^\/]+$/.test(repo) || !repoSubdir) {
+    console.warn('[autoDiscoverPosts] invalid repo or subdir, fallback to index.json');
     return normalizePosts(indexPosts);
   }
 
   const cacheMin = Math.max(1, Number(SITE.autoDiscoverCacheMinutes || 10));
-  const cacheKey = `AUTO_POSTS_${repo}@${branch}`;
+  const cacheKey = `AUTO_POSTS_${repo}@${branch}/${repoSubdir}`;
   try {
     const raw = sessionStorage.getItem(cacheKey);
     if (raw) {
@@ -123,7 +123,7 @@ async function loadPosts(){
   } catch(_) {}
 
   try {
-    const discovered = await discoverPostsViaGitHub(repo, branch);
+    const discovered = await discoverPostsViaGitHub(repo, branch, repoSubdir);
     try { sessionStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: discovered })); } catch(_){}
     return mergeBySlug(normalizePosts(discovered), normalizePosts(indexPosts));
   } catch (e) {
@@ -132,8 +132,9 @@ async function loadPosts(){
   }
 }
 
-async function discoverPostsViaGitHub(repo, branch='main'){
-  const dirApi = `https://api.github.com/repos/${repo}/contents/content/posts?ref=${encodeURIComponent(branch)}`;
+/* GitHub API 扫描 plus/content/posts 目录，解析每篇 md 的 Front-Matter */
+async function discoverPostsViaGitHub(repo, branch='main', subdir='plus'){
+  const dirApi = `https://api.github.com/repos/${repo}/contents/${encodeURIComponent(subdir)}/content/posts?ref=${encodeURIComponent(branch)}`;
   const listRes = await fetch(dirApi);
   if (!listRes.ok) throw new Error('GitHub API list failed: '+listRes.status);
   const list = await listRes.json();
@@ -141,14 +142,15 @@ async function discoverPostsViaGitHub(repo, branch='main'){
 
   const posts = [];
   for (const f of files){
-    const name = f.name;
+    const name = f.name;                       // e.g. hello.md
     const slug = name.replace(/\.md$/i,'');
-    const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/content/posts/${encodeURIComponent(name)}`;
+    const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${encodeURIComponent(subdir)}/content/posts/${encodeURIComponent(name)}`;
     try{
       const res = await fetch(rawUrl);
       if (!res.ok) continue;
       const md = await res.text();
       const { fm, body } = parseFrontMatter(md);
+
       const p = {
         slug: fm.slug || slug,
         title: fm.title || slug,
@@ -167,6 +169,7 @@ async function discoverPostsViaGitHub(repo, branch='main'){
   return posts;
 }
 
+/* 规范化 post 字段；过滤无 slug 的项 */
 function normalizePosts(arr){
   return (Array.isArray(arr)?arr:[])
     .map(p=>({
@@ -184,6 +187,7 @@ function normalizePosts(arr){
     .filter(p=>p.slug);
 }
 
+/* 以 slug 合并：a 覆盖 b（自动发现优先），b 兜底（index.json） */
 function mergeBySlug(a,b){
   const map = new Map();
   for (const p of [...b, ...a]) {
@@ -192,6 +196,7 @@ function mergeBySlug(a,b){
   return [...map.values()];
 }
 
+/* 若没有 search.json，则用 POSTS 构建简单索引 */
 function buildSearchFromPosts(posts){
   return (Array.isArray(posts)?posts:[]).map(p=>({
     slug: p.slug,
@@ -201,11 +206,15 @@ function buildSearchFromPosts(posts){
   }));
 }
 
-/* ---------------- 导航 ---------------- */
+/* ---------------- 导航（全站一致） ---------------- */
 function renderNav(){
   const ul = q('#navList');
   if(!ul) return;
-  const groups = Array.isArray(SITE.nav)? SITE.nav : [];
+  const groups = SITE.nav || [];
+  if (!Array.isArray(groups) || groups.length===0){
+    ul.innerHTML = ''; // 没有导航数据不输出空壳
+    return;
+  }
   ul.innerHTML = groups.map(group=>{
     const items = (group.children||[])
       .map(c=>`<a href="${buildLink(c.slug)}">${esc(c.label||c.slug)}</a>`)
@@ -223,7 +232,7 @@ function renderNav(){
   });
 }
 
-/* ---------------- 推荐区 ---------------- */
+/* ---------------- 推荐区：置顶优先，再按日期 ---------------- */
 function renderRecommend(){
   const grid = q('#recommendGrid'); if(!grid) return;
   const source = Array.isArray(POSTS) ? POSTS : [];
@@ -243,10 +252,11 @@ function renderRecommend(){
     </a>`).join('');
 }
 
-/* ---------------- 列表 + 分页 ---------------- */
+/* ---------------- 列表 + 分页（单一面板式文章流） ---------------- */
 function renderListWithPagination(){
   const qs = new URLSearchParams(location.search);
   const ps = Number(qs.get('page')||'1');
+
   const categoryFilter = (qs.get('category')||'').trim().toLowerCase();
 
   let pageSize = Number(SITE.pageSize||8);
@@ -300,8 +310,10 @@ function renderList(items){
     </article>`).join('');
 }
 
+/* 稳健分页：数字 + 省略号；总页数<=1时隐藏容器 */
 function renderPagination(cur,total,categoryFilter){
   const c = q('#pagination'); if(!c) return;
+
   if(total<=1){ c.innerHTML=''; return; }
 
   const link = p => `${PREFIX}?page=${p}${categoryFilter?`&category=${encodeURIComponent(categoryFilter)}`:''}`;
@@ -361,7 +373,7 @@ function renderSidebar(){
   }
 }
 
-/* ---------------- 搜索 ---------------- */
+/* ---------------- 搜索：输入时即时过滤 ---------------- */
 function bindSearch(){
   const i = q('#searchInput'); if(!i) return;
   let timer=null;
@@ -386,7 +398,7 @@ function bindSearch(){
   });
 }
 
-/* ---------------- 悬浮微信按钮（仅占位设置图） ---------------- */
+/* ---------------- 悬浮微信按钮占位图（仅首页） ---------------- */
 function renderWeChatFloat(){
   const img = q('#wfImg');
   if(img) img.src = SITE.wechatQrcode || '/plus/images/qrcode-wechat.png';
