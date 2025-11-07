@@ -1,6 +1,6 @@
 // /plus/assets/main.js
 // 首页：导航 / 推荐 / 列表（单一面板式文章流）/ 分页 / 搜索 / 右侧栏
-// 自动发现 posts（GitHub API 扫描 plus/content/posts/*.md），与 index.json 合并去重。
+// 自动发现 posts（GitHub API 扫描 {repoSubdir}/content/posts/*.md 或 content/posts/*.md），与 index.json 合并去重。
 // 不再强依赖页面注入的 url()/PREFIX/BUILD_VERSION，内部自带兜底。
 
 /* ---------------- 安全 URL 工具（兜底） ---------------- */
@@ -135,14 +135,15 @@ async function loadPosts(){
 
   const repo   = SITE.repo   || '';              // e.g. "chatgptchongzhi/plus"
   const branch = SITE.branch || 'main';
-  // 必须为 "plus"（与你当前仓库子目录一致）
+
+  // 允许空字符串 ""：为空时表示“仓库根目录”，不回退为 'plus'
   const repoSubdir = (SITE.repoSubdir === undefined
-  ? String(typeof PREFIX==='string'?PREFIX:'/plus/').replace(/^\/|\/$/g,'')
-  : SITE.repoSubdir);  // 允许空字符串 ""，不回退
+    ? String(typeof PREFIX==='string'?PREFIX:'/plus/').replace(/^\/|\/$/g,'')
+    : SITE.repoSubdir);
 
-
-  if (!/^[^\/]+\/[^\/]+$/.test(repo) || !repoSubdir) {
-    console.warn('[autoDiscoverPosts] invalid repo or subdir, fallback to index.json');
+  // 只校验 repo 合法；允许 repoSubdir 为 ""（仓库根）
+  if (!/^[^\/]+\/[^\/]+$/.test(repo)) {
+    console.warn('[autoDiscoverPosts] invalid repo, fallback to index.json');
     return normalizePosts(indexPosts);
   }
 
@@ -168,7 +169,7 @@ async function loadPosts(){
   }
 }
 
-/* ✅ 改为使用 git/trees API，一次性拿全树，稳定获取 /{subdir}/content/posts/*.md 列表 */
+/* ✅ 使用 git/trees API：稳定获取 {subdir}/content/posts/*.md（subdir 可为空 = 仓库根） */
 async function discoverPostsViaGitHub(repo, branch = 'main', subdir = 'plus'){
   // 1) 拉取整个分支的文件树（递归）
   const treeApi = `https://api.github.com/repos/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`;
@@ -177,9 +178,11 @@ async function discoverPostsViaGitHub(repo, branch = 'main', subdir = 'plus'){
   const j = await r.json();
   const tree = Array.isArray(j.tree) ? j.tree : [];
 
-  // 2) 只保留 /{subdir}/content/posts/ 下的 .md 文件
-  const base = subdir.replace(/^\/|\/$/g,''); // e.g. 'plus'
-  const prefix = `${base}/content/posts/`;
+  // 2) 根据 subdir 计算前缀；subdir 为空时前缀就是 'content/posts/'
+  const base   = (subdir || '').replace(/^\/|\/$//g, '');               // '' 或 'plus'
+  const prefix = (base ? `${base}/` : '') + 'content/posts/';
+
+  // 只保留 posts 下的 .md
   const files = tree
     .filter(n => n.type === 'blob' && n.path.startsWith(prefix) && /\.md$/i.test(n.path))
     .map(n => n.path.slice(prefix.length)); // 纯文件名：xxx.md
@@ -188,7 +191,8 @@ async function discoverPostsViaGitHub(repo, branch = 'main', subdir = 'plus'){
   const posts = [];
   for (const name of files) {
     const slug = name.replace(/\.md$/i,'');
-    const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${encodeURIComponent(base)}/content/posts/${encodeURIComponent(name)}`;
+    const basePart = base ? `${encodeURIComponent(base)}/` : '';
+    const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${basePart}content/posts/${encodeURIComponent(name)}`;
     try{
       const res = await fetch(rawUrl, { cache: 'no-store' });
       if (!res.ok) continue;
