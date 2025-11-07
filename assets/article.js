@@ -1,5 +1,6 @@
 // /plus/assets/article.js
-// 文章页：加载文章、解析 Front-Matter、渲染正文/目录/上下篇、可点击面包屑（当前位置： 木子AI » 类目 » 当前文章标题）
+// 文章页：加载文章、解析 Front-Matter、渲染正文/目录/上下篇、可点击面包屑
+// ★ 本版新增：渲染顶部主菜单（#navList），配合 CSS 的 .navbar{position:fixed}，确保首页与文章页导航始终固定在顶部且显示文字
 
 const q  = (sel, el=document)=>el.querySelector(sel);
 const qa = (sel, el=document)=>[...el.querySelectorAll(sel)];
@@ -14,18 +15,7 @@ async function getJSON(path){
   return r.json();
 }
 
-/* -------- Front-Matter 解析：返回 { fm, body } --------
-   1) 支持形如：
-      ---
-      title: 标题
-      date: 2025-11-05
-      tags: [ChatGPT, 代充]
-      categories: [ChatGPT]
-      cover: /plus/images/xxx.jpg
-      top: false
-      ---
-   2) tags/categories 同时兼容 "a, b" / "[a, b]" 两种写法
-*/
+/* -------- Front-Matter 解析：返回 { fm, body } -------- */
 function parseFrontMatter(mdText){
   if (!mdText) return { fm:{}, body:'' };
   const re = /^---\s*[\r\n]+([\s\S]*?)\r?\n---\s*[\r\n]*/;
@@ -40,40 +30,25 @@ function parseFrontMatter(mdText){
     const key = line.slice(0, idx).trim();
     let val = line.slice(idx+1).trim();
 
-    // 去掉首尾引号
-    if ((val.startsWith('"') && val.endsWith('"')) ||
-        (val.startsWith("'") && val.endsWith("'"))) {
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
       val = val.slice(1, -1);
     }
-
-    // 数组形式 [a, b]
     if (/^\[.*\]$/.test(val)) {
-      fm[key] = val
-        .replace(/^\[/,'').replace(/\]$/,'')
-        .split(',')
-        .map(s=>s.trim().replace(/^['"]|['"]$/g,''))
-        .filter(Boolean);
+      fm[key] = val.replace(/^\[/,'').replace(/\]$/,'')
+        .split(',').map(s=>s.trim().replace(/^['"]|['"]$/g,'')).filter(Boolean);
       return;
     }
-
-    // 逗号分隔 a, b
     if (val.includes(',') && (key==='tags' || key==='categories')) {
       fm[key] = val.split(',').map(s=>s.trim()).filter(Boolean);
       return;
     }
-
-    // 布尔/数字
     if (val === 'true') { fm[key]=true; return; }
     if (val === 'false'){ fm[key]=false; return; }
-    if (!Number.isNaN(Number(val)) && val.trim() !== '') {
-      fm[key] = Number(val);
-      return;
-    }
-
+    if (!Number.isNaN(Number(val)) && val.trim() !== '') { fm[key] = Number(val); return; }
     fm[key] = val;
   });
 
-  const body = mdText.replace(re, ''); // 移除头部
+  const body = mdText.replace(re, '');
   return { fm, body };
 }
 
@@ -89,18 +64,66 @@ async function init(){
   SITE  = await getJSON('content/site.json');
   POSTS = await getJSON('content/index.json');
 
+  // 渲染顶部主菜单（确保文章页导航有文字）
+  renderNav();
+
+  // 顶部搜索框（文章页用的是 #searchJump）
+  bindSearchJump();
+
+  // 页脚邮箱
+  const emailEl = q('#siteEmail');
+  if (emailEl) emailEl.textContent = SITE.email || '';
+
   const slug = getParam('slug');
   CUR = (POSTS||[]).find(p=> (p.slug||'') === slug);
 
-  renderTitleAndMeta();     // 先占位
-  await renderContent();    // 解析 FM 并合并 CUR
+  renderTitleAndMeta();
+  await renderContent();     // 解析 FM 并合并 CUR
   renderTOC();
   renderPrevNext();
-  renderBreadcrumb();       // 依赖 category/sections/tags 等
+  renderBreadcrumb();
+}
 
-  // ★ 补充：页脚邮箱赋值（与首页一致）
-  const emailEl = q('#siteEmail');
-  if (emailEl) emailEl.textContent = SITE.email || '';
+/* ---------------- 顶部主菜单（与首页一致的渲染逻辑） ---------------- */
+function renderNav(){
+  const ul = q('#navList');
+  if(!ul) return;
+
+  const nav = Array.isArray(SITE.nav) ? SITE.nav : [];
+  if (!nav.length){
+    ul.innerHTML = ''; // 无数据则留空，避免占位的空 li
+    return;
+  }
+
+  ul.innerHTML = nav.map(group=>{
+    const items = (group.children||[])
+      .map(c=>`<a href="${buildLink(c.slug)}">${esc(c.label||c.slug)}</a>`)
+      .join('');
+    return `<li class="nav-item">
+      <a href="javascript:void(0)">${esc(group.label||'分类')}</a>
+      <div class="submenu">${items}</div>
+    </li>`;
+  }).join('');
+
+  // 防闪退的悬停展开
+  qa('.nav-item', ul).forEach(li=>{
+    let t; const sub = q('.submenu', li);
+    li.addEventListener('mouseleave',()=>{ t=setTimeout(()=>{ if(sub) sub.style.display='none'; },200); });
+    li.addEventListener('mouseenter',()=>{ clearTimeout(t); if(sub) sub.style.display='block'; });
+  });
+}
+
+/* ---------------- 顶部搜索（文章页的 input#searchJump） ---------------- */
+function bindSearchJump(){
+  const i = q('#searchJump');
+  if(!i) return;
+  i.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter'){
+      const kw = (i.value||'').trim();
+      // 跳回首页并携带搜索词（首页 main.js 会即时过滤）
+      location.href = `${PREFIX}?q=${encodeURIComponent(kw)}`;
+    }
+  });
 }
 
 /* ---------------- 面包屑（分类可点击过滤首页） ---------------- */
@@ -110,7 +133,6 @@ function renderBreadcrumb(){
   const siteName = SITE.title || '木子AI';
   const homeHref = `${PREFIX}`;
 
-  // 更稳健的分类选择优先级
   const cat = (()=>{
     if (!CUR) return 'ChatGPT';
     if (CUR.category) return CUR.category;
@@ -165,11 +187,9 @@ async function renderContent(){
 
   if(!md && CUR.body) md = CUR.body;
 
-  // 解析 Front-Matter，并把元数据合并回 CUR
   const parsed = parseFrontMatter(md);
   if (parsed && parsed.fm && Object.keys(parsed.fm).length){
     const fm = parsed.fm;
-    // 统一字段
     if (fm.title) CUR.title = fm.title;
     if (fm.date)  CUR.date  = fm.date;
     if (fm.tags)  CUR.tags  = Array.isArray(fm.tags)? fm.tags : [fm.tags];
@@ -180,14 +200,13 @@ async function renderContent(){
   }
   const body = parsed ? parsed.body : md;
 
-  // 渲染正文（已去除 FM）
   if (window.marked){
     box.innerHTML = window.marked.parse(body || '');
   }else{
     box.textContent = body || '';
   }
 
-  // 在正文下方渲染标签 pills （复用首页 .tag 样式）
+  // 正文下方：标签 pills
   const tags = CUR.tags || CUR.tag || [];
   const wrapId = 'postTagsWrap';
   let wrap = document.getElementById(wrapId);
@@ -211,7 +230,6 @@ function renderTOC(){
 
   if (window.tocbot){
     try{
-      // 可选增强：重复进入时先销毁再初始化，避免重复目录
       window.tocbot.destroy?.();
       window.tocbot.init({
         tocSelector: '#toc',
