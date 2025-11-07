@@ -1,6 +1,5 @@
 // /plus/assets/article.js
-// 文章页：加载文章、解析 Front-Matter、渲染正文/目录/上下篇、可点击面包屑
-// ★ 本版新增：渲染顶部主菜单（#navList），配合 CSS 的 .navbar{position:fixed}，确保首页与文章页导航始终固定在顶部且显示文字
+// 文章页：加载文章、解析 Front-Matter、渲染导航/正文/目录/上下篇、可点击面包屑
 
 const q  = (sel, el=document)=>el.querySelector(sel);
 const qa = (sel, el=document)=>[...el.querySelectorAll(sel)];
@@ -33,9 +32,13 @@ function parseFrontMatter(mdText){
     if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
       val = val.slice(1, -1);
     }
+
     if (/^\[.*\]$/.test(val)) {
-      fm[key] = val.replace(/^\[/,'').replace(/\]$/,'')
-        .split(',').map(s=>s.trim().replace(/^['"]|['"]$/g,'')).filter(Boolean);
+      fm[key] = val
+        .replace(/^\[/,'').replace(/\]$/,'')
+        .split(',')
+        .map(s=>s.trim().replace(/^['"]|['"]$/g,''))
+        .filter(Boolean);
       return;
     }
     if (val.includes(',') && (key==='tags' || key==='categories')) {
@@ -45,6 +48,7 @@ function parseFrontMatter(mdText){
     if (val === 'true') { fm[key]=true; return; }
     if (val === 'false'){ fm[key]=false; return; }
     if (!Number.isNaN(Number(val)) && val.trim() !== '') { fm[key] = Number(val); return; }
+
     fm[key] = val;
   });
 
@@ -64,38 +68,32 @@ async function init(){
   SITE  = await getJSON('content/site.json');
   POSTS = await getJSON('content/index.json');
 
-  // 渲染顶部主菜单（确保文章页导航有文字）
+  // ★ 新增：文章页也渲染导航（修复“主菜单文字不见”的根因）
   renderNav();
-
-  // 顶部搜索框（文章页用的是 #searchJump）
-  bindSearchJump();
-
-  // 页脚邮箱
-  const emailEl = q('#siteEmail');
-  if (emailEl) emailEl.textContent = SITE.email || '';
 
   const slug = getParam('slug');
   CUR = (POSTS||[]).find(p=> (p.slug||'') === slug);
 
   renderTitleAndMeta();
-  await renderContent();     // 解析 FM 并合并 CUR
+  await renderContent();
   renderTOC();
   renderPrevNext();
   renderBreadcrumb();
+
+  const emailEl = q('#siteEmail');
+  if (emailEl) emailEl.textContent = SITE.email || '';
 }
 
-/* ---------------- 顶部主菜单（与首页一致的渲染逻辑） ---------------- */
+/* ---------------- 导航（与首页保持一致） ---------------- */
 function renderNav(){
   const ul = q('#navList');
   if(!ul) return;
-
-  const nav = Array.isArray(SITE.nav) ? SITE.nav : [];
-  if (!nav.length){
-    ul.innerHTML = ''; // 无数据则留空，避免占位的空 li
+  const groups = SITE.nav || [];
+  if (!Array.isArray(groups) || groups.length===0){
+    ul.innerHTML = ''; // 没有导航数据就清空，避免空壳
     return;
   }
-
-  ul.innerHTML = nav.map(group=>{
+  ul.innerHTML = groups.map(group=>{
     const items = (group.children||[])
       .map(c=>`<a href="${buildLink(c.slug)}">${esc(c.label||c.slug)}</a>`)
       .join('');
@@ -105,7 +103,6 @@ function renderNav(){
     </li>`;
   }).join('');
 
-  // 防闪退的悬停展开
   qa('.nav-item', ul).forEach(li=>{
     let t; const sub = q('.submenu', li);
     li.addEventListener('mouseleave',()=>{ t=setTimeout(()=>{ if(sub) sub.style.display='none'; },200); });
@@ -113,24 +110,10 @@ function renderNav(){
   });
 }
 
-/* ---------------- 顶部搜索（文章页的 input#searchJump） ---------------- */
-function bindSearchJump(){
-  const i = q('#searchJump');
-  if(!i) return;
-  i.addEventListener('keydown', (e)=>{
-    if(e.key==='Enter'){
-      const kw = (i.value||'').trim();
-      // 跳回首页并携带搜索词（首页 main.js 会即时过滤）
-      location.href = `${PREFIX}?q=${encodeURIComponent(kw)}`;
-    }
-  });
-}
-
-/* ---------------- 面包屑（分类可点击过滤首页） ---------------- */
+/* ---------------- 面包屑 ---------------- */
 function renderBreadcrumb(){
   const el = q('#breadcrumb'); if(!el) return;
-
-  const siteName = SITE.title || '木子AI';
+  const siteName = SITE.title || SITE.siteTitle || '木子AI';
   const homeHref = `${PREFIX}`;
 
   const cat = (()=>{
@@ -171,91 +154,4 @@ function renderTitleAndMeta(){
   }
 }
 
-/* ---------------- 正文渲染 + 标签展示 ---------------- */
-async function renderContent(){
-  const box = q('#postContent'); if(!box) return;
-
-  let md = '';
-  if (!CUR){
-    box.innerHTML = '<p style="color:#999;">没有找到对应文章。</p>'; return;
-  }
-  const mdPath = `content/posts/${CUR.slug}.md`;
-  try{
-    const r = await fetch(url(mdPath));
-    if(r.ok) md = await r.text();
-  }catch(_){}
-
-  if(!md && CUR.body) md = CUR.body;
-
-  const parsed = parseFrontMatter(md);
-  if (parsed && parsed.fm && Object.keys(parsed.fm).length){
-    const fm = parsed.fm;
-    if (fm.title) CUR.title = fm.title;
-    if (fm.date)  CUR.date  = fm.date;
-    if (fm.tags)  CUR.tags  = Array.isArray(fm.tags)? fm.tags : [fm.tags];
-    if (fm.categories) CUR.categories = Array.isArray(fm.categories)? fm.categories : [fm.categories];
-    if (fm.category)   CUR.category   = fm.category;
-    if (fm.cover) CUR.cover = fm.cover;
-    if (typeof fm.top !== 'undefined') CUR.top = fm.top;
-  }
-  const body = parsed ? parsed.body : md;
-
-  if (window.marked){
-    box.innerHTML = window.marked.parse(body || '');
-  }else{
-    box.textContent = body || '';
-  }
-
-  // 正文下方：标签 pills
-  const tags = CUR.tags || CUR.tag || [];
-  const wrapId = 'postTagsWrap';
-  let wrap = document.getElementById(wrapId);
-  if (!wrap){
-    wrap = document.createElement('div');
-    wrap.id = wrapId;
-    wrap.className = 'article-tags';
-    wrap.style.marginTop = '16px';
-    box.insertAdjacentElement('afterend', wrap);
-  }
-  wrap.innerHTML = (Array.isArray(tags) && tags.length)
-    ? tags.map(t=>`<a class="tag" href="${PREFIX}?q=${encodeURIComponent(t)}">${esc('#'+t)}</a>`).join('')
-    : '';
-}
-
-/* ---------------- 目录（tocbot） ---------------- */
-function renderTOC(){
-  const tocEl = q('#toc');
-  const box = q('#postContent');
-  if(!tocEl || !box) return;
-
-  if (window.tocbot){
-    try{
-      window.tocbot.destroy?.();
-      window.tocbot.init({
-        tocSelector: '#toc',
-        contentSelector: '#postContent',
-        headingSelector: 'h1, h2, h3',
-        collapseDepth: 6,
-        hasInnerContainers: false
-      });
-    }catch(e){ console.warn('tocbot init failed', e); }
-  }
-}
-
-/* ---------------- 上一篇 / 下一篇 ---------------- */
-function renderPrevNext(){
-  const nav = q('#postNav'); if(!nav) return;
-  if(!CUR){ nav.innerHTML=''; return; }
-
-  const sorted = [...POSTS].sort((a,b)=>(b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||''));
-  const i = sorted.findIndex(p=>p.slug===CUR.slug);
-  const prev = i>0 ? sorted[i-1] : null;
-  const next = i<sorted.length-1 ? sorted[i+1] : null;
-
-  nav.innerHTML = `
-    <div style="display:flex;justify-content:space-between;gap:16px;margin-top:16px">
-      <div>${prev?`上一篇：<a href="${buildLink(prev.slug)}">${esc(prev.title)}</a>`:''}</div>
-      <div>${next?`下一篇：<a href="${buildLink(next.slug)}">${esc(next.title)}</a>`:''}</div>
-    </div>
-  `;
-}
+/* ---------------- 正文渲染 + 标签*
