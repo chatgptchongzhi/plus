@@ -154,4 +154,91 @@ function renderTitleAndMeta(){
   }
 }
 
-/* ---------------- 正文渲染 + 标签*
+/* ---------------- 正文渲染 + 标签 ---------------- */
+async function renderContent(){
+  const box = q('#postContent'); if(!box) return;
+
+  let md = '';
+  if (!CUR){
+    box.innerHTML = '<p style="color:#999;">没有找到对应文章。</p>'; return;
+  }
+  const mdPath = `content/posts/${CUR.slug}.md`;
+  try{
+    const r = await fetch(url(mdPath));
+    if(r.ok) md = await r.text();
+  }catch(_){}
+
+  if(!md && CUR.body) md = CUR.body;
+
+  const parsed = parseFrontMatter(md);
+  if (parsed && parsed.fm && Object.keys(parsed.fm).length){
+    const fm = parsed.fm;
+    if (fm.title) CUR.title = fm.title;
+    if (fm.date)  CUR.date  = fm.date;
+    if (fm.tags)  CUR.tags  = Array.isArray(fm.tags)? fm.tags : [fm.tags];
+    if (fm.categories) CUR.categories = Array.isArray(fm.categories)? fm.categories : [fm.categories];
+    if (fm.category)   CUR.category   = fm.category;
+    if (fm.cover) CUR.cover = fm.cover;
+    if (typeof fm.top !== 'undefined') CUR.top = fm.top;
+    if (fm.excerpt && !CUR.excerpt) CUR.excerpt = fm.excerpt;
+  }
+  const body = parsed ? parsed.body : md;
+
+  if (window.marked){
+    box.innerHTML = window.marked.parse(body || '');
+  }else{
+    box.textContent = body || '';
+  }
+
+  const tags = CUR.tags || CUR.tag || [];
+  const wrapId = 'postTagsWrap';
+  let wrap = document.getElementById(wrapId);
+  if (!wrap){
+    wrap = document.createElement('div');
+    wrap.id = wrapId;
+    wrap.className = 'article-tags';
+    wrap.style.marginTop = '16px';
+    box.insertAdjacentElement('afterend', wrap);
+  }
+  wrap.innerHTML = (Array.isArray(tags) && tags.length)
+    ? tags.map(t=>`<a class="tag" href="${PREFIX}?q=${encodeURIComponent(t)}">${esc('#'+t)}</a>`).join('')
+    : '';
+}
+
+/* ---------------- 目录（tocbot） ---------------- */
+function renderTOC(){
+  const tocEl = q('#toc');
+  const box = q('#postContent');
+  if(!tocEl || !box) return;
+
+  if (window.tocbot){
+    try{
+      window.tocbot.destroy?.();
+      window.tocbot.init({
+        tocSelector: '#toc',
+        contentSelector: '#postContent',
+        headingSelector: 'h1, h2, h3',
+        collapseDepth: 6,
+        hasInnerContainers: false
+      });
+    }catch(e){ console.warn('tocbot init failed', e); }
+  }
+}
+
+/* ---------------- 上一篇 / 下一篇 ---------------- */
+function renderPrevNext(){
+  const nav = q('#postNav'); if(!nav) return;
+  if(!CUR){ nav.innerHTML=''; return; }
+
+  const sorted = [...POSTS].sort((a,b)=>(b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||''));
+  const i = sorted.findIndex(p=>p.slug===CUR.slug);
+  const prev = i>0 ? sorted[i-1] : null;
+  const next = i<sorted.length-1 ? sorted[i+1] : null;
+
+  nav.innerHTML = `
+    <div style="display:flex;justify-content:space-between;gap:16px;margin-top:16px">
+      <div>${prev?`上一篇：<a href="${buildLink(prev.slug)}">${esc(prev.title)}</a>`:''}</div>
+      <div>${next?`下一篇：<a href="${buildLink(next.slug)}">${esc(next.title)}</a>`:''}</div>
+    </div>
+  `;
+}
