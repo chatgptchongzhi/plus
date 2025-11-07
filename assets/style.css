@@ -71,4 +71,142 @@ body{ padding-top: var(--nav-h); }
 .submenu a{display:block;padding:8px 10px;border-radius:6px;color:#333}
 .submenu a:hover{background:#fafafa;color:var(--primary)}
 @media (min-width: 992px){ .navbar .nav{ padding-left: 28px; } }
-@media (min-width:1280px){ .na
+@media (min-width:1280px){ .navbar .nav{ padding-left: 40px; } }
+@media (min-width:1600px){ .navbar .nav{ padding-left: 56px; } }
+
+/* ===== Layout / Container ===== */
+.container{
+  display:grid; gap:30px;
+  margin:24px auto;
+  padding:0 24px;
+}
+.container{ grid-template-columns:1fr; }
+@media (min-width:992px){ .container{ grid-template-columns:70% 30%; } }
+@media (min-width:1280px){ .container{ grid-template-columns:72% 28%; } }
+
+@media (min-width:992px) and (max-width:1279px){
+  .container{ max-width:1160px; padding-left:24px; padding-right:72px; }
+}
+@media (min-width:1280px) and (max-width:1439px){
+  .container{ max-width:1320px; padding-left:32px; padding-right:96px; }
+}
+@media (min-width:1440px) and (max-width:1599px){
+  .container{ max-width:1440px; padding-left:32px; padding-right:96px; }
+}
+@media (min-width:1600px) and (max-width:1919px){
+  .container{ max-width:1560px; padding-left:36px; padding-right:108px; }
+}
+@media (min-width:1920px){
+  .container{ max-width:none; width:calc(100% - 192px); padding-left:48px; padding-right:144px; }
+}
+.container{ margin-left: calc(var(--left-gap-base) * 3) !important; }
+
+main{min-width:0}
+.sidebar, aside{min-width:0}
+.container > .main-col { min-width:0; }
+
+/* ===== 右侧栏随文档滚动 ===== */
+@media (max-width: 991.98px){
+  .sidebar.sticky{ position:static; top:auto; width:100%; max-height:none; overflow:visible; }
+}
+@media (min-width: 992px){
+  .main-col{ margin-right: 0 !important; }
+  .sidebar.sticky{
+    position: static !important; top:auto !important; right:auto !important;
+    width:100% !important; max-height:none !important; overflow:visible !important; z-index:auto !important;
+  }
+}
+
+/* 右侧“两块正方形容器” */
+.side-squares{ display:flex; flex-direction:column; gap:20px; }
+.side-square{
+  width:100%; aspect-ratio:1/1;
+  background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+/* ===== 卡片通用 ===== */
+.card{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:10px;padding:16px;margin-bottom:20px}
+
+/* ===== 推荐区 ===== */
+.block-title{display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:16px;font-weight:800}
+.block-title .bar{display:inline-block;width:4px;height:18px;background:var(--primary);border-radius:2px}
+.recommend-box .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.rec-item{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center}
+.rec-item img{width:120px;height:80px;object-fit:cover;border-radius:6px;box-shadow:var(--shadow)}
+.rec-item .title{font-size:15px;font-weight:400}
+.rec-meta{font-size:12px;color:#888}
+
+/* ===== 首页文章列表 —— 单一面板式文章流 ===== */
+.article-list{
+  background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow);
+  padding:4px 16px; /* 顶底的间距由每条 item 控制 */
+}
+.article-card{
+  display:grid; grid-template-columns:260px 1fr; column-gap:24px;
+  padding:20px 0; align-items:start;
+}
+.article-card + .article-card{ border-top:1px solid var(--line); }
+.article-thumb{ width:260px; height:146px; border-radius:8px; object-fit:cover; }
+.article-title{ display:block; font-size:18px; margin:0 0 8px; font-weight:700; }
+.article-title:hover{ color:var(--primary); }
+.article-excerpt{ font-size:14px; color:#555; margin:6px 0 10px; }
+.article-meta{ font-size:12px; color:#888; display:flex; gap:16px; flex-wrap:wrap; }
+.article-tags{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.tag{ font-size:12px; background:#f2f3f5; border-radius:999px; padding:2px 10px; color:#666; }
+
+@media (max-width:991.98px){
+  .recommend-box .grid-2{ grid-template-columns:1fr; }
+  .article-card{ grid-template-columns:1fr; row-gap:10px; }
+  .article-thumb{ width:100%; height:auto; }
+  .search input{ min-width:120px; }
+}
+
+/* ===== Pagination（页码） ===== */
+.pagination{ display:flex; justify-content:center; align-items:center; gap:10px; margin:24px 0 10px; flex-wrap:wrap; }
+.page-btn,
+.page-ellipsis{
+  min-width:36px; height:36px; padding:0 10px;
+  display:inline-flex; align-items:center; justify-content:center;
+  border:1px solid #ddd; background:#fff; border-radius:10px; cursor:pointer; user-select:none;
+  font-size:14px; color:#333;
+}
+.page-ellipsis{ border-style:dashed; cursor:default; }
+.page-btn.active{ background:var(--primary); color:#fff; border-color:var(--primary); }
+.page-btn:hover{ background:#f5f5f5; }
+.page-btn[aria-disabled="true"]{ opacity:.45; pointer-events:none; }
+
+/* ===== Footer ===== */
+.footer{margin:40px 0 20px;text-align:center;color:#888}
+
+/* ===== WeChat Floating Button ===== */
+.wechat-float{
+  position:fixed; z-index:9999; right:35px; bottom:150px;
+  width:56px; height:56px; border-radius:50%;
+  background:#09bb07; box-shadow:0 6px 20px rgba(0,0,0,.15);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; user-select:none;
+}
+.wechat-float img.icon{max-width:56px; max-height:56px; border-radius:50%; display:block;}
+.wechat-float .fallback{color:#fff; font-size:13px; font-weight:700; letter-spacing:1px;}
+.wechat-float .qr{
+  position:absolute; right:64px; bottom:0;
+  width:311px; height:403px; background:#fff; border-radius:8px;
+  box-shadow:0 10px 30px rgba(0,0,0,.2); padding:10px; display:none;
+}
+.wechat-float .qr img{width:100%; height:100%; object-fit:contain; display:block;}
+.wechat-float.show .qr{display:block;}
+@media (max-width:768px){ .wechat-float{right:20px; bottom:100px;} }
+
+/* ===== 返回顶部按钮 ===== */
+#backToTop{
+  position:fixed; right:28px; bottom:28px; z-index:10000;
+  width:48px; height:48px; border-radius:12px;
+  background:#fff; border:1px solid rgba(0,0,0,.12);
+  box-shadow:0 8px 24px rgba(0,0,0,.12);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transform:translateY(10px);
+  transition:opacity .25s ease, transform .25s ease;
+}
+#backToTop svg{ width:24px; height:24px; flex:0 0 24px; }  /* ← 锁定图标尺寸，避免“巨大箭头” */
+#backToTop.show{ opacity:1; pointer-events:auto; transform:translateY(0); }
