@@ -165,19 +165,27 @@ async function loadPosts(){
   }
 }
 
-/* GitHub API 扫描 plus/content/posts 目录，解析每篇 md 的 Front-Matter */
-async function discoverPostsViaGitHub(repo, branch='main', subdir='plus'){
-  const dirApi = `https://api.github.com/repos/${repo}/contents/${encodeURIComponent(subdir)}/content/posts?ref=${encodeURIComponent(branch)}`;
-  const listRes = await fetch(dirApi, { cache: 'no-store' });
-  if (!listRes.ok) throw new Error('GitHub API list failed: '+listRes.status);
-  const list = await listRes.json();
-  const files = (Array.isArray(list)?list:[]).filter(it=>/\.md$/i.test(it.name));
+/* ✅ 改为使用 git/trees API，一次性拿全树，稳定获取 /{subdir}/content/posts/*.md 列表 */
+async function discoverPostsViaGitHub(repo, branch = 'main', subdir = 'plus'){
+  // 1) 拉取整个分支的文件树（递归）
+  const treeApi = `https://api.github.com/repos/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`;
+  const r = await fetch(treeApi, { cache: 'no-store' });
+  if (!r.ok) throw new Error('GitHub git/trees failed: ' + r.status);
+  const j = await r.json();
+  const tree = Array.isArray(j.tree) ? j.tree : [];
 
+  // 2) 只保留 /{subdir}/content/posts/ 下的 .md 文件
+  const base = subdir.replace(/^\/|\/$/g,''); // e.g. 'plus'
+  const prefix = `${base}/content/posts/`;
+  const files = tree
+    .filter(n => n.type === 'blob' && n.path.startsWith(prefix) && /\.md$/i.test(n.path))
+    .map(n => n.path.slice(prefix.length)); // 纯文件名：xxx.md
+
+  // 3) 逐个取 raw 内容，解析 Front-Matter
   const posts = [];
-  for (const f of files){
-    const name = f.name;                       // e.g. hello.md
+  for (const name of files) {
     const slug = name.replace(/\.md$/i,'');
-    const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${encodeURIComponent(subdir)}/content/posts/${encodeURIComponent(name)}`;
+    const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${encodeURIComponent(base)}/content/posts/${encodeURIComponent(name)}`;
     try{
       const res = await fetch(rawUrl, { cache: 'no-store' });
       if (!res.ok) continue;
@@ -185,13 +193,13 @@ async function discoverPostsViaGitHub(repo, branch='main', subdir='plus'){
       const { fm, body } = parseFrontMatter(md);
 
       const p = {
-        file: name,                             // ★ 记录原始 md 文件名，详情页可兜底用
+        file: name,                                  // 记录原始 md 文件名（文章页兜底用）
         slug: fm.slug || slug,
         title: fm.title || slug,
         date: fm.date || '',
-        tags: Array.isArray(fm.tags)? fm.tags : (fm.tags ? [fm.tags] : []),
-        categories: Array.isArray(fm.categories)? fm.categories : (fm.categories ? [fm.categories] : []),
-        category: fm.category || (Array.isArray(fm.categories)&&fm.categories[0]) || '',
+        tags: Array.isArray(fm.tags) ? fm.tags : (fm.tags ? [fm.tags] : []),
+        categories: Array.isArray(fm.categories) ? fm.categories : (fm.categories ? [fm.categories] : []),
+        category: fm.category || (Array.isArray(fm.categories) && fm.categories[0]) || '',
         cover: fm.cover || '/plus/images/banner-plus.jpg',
         top: !!fm.top,
         excerpt: fm.excerpt || deriveExcerptFromBody(body),
