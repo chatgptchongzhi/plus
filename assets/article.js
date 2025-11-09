@@ -330,36 +330,47 @@ async function renderContent(){
     : '';
 }
 
-/* ---------------- 目录（tocbot） ---------------- */
-function renderTOC(retryCount){
-  const tocEl = q('#toc');
-  const box   = q('#postContent');
+/* ---------------- 目录（不用 tocbot，自己生成） ---------------- */
+function renderTOC(){
+  const tocEl = q('#toc');          // 右侧“目录”这个盒子
+  const box   = q('#postContent');  // 文章正文
   if (!tocEl || !box) return;
 
-  const hasTocbot   = !!(window.tocbot && typeof window.tocbot.init === 'function');
-  const hasHeadings = !!box.querySelector('h1, h2, h3');
-
-  // 如果 tocbot 还没加载好，或者正文里还没出现任何 h1/h2/h3，就稍后再试
-  if (!hasTocbot || !hasHeadings){
-    const n = (retryCount || 0);
-    if (n < 10){              // 最多重试 10 次，每次间隔 200ms
-      setTimeout(()=>renderTOC(n + 1), 200);
-    }
+  // 抓正文里的所有 h1 / h2 / h3 标题
+  const headings = box.querySelectorAll('h1, h2, h3');
+  if (!headings.length){
+    tocEl.innerHTML = '';   // 没有标题就不显示目录
     return;
   }
 
-  try{
-    window.tocbot.destroy?.();
-    window.tocbot.init({
-      tocSelector: '#toc',
-      contentSelector: '#postContent',
-      headingSelector: 'h1, h2, h3',
-      collapseDepth: 6,
-      hasInnerContainers: false
-    });
-  }catch(e){
-    console.warn('tocbot init failed', e);
-  }
+  const ul = document.createElement('ul');
+  ul.className = 'toc-list';
+
+  headings.forEach((h, idx) => {
+    const level = Number(h.tagName[1] || 2); // H1/H2/H3 → 1/2/3
+
+    // 如果这个标题没有 id，就自动给它生成一个
+    if (!h.id){
+      const base = h.textContent.trim()
+        .replace(/\s+/g, '-')                     // 空格变成 -
+        .replace(/[^\w\u4e00-\u9fa5\-]/g, '')     // 去掉奇怪字符，保留中英文和 -
+        || 'sec';
+      h.id = 'toc-' + base + '-' + idx;
+    }
+
+    const li = document.createElement('li');
+    li.className = 'toc-item toc-level-' + level;
+
+    const a = document.createElement('a');
+    a.href = '#' + h.id;                   // 点击跳到对应标题
+    a.textContent = h.textContent.trim();  // 目录里显示标题文字
+
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+
+  tocEl.innerHTML = '';        // 清空原内容
+  tocEl.appendChild(ul);       // 把生成好的目录塞进去
 }
 
 
