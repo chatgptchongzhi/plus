@@ -237,4 +237,25 @@ main{min-width:0}
 .article-meta .meta-icon-user::before {
   content: "👤";
 }
+/* 右侧栏正方形容器（自适应宽度，高度自动保持 1:1） */
+.sidebar-square {
+  width: 100%;              /* 占满右侧栏宽度 */
+  aspect-ratio: 1 / 1;      /* 正方形关键：宽高比 1:1 */
+  background: #f7f7f7;      /* 浅灰背景，后面你可以改成图片或别的颜色 */
+  border-radius: 12px;
+  border: 1px solid #eee;
+  box-sizing: border-box;
+  margin-bottom: 16px;      /* 和下方内容留一点间距 */
+  overflow: hidden;         /* 以后里面放图片不会溢出去 */
+}
+
+/* 手机上稍微缩窄一点，避免太大 */
+@media (max-width: 768px) {
+  .sidebar-square {
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 
