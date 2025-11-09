@@ -429,29 +429,42 @@ function renderPagination(cur,total,categoryFilter){
 
 /* ---------------- 右侧栏 ---------------- */
 function renderSidebar(){
-  const sidebar   = q('.sidebar');                       // 整个右侧栏
-  const aboutBox  = q('#sideBox1') || q('#aboutBox');    // 优先按 id 找
-  const adBox     = q('#sideBox2') || q('#adBox');
-  const contactBox= q('#contactBox');
+  const sidebar    = q('.sidebar');                       // 整个右侧栏容器
+  const aboutBox   = q('#sideBox1') || q('#aboutBox');
+  const adBox      = q('#sideBox2') || q('#adBox');
+  const contactBox = q('#contactBox');
 
-  // 1）优先用指定 id 的 aboutBox；
-  //    如果没有，就退一步：在 .sidebar 里面找第一个 .card，当作“关于本站”
-  let targetAbout = aboutBox;
-  if (!targetAbout && sidebar){
-    const firstCard = q('.card', sidebar);
-    if (firstCard) targetAbout = firstCard;
+  // 1）关于本站：只保留标题 + 文案（不再塞正方形进去）
+  if (aboutBox){
+    aboutBox.innerHTML = `<h3>关于本站</h3><div>${SITE.sidebar?.about || '专注 ChatGPT / Sora 教程与充值引导。'}</div>`;
   }
 
-  // 关于本站：标题 + 文案 + 正方形盒子
-  if (targetAbout){
-    targetAbout.innerHTML = `
-      <h3>关于本站</h3>
-      <div>${SITE.sidebar?.about || '专注 ChatGPT / Sora 教程与充值引导。'}</div>
-      <div class="sidebar-square"></div>
-    `;
+  // 2）在“关于本站”下面，额外插入一块【正方形卡片】
+  if (sidebar && !q('.sidebar-square-card', sidebar)){
+    const squareCard = document.createElement('div');
+    squareCard.className = 'card sidebar-square-card';
+    squareCard.innerHTML = `<div class="sidebar-square"></div>`;
+
+    // 优先插在 aboutBox 后面；如果找不到，就插在 adBox/联系卡片前面
+    if (aboutBox && aboutBox.parentElement === sidebar){
+      if (aboutBox.nextSibling){
+        sidebar.insertBefore(squareCard, aboutBox.nextSibling);
+      } else {
+        sidebar.appendChild(squareCard);
+      }
+    } else {
+      const ref = (adBox && adBox.parentElement === sidebar) ? adBox
+                 : (contactBox && contactBox.parentElement === sidebar) ? contactBox
+                 : null;
+      if (ref){
+        sidebar.insertBefore(squareCard, ref);
+      } else {
+        sidebar.appendChild(squareCard);
+      }
+    }
   }
 
-  // 推广卡片（保持不变）
+  // 3）推广卡片（保持不变）
   if (adBox){
     const ad = SITE.sidebar?.ad || {};
     adBox.innerHTML = `<h3>${esc(ad.title||'推广')}</h3>
@@ -462,7 +475,7 @@ function renderSidebar(){
       </div>`;
   }
 
-  // 联系木子（保持不变）
+  // 4）联系木子（保持不变）
   if (contactBox){
     const c = SITE.sidebar?.contact || {};
     contactBox.innerHTML = `<h3>${esc(c.title||'联系木子')}</h3>
@@ -470,6 +483,7 @@ function renderSidebar(){
       <img src="${SITE.wechatQrcode||'/plus/images/qrcode-wechat.png'}" alt="微信二维码">`;
   }
 }
+
 
 
 
