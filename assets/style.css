@@ -397,49 +397,23 @@ main{min-width:0}
   margin-right: 8px;
 }
 
-/* 2）目录本身：竖着长方形，内部滚动 */
+/* ========== 文章页右侧目录：时间轴样式 ========== */
+
+/* 整个目录区域：内部滚动（右侧有滚动条） */
 .article-page #toc {
   font-size: 14px;
   line-height: 1.6;
-  max-height: calc(100vh - 190px);  /* 视口高度减掉导航等 */
-  overflow-y: auto;                  /* 内容多时，内部出现滚动条 */
-  padding-right: 8px;                /* 给滚动条留点空隙 */
-}
-
-/* tocbot 生成的列表：左侧竖线 + 小圆点 */
-.article-page #toc .toc-list {
-  list-style: none;
-  margin: 0;
-  padding-left: 18px;                /* 给竖线和圆点留空间 */
-  border-left: 1px solid #eee;       /* 竖线 */
-}
-
-.article-page #toc .toc-list-item {
-  position: relative;
-  margin: 4px 0;
-}
-
-.article-page #toc .toc-link {
-  display: block;
-}
-
-   /* ========== 文章页右侧目录：时间轴样式 ========== */
-
-/* 整个目录区域：内部可以滚动（你已经有滚动条了，这里一起写） */
-.article-page #toc {
-  font-size: 14px;
-  line-height: 1.6;
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 200px);  /* 不超过一屏 */
   overflow-y: auto;
   padding-right: 8px;
 }
 
-/* tocbot 的外层列表：左边一条淡色竖线 */
+/* tocbot 生成的顶层列表：左边一条淡色竖线 */
 .article-page #toc .toc-list {
-  list-style: none;
+  list-style: none;              /* 去掉默认的点 */
   margin: 0;
-  padding-left: 20px;             /* 给竖线和圆点留位置 */
-  border-left: 1px solid #eee;    /* ← 这就是那根淡色竖线 */
+  padding-left: 20px;            /* 给竖线和圆点留位置 */
+  border-left: 1px solid #eee;   /* 这就是那根淡色竖线 */
 }
 
 /* 每一项 */
@@ -448,21 +422,25 @@ main{min-width:0}
   margin: 4px 0;
 }
 
-/* 链接本身 */
+/* 链接本身：单行显示 + 省略号 */
 .article-page #toc .toc-link {
   display: block;
-  padding: 4px 0 4px 12px;        /* 文本稍微往右缩一点 */
+  padding: 4px 0 4px 12px;       /* 文本稍微往右缩一点 */
   color: #555;
   text-decoration: none;
   cursor: pointer;
+
+  white-space: nowrap;           /* 单行显示 */
+  overflow: hidden;              /* 多余截掉 */
+  text-overflow: ellipsis;       /* 显示省略号 */
 }
 
-/* 每一项左边的小圆点 */
+/* 每一项左边的小圆点（自定义，不是默认 bullet） */
 .article-page #toc .toc-link::before {
   content: "";
   position: absolute;
   left: -6px;
-  top: 11px;                      /* 垂直居中文字的中线附近 */
+  top: 11px;                     /* 垂直居中文字 */
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -470,12 +448,12 @@ main{min-width:0}
   background: #fff;
 }
 
-/* hover 效果 */
+/* hover 效果：颜色变主题色 */
 .article-page #toc .toc-link:hover {
   color: var(--primary);
 }
 
-/* 当前小节（tocbot 自动加 is-active-link）高亮效果 */
+/* 当前小节高亮：tocbot 自动加 is-active-link */
 .article-page #toc .toc-link.is-active-link {
   color: var(--primary);
   font-weight: 600;
@@ -484,33 +462,3 @@ main{min-width:0}
 .article-page #toc .toc-link.is-active-link::before {
   border-color: var(--primary);
 }
-/* ================== 文章详情页右侧目录：卡片 & 标题 ================== */
-
-/* 让文章页右侧这块卡片变成长方形，带阴影 */
-.article-page .side-square {
-  aspect-ratio: auto;              /* 不要正方形 */
-  padding: 16px;
-  border-radius: 12px;
-  background: #fff;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-}
-
-/* 标题“文章目录”：前面一根红色竖条，字体稍微大一点、加粗 */
-.article-page .side-square h3 {
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  font-weight: 700;
-  margin: 0 0 12px;
-}
-
-.article-page .side-square h3::before {
-  content: "";
-  width: 4px;
-  height: 18px;
-  border-radius: 999px;
-  background: var(--primary);  /* 红色 */
-  margin-right: 8px;
-}
-
