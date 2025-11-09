@@ -72,25 +72,32 @@
 
   <!-- 动态注入脚本（统一走 url()，避免固定版本号），保持依赖顺序 -->
   <script>
-    (function () {
-      [
-        'assets/libs/marked.min.js',
-        'assets/libs/tocbot.min.js',
-        'assets/article.js'
-      ].forEach(p => {
-        const s = document.createElement('script');
-        s.defer = true;
-        s.src = url(p);
-        document.head.appendChild(s);
-      });
+  (function () {
+    // 按顺序：先 marked → 再 tocbot → 最后 article.js
+    const scripts = [
+      'assets/libs/marked.min.js',
+      'assets/libs/tocbot.min.js',
+      'assets/article.js'
+    ];
 
-      // 全站微信悬浮按钮（同样走 url()）
-      const w = document.createElement('script');
-      w.defer = true;
-      w.src = url('assets/wechat-float.js');
-      document.head.appendChild(w);
-    })();
-  </script>
+    function loadSeq(i){
+      if (i >= scripts.length) {
+        // 三个主要脚本都加载完了，再挂微信浮窗
+        const w = document.createElement('script');
+        w.src = url('assets/wechat-float.js');
+        document.head.appendChild(w);
+        return;
+      }
+      const s = document.createElement('script');
+      s.src = url(scripts[i]);
+      s.onload = () => loadSeq(i + 1);
+      document.head.appendChild(s);
+    }
+
+    loadSeq(0);
+  })();
+</script>
+
 
   <!-- 返回顶部逻辑（独立、零依赖） -->
   <script>
