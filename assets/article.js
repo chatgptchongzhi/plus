@@ -135,20 +135,38 @@ function renderBreadcrumb(){
 
 /* ---------------- 标题 + Meta ---------------- */
 function renderTitleAndMeta(){
-  const h1 = q('#postTitle');
+  const h1   = q('#postTitle');
   const meta = q('#metaBar');
+
   if (!CUR){
-    if (h1) h1.textContent = '文章未找到';
+    if (h1)   h1.textContent = '文章未找到';
     if (meta) meta.textContent = '';
     return;
   }
-  if (h1) h1.textContent = CUR.title || CUR.slug || '';
+
+  const title = CUR.title || CUR.slug || '';
+  if (h1) h1.textContent = title;
+
+  // 从 CUR 里拿分类（优先 category，其次 categories[0]）
+  const cat = (
+    CUR.category ||
+    (Array.isArray(CUR.categories) && CUR.categories.length ? CUR.categories[0] : '') ||
+    ''
+  );
+  const date = fmtDate(CUR.date);
+
   if (meta){
-    const left = `<span>${fmtDate(CUR.date)}</span>`;
-    const right = `<span>阅读 ${CUR.views ?? 0}</span>`;
-    meta.innerHTML = `<div>${left}</div><div>${right}</div>`;
+    meta.innerHTML = `
+      <div class="article-meta">
+        <span class="meta-icon meta-icon-user"></span>
+        <span>木子-联系微信：ef98ee</span>
+        ${date ? `<span class="meta-sep">·</span><span>${date}</span>` : ''}
+        ${cat  ? `<span class="meta-sep">·</span><span>${esc(cat)}</span>`   : ''}
+      </div>
+    `;
   }
 }
+
 
 /* ---------------- 正文渲染（优先使用 CUR.file 兜底；再目录扫描） ---------------- */
 async function renderContent(){
