@@ -418,11 +418,12 @@ function renderSidebar(){
   if (contactBox){
     const c = SITE.sidebar?.contact || {};
     contactBox.innerHTML = `<h3>${esc(c.title||'联系木子')}</h3>
+      <!-- 新增：右侧栏正方形容器 -->
+      <div class="sidebar-square"></div>
       <div>微信：${esc(SITE.wechatId||'')}</div>
       <img src="${SITE.wechatQrcode||'/plus/images/qrcode-wechat.png'}" alt="微信二维码">`;
   }
 }
-
 /* ---------------- 搜索：输入时即时过滤 ---------------- */
 function bindSearch(){
   const i = q('#searchInput'); if(!i) return;
