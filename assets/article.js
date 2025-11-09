@@ -151,7 +151,6 @@ function renderTitleAndMeta(){
 }
 
 /* ---------------- 正文渲染（优先使用 CUR.file 兜底；再目录扫描） ---------------- */
-/* ---------------- 正文渲染（优先使用 CUR.file 兜底；再目录扫描） ---------------- */
 async function renderContent(){
   const box = q('#postContent'); if(!box) return;
 
@@ -275,128 +274,6 @@ async function renderContent(){
 
   // 解析完 FM 后，用新 title/date 刷新标题栏
   renderTitleAndMeta();
-
-  // 标签
-  const tags = CUR.tags || CUR.tag || [];
-  const wrapId = 'postTagsWrap';
-  let wrap = document.getElementById(wrapId);
-  if (!wrap){
-    wrap = document.createElement('div');
-    wrap.id = wrapId;
-    wrap.className = 'article-tags';
-    wrap.style.marginTop = '16px';
-    box.insertAdjacentElement('afterend', wrap);
-  }
-  wrap.innerHTML = (Array.isArray(tags) && tags.length)
-    ? tags.map(t=>`<a class="tag" href="${PREFIX}?q=${encodeURIComponent(t)}">${esc('#'+t)}</a>`).join('')
-    : '';
-}
-
-  // 3) 远端 raw（按 slug）
-  if(!md){
-    try{
-      const repo   = SITE.repo   || '';
-      const branch = SITE.branch || 'main';
-      const repoSubdir = (SITE.repoSubdir || String(typeof PREFIX==='string'?PREFIX:'/plus/')).replace(/^\/|\/$/g,'');
-      if (/^[^\/]+\/[^\/]+$/.test(repo) && repoSubdir){
-        const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${encodeURIComponent(repoSubdir)}/content/posts/${encodeURIComponent(slug)}.md?ts=${Date.now()}`;
-        const r2 = await fetch(rawUrl, { cache: 'no-store' });
-        if(r2.ok) md = await r2.text();
-      }
-    }catch(_){}
-  }
-
-  // 4) 若有 CUR.file，则远端 raw 再按原始文件名尝试一次
-  if(!md && file){
-    try{
-      const repo   = SITE.repo   || '';
-      const branch = SITE.branch || 'main';
-      const repoSubdir = (SITE.repoSubdir || String(typeof PREFIX==='string'?PREFIX:'/plus/')).replace(/^\/|\/$/g,'');
-      if (/^[^\/]+\/[^\/]+$/.test(repo) && repoSubdir){
-        const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${encodeURIComponent(repoSubdir)}/content/posts/${encodeURIComponent(file)}?ts=${Date.now()}`;
-        const r2b = await fetch(rawUrl, { cache: 'no-store' });
-        if(r2b.ok) md = await r2b.text();
-      }
-    }catch(_){}
-  }
-
-  // 5) 仍无：目录扫描（匹配文件名或 FM.slug）
-  if(!md){
-    try{
-      const repo   = SITE.repo   || '';
-      const branch = SITE.branch || 'main';
-      const repoSubdir = (SITE.repoSubdir || String(typeof PREFIX==='string'?PREFIX:'/plus/')).replace(/^\/|\/$/g,'');
-      if (/^[^\/]+\/[^\/]+$/.test(repo) && repoSubdir){
-        const dirApi = `https://api.github.com/repos/${repo}/contents/${encodeURIComponent(repoSubdir)}/content/posts?ref=${encodeURIComponent(branch)}&ts=${Date.now()}`;
-        const listRes = await fetch(dirApi, { cache: 'no-store' });
-        if (listRes.ok){
-          const list = await listRes.json();
-          const mdFiles = (Array.isArray(list)?list:[]).filter(it=>/\.md$/i.test(it.name));
-
-          // 优先直接名字等于 slug 的
-          let hit = mdFiles.find(f=> f.name.replace(/\.md$/i,'') === slug);
-
-          // 否则抽样读头部找 FM.slug
-          if (!hit){
-            for (const f of mdFiles){
-              try{
-                const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${encodeURIComponent(repoSubdir)}/content/posts/${encodeURIComponent(f.name)}?ts=${Date.now()}`;
-                const r3 = await fetch(rawUrl, { cache: 'no-store' });
-                if(!r3.ok) continue;
-                const text = await r3.text();
-                const { fm } = parseFrontMatter(text);
-                const fmSlug = (fm && (fm.slug||'')).toString().trim();
-                if (fmSlug && fmSlug === slug){
-                  hit = f; md = text; break;
-                }
-              }catch(_){}
-            }
-          }
-
-          // 命中文件名但还没拿到正文，再读一次
-          if (hit && !md){
-            const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${encodeURIComponent(repoSubdir)}/content/posts/${encodeURIComponent(hit.name)}?ts=${Date.now()}`;
-            const r4 = await fetch(rawUrl, { cache: 'no-store' });
-            if(r4.ok) md = await r4.text();
-          }
-        }
-      }
-    }catch(e){
-      console.warn('[article] fallback by original filename failed:', e);
-    }
-  }
-
-  // 6) 渲染
-  const parsed = parseFrontMatter(md||'');
-  if (parsed && parsed.fm && Object.keys(parsed.fm).length){
-    const fm = parsed.fm;
-    if (fm.title) CUR.title = fm.title;
-    if (fm.date)  CUR.date  = fm.date;
-    if (fm.tags)  CUR.tags  = Array.isArray(fm.tags)? fm.tags : [fm.tags];
-    if (fm.categories) CUR.categories = Array.isArray(fm.categories)? fm.categories : [fm.categories];
-    if (fm.category)   CUR.category   = fm.category;
-    if (fm.cover) CUR.cover = fm.cover;
-    if (typeof fm.top !== 'undefined') CUR.top = fm.top;
-    if (fm.excerpt && !CUR.excerpt) CUR.excerpt = fm.excerpt;
-  }
-  const body = parsed ? parsed.body : (md||'');
-
-  if (window.marked){
-    box.innerHTML = window.marked.parse(body || '');
-  }else{
-    box.textContent = body || '';
-  }
-  if (window.marked){
-    box.innerHTML = window.marked.parse(body || '');
-  }else{
-    box.textContent = body || '';
-  }
-
-  // ★ 这里新加一行：重新渲染标题和 meta
-  renderTitleAndMeta();
-
-  // 标签
-  const tags = CUR.tags || CUR.tag || [];
 
   // 标签
   const tags = CUR.tags || CUR.tag || [];
