@@ -352,7 +352,7 @@ function renderList(items){
       <div class="article-content">
         <a class="article-title" href="${buildLink(p.slug)}">${esc(p.title)}</a>
         <div class="article-excerpt">${esc(p.excerpt||'')}</div>
-        <div class="article-meta"><span>${fmtDate(p.date)}</span><span>阅读 ${p.views??0}</span></div>
+        <div class="article-meta">木子-联系微信：ef98ee      2025-07-28</div>
         <div class="article-tags">
           ${(p.tags||[]).map(t=>`<a class="tag" href="${PREFIX}?q=${encodeURIComponent(t)}">${esc('#'+t)}</a>`).join('')}
         </div>
