@@ -147,7 +147,7 @@ function renderTitleAndMeta(){
   const title = CUR.title || CUR.slug || '';
   if (h1) h1.textContent = title;
 
-  // 从 CUR 里拿分类（优先 category，其次 categories[0]）
+  // 从 CUR 中取分类（优先 category，再退回 categories[0]）
   const cat = (
     CUR.category ||
     (Array.isArray(CUR.categories) && CUR.categories.length ? CUR.categories[0] : '') ||
@@ -156,12 +156,28 @@ function renderTitleAndMeta(){
   const date = fmtDate(CUR.date);
 
   if (meta){
+    const catHtml = cat
+      ? `<span class="meta-item meta-cat">
+           <a class="meta-category" href="${PREFIX}?category=${encodeURIComponent(cat)}">
+             ${esc(cat)}
+           </a>
+         </span>`
+      : '';
+
+    const dateHtml = date
+      ? `<span class="meta-item meta-date">${date}</span>`
+      : '';
+
     meta.innerHTML = `
-      <div class="article-meta">
-        <span class="meta-icon meta-icon-user"></span>
-        <span>木子-联系微信：ef98ee</span>
-        ${date ? `<span class="meta-sep">·</span><span>${date}</span>` : ''}
-        ${cat  ? `<span class="meta-sep">·</span><span>${esc(cat)}</span>`   : ''}
+      <div class="post-meta-bar">
+        <div class="article-meta">
+          <span class="meta-item meta-author">
+            <span class="meta-icon meta-icon-user"></span>
+            <span>木子-联系微信：ef98ee</span>
+          </span>
+          ${dateHtml}
+          ${catHtml}
+        </div>
       </div>
     `;
   }
