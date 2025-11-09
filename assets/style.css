@@ -557,3 +557,96 @@ main{min-width:0}
 #toc .toc-link.is-active-link::before{
   border-color: var(--primary);
 }
+/* ========== 强制覆盖：文章详情页右侧目录卡片 + 时间轴样式 ========== */
+
+/* 右侧栏第一个卡片（目录）：改成长方形卡片 */
+.sidebar.sticky.side-squares > .side-square:first-child{
+  aspect-ratio: auto !important;          /* 不要正方形 */
+  padding: 16px !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* 标题“文章目录”：前面一根红色竖条 */
+.sidebar.sticky.side-squares > .side-square:first-child > h3{
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.sidebar.sticky.side-squares > .side-square:first-child > h3::before{
+  content: "";
+  width: 4px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--primary);  /* 红色竖条 */
+  margin-right: 8px;
+}
+
+/* 目录区域本身：长方形 + 内部可滚动 */
+.sidebar.sticky.side-squares > .side-square:first-child #toc{
+  font-size: 14px;
+  line-height: 1.6;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* 外层列表：左侧一条淡色竖线 */
+.sidebar.sticky.side-squares > .side-square:first-child #toc .toc-list{
+  list-style: none;
+  margin: 0;
+  padding-left: 20px;             /* 给竖线和圆点留位置 */
+  border-left: 1px solid #eee;    /* ← 这根淡色竖线 */
+}
+
+/* 每一项 */
+.sidebar.sticky.side-squares > .side-square:first-child #toc .toc-list-item{
+  position: relative;
+  margin: 4px 0;
+}
+
+/* 链接本身 */
+.sidebar.sticky.side-squares > .side-square:first-child #toc .toc-link{
+  display: block;
+  padding: 4px 0 4px 12px;        /* 文本稍微往右缩一点 */
+  color: #555;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;        /* 太长省略号 */
+}
+
+/* 每一项左边的小圆点 */
+.sidebar.sticky.side-squares > .side-square:first-child #toc .toc-link::before{
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 11px;                      /* 垂直居中文字的中线附近 */
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+
+/* hover 效果 */
+.sidebar.sticky.side-squares > .side-square:first-child #toc .toc-link:hover{
+  color: var(--primary);
+}
+
+/* 当前小节高亮（tocbot 自动加 is-active-link） */
+.sidebar.sticky.side-squares > .side-square:first-child #toc .toc-link.is-active-link{
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.sidebar.sticky.side-squares > .side-square:first-child #toc .toc-link.is-active-link::before{
+  border-color: var(--primary);
+}
+
