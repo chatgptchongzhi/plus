@@ -128,7 +128,13 @@ main{min-width:0}
 }
 
 /* ===== 卡片通用 ===== */
-.card{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:10px;padding:16px;margin-bottom:20px}
+/* 专门给右侧栏正方形用的卡片：只当容器，不画外框 */
+.sidebar-square-card{
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
 
 /* ===== 推荐区 ===== */
 .block-title{display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:16px;font-weight:800}
