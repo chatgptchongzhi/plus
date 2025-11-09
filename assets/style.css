@@ -465,8 +465,8 @@ main{min-width:0}
 /* ================== 右侧文章目录：最终样式覆盖 ================== */
 
 /* 右侧第一个卡片（目录）变成长方形卡片 */
-aside.sidebar .side-squares .side-square:first-child{
-  aspect-ratio: auto;              /* 不再强制正方形 */
+.side-squares .side-square:first-child{
+  aspect-ratio: auto;
   padding: 16px;
   border-radius: 12px;
   background: #fff;
@@ -475,7 +475,7 @@ aside.sidebar .side-squares .side-square:first-child{
 }
 
 /* 标题“文章目录”：前面一根红色竖条 */
-aside.sidebar .side-squares .side-square:first-child > h3{
+.side-squares .side-square:first-child > h3{
   display: flex;
   align-items: center;
   font-size: 16px;
@@ -483,7 +483,7 @@ aside.sidebar .side-squares .side-square:first-child > h3{
   margin: 0 0 12px;
 }
 
-aside.sidebar .side-squares .side-square:first-child > h3::before{
+.side-squares .side-square:first-child > h3::before{
   content: "";
   width: 4px;
   height: 18px;
@@ -491,6 +491,7 @@ aside.sidebar .side-squares .side-square:first-child > h3::before{
   background: var(--primary);  /* 红色竖条 */
   margin-right: 8px;
 }
+
 
 /* 整个目录区域：竖向长方形，内部可以滚动 */
 #toc{
