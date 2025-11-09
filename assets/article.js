@@ -134,6 +134,7 @@ function renderBreadcrumb(){
 }
 
 /* ---------------- 标题 + Meta ---------------- */
+/* ---------------- 标题 + Meta ---------------- */
 function renderTitleAndMeta(){
   const h1   = q('#postTitle');
   const meta = q('#metaBar');
@@ -147,26 +148,29 @@ function renderTitleAndMeta(){
   const title = CUR.title || CUR.slug || '';
   if (h1) h1.textContent = title;
 
+  // ✅ 这里用的是 CUR.date，而不是写死的某个日期
+  const date = fmtDate(CUR.date || '');
+
   // 从 CUR 中取分类（优先 category，再退回 categories[0]）
-  const cat = (
+  const cat =
     CUR.category ||
     (Array.isArray(CUR.categories) && CUR.categories.length ? CUR.categories[0] : '') ||
-    ''
-  );
-  const date = fmtDate(CUR.date);
+    '';
 
   if (meta){
-    const catHtml = cat
-      ? `<span class="meta-item meta-cat">
-           <a class="meta-category" href="${PREFIX}?category=${encodeURIComponent(cat)}">
-             ${esc(cat)}
-           </a>
-         </span>`
-      : '';
+    const dateHtml = date ? `
+      <span class="meta-item meta-date">
+        <span class="meta-icon meta-icon-date"></span>
+        <span>更新于 ${date}</span>
+      </span>` : '';
 
-    const dateHtml = date
-      ? `<span class="meta-item meta-date">${date}</span>`
-      : '';
+    const catHtml = cat ? `
+      <span class="meta-item meta-cat">
+        <span class="meta-icon meta-icon-cat"></span>
+        <a class="meta-category" href="${PREFIX}?category=${encodeURIComponent(cat)}">
+          ${esc(cat)}
+        </a>
+      </span>` : '';
 
     meta.innerHTML = `
       <div class="post-meta-bar">
@@ -182,6 +186,7 @@ function renderTitleAndMeta(){
     `;
   }
 }
+
 
 
 /* ---------------- 正文渲染（优先使用 CUR.file 兜底；再目录扫描） ---------------- */
