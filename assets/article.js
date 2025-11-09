@@ -331,24 +331,37 @@ async function renderContent(){
 }
 
 /* ---------------- 目录（tocbot） ---------------- */
-function renderTOC(){
+function renderTOC(retryCount){
   const tocEl = q('#toc');
-  const box = q('#postContent');
-  if(!tocEl || !box) return;
+  const box   = q('#postContent');
+  if (!tocEl || !box) return;
 
-  if (window.tocbot){
-    try{
-      window.tocbot.destroy?.();
-      window.tocbot.init({
-        tocSelector: '#toc',
-        contentSelector: '#postContent',
-        headingSelector: 'h1, h2, h3',
-        collapseDepth: 6,
-        hasInnerContainers: false
-      });
-    }catch(e){ console.warn('tocbot init failed', e); }
+  const hasTocbot   = !!(window.tocbot && typeof window.tocbot.init === 'function');
+  const hasHeadings = !!box.querySelector('h1, h2, h3');
+
+  // 如果 tocbot 还没加载好，或者正文里还没出现任何 h1/h2/h3，就稍后再试
+  if (!hasTocbot || !hasHeadings){
+    const n = (retryCount || 0);
+    if (n < 10){              // 最多重试 10 次，每次间隔 200ms
+      setTimeout(()=>renderTOC(n + 1), 200);
+    }
+    return;
+  }
+
+  try{
+    window.tocbot.destroy?.();
+    window.tocbot.init({
+      tocSelector: '#toc',
+      contentSelector: '#postContent',
+      headingSelector: 'h1, h2, h3',
+      collapseDepth: 6,
+      hasInnerContainers: false
+    });
+  }catch(e){
+    console.warn('tocbot init failed', e);
   }
 }
+
 
 /* ---------------- 上一篇 / 下一篇 ---------------- */
 function renderPrevNext(){
