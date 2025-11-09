@@ -270,6 +270,17 @@ async function renderContent(){
   }else{
     box.textContent = body || '';
   }
+  if (window.marked){
+    box.innerHTML = window.marked.parse(body || '');
+  }else{
+    box.textContent = body || '';
+  }
+
+  // ★ 这里新加一行：重新渲染标题和 meta
+  renderTitleAndMeta();
+
+  // 标签
+  const tags = CUR.tags || CUR.tag || [];
 
   // 标签
   const tags = CUR.tags || CUR.tag || [];
