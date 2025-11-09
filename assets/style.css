@@ -242,11 +242,56 @@ main{min-width:0}
 /* 用 Unicode 画出一个小人 */
 .article-meta .meta-icon-user::before {
   content: "👤";
-   .article-meta .meta-sep{
+}
+
+/* 从这里开始粘下面这块新代码 */
+/* 文章页标题下方的整条卡片容器 */
+#metaBar{
+  margin: 8px 0 16px;
+}
+
+.post-meta-bar{
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* 文章页这条 meta 的卡片样式 */
+.post-meta-bar .article-meta{
+  padding: 6px 14px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.03);
+  font-size: 14px;
+  color: #666;
+
+  display: flex;
+  align-items: center;
+  gap: 32px;              /* ← 三块之间的明显间距：作者 / 日期 / 分类 */
+}
+
+/* 每一块（作者 / 日期 / 分类）内部的小布局 */
+.post-meta-bar .meta-item{
+  display: flex;
+  align-items: center;
+  gap: 4px;               /* 图标和文字之间的小间距 */
+}
+
+/* 分类链接样式 */
+.meta-category{
+  color: var(--primary);
+  text-decoration: none;
+}
+.meta-category:hover{
+  text-decoration: underline;
+}
+
+/* 如果你还想保留分隔符的样式，就这样单独写 */
+.article-meta .meta-sep{
   margin: 0 4px;
   color: #ccc;
 }
-}
+
 /* 右侧栏正方形容器（自适应宽度，高度自动保持 1:1） */
 .sidebar-square {
   width: 100%;              /* 占满右侧栏宽度 */
