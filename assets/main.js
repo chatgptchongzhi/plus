@@ -255,6 +255,36 @@ function buildSearchFromPosts(posts){
     tags: p.tags || []
   }));
 }
+/* ---------------- 搜索框：输入关键字即时过滤列表 ---------------- */
+function bindSearch(){
+  const input = q('#searchInput');
+  const pagination = q('#pagination');
+
+  // 页面上没有搜索框就直接退出，避免再报错
+  if (!input) return;
+
+  input.addEventListener('input', () => {
+    const kw = input.value.trim().toLowerCase();
+
+    // 关键字清空：恢复正常分页列表
+    if (!kw){
+      if (pagination) pagination.style.display = '';
+      renderListWithPagination();
+      return;
+    }
+
+    // 用关键词在 POSTS 里筛选标题 / 摘要 / 标签
+    const source = Array.isArray(POSTS) ? POSTS : [];
+    const matched = source.filter(p => {
+      const text = `${p.title||''} ${p.excerpt||''} ${(p.tags||[]).join(' ')}`.toLowerCase();
+      return text.includes(kw);
+    });
+
+    // 显示筛选结果，并隐藏分页区域
+    renderList(matched);
+    if (pagination) pagination.style.display = 'none';
+  });
+}
 
 /* ---------------- 导航（全站一致） ---------------- */
 function renderNav(){
