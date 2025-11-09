@@ -380,15 +380,20 @@ function renderList(items){
         <img class="article-thumb" src="${p.cover||'/plus/images/banner-plus.jpg'}" alt="${esc(p.title)}">
       </a>
       <div class="article-content">
+        <!-- 标题 -->
         <a class="article-title" href="${buildLink(p.slug)}">${esc(p.title)}</a>
-        <div class="article-excerpt">${esc(p.excerpt||'')}</div>
+        <!-- 元信息行（放到标题下面） -->
         <div class="article-meta"><span class="meta-icon meta-icon-user"></span>木子-联系微信：ef98ee&nbsp;&nbsp;&nbsp;2025-07-28</div>
+        <!-- 摘要 -->
+        <div class="article-excerpt">${esc(p.excerpt||'')}</div>
+        <!-- 标签 -->
         <div class="article-tags">
           ${(p.tags||[]).map(t=>`<a class="tag" href="${PREFIX}?q=${encodeURIComponent(t)}">${esc('#'+t)}</a>`).join('')}
         </div>
       </div>
     </article>`).join('');
 }
+
 
 /* 稳健分页：数字 + 省略号；总页数<=1时隐藏容器 */
 function renderPagination(cur,total,categoryFilter){
