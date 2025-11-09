@@ -247,7 +247,7 @@ main{min-width:0}
 .sidebar-square {
   width: 100%;              /* 占满右侧栏宽度 */
   aspect-ratio: 1 / 1;      /* 正方形关键：宽高比 1:1 */
-  background: #f7f7f7;      /* 浅灰背景，后面你可以改成图片或别的颜色 */
+  background: #fff;        /* 浅灰背景，后面你可以改成图片或别的颜色 */
   border-radius: 12px;
   border: 1px solid #eee;
   box-sizing: border-box;
