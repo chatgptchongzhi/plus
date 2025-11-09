@@ -107,31 +107,42 @@ main{min-width:0}
 .sidebar, aside{min-width:0}
 .container > .main-col { min-width:0; }
 
-/* ===== 右侧栏：手机跟随内容，PC 固定在右侧 ===== */
+/* ===== 右侧栏随文档滚动（不再 fixed） ===== */
 @media (max-width: 991.98px){
   .sidebar.sticky{
-    position: static;
-    top: auto;
-    width: 100%;
-    max-height: none;
-    overflow: visible;
+    position:static;
+    top:auto;
+    width:100%;
+    max-height:none;
+    overflow:visible;
   }
 }
-
 @media (min-width: 992px){
   .main-col{
     margin-right: 0 !important;
   }
-
   .sidebar.sticky{
-    position: sticky;                      /* 关键：变回 sticky */
-    top: calc(var(--nav-h) + 16px);        /* 顶部导航下面一点点 */
-    right: auto;
-    width: 100%;
-    max-height: calc(100vh - var(--nav-h) - 32px); /* 目录高度不超过一屏 */
-    overflow-y: auto;                      /* 右侧内部自己滚动 */
-    overflow-x: hidden;
-    z-index: 999;
+    position: static !important;
+    top:auto !important;
+    right:auto !important;
+    width:100% !important;
+    max-height:none !important;
+    overflow:visible !important;
+    z-index:auto !important;
+  }
+}
+
+/* ===== 新增：PC 端右侧栏固定在视口，内部可以滚动 ===== */
+@media (min-width: 992px){
+  .sidebar.sticky{
+    position: sticky !important;                         /* 固定在右侧 */
+    top: calc(var(--nav-h) + 16px) !important;           /* 导航条下方一点 */
+    right: auto !important;
+    width: 100% !important;
+    max-height: calc(100vh - var(--nav-h) - 32px) !important; /* 高度不超过一屏 */
+    overflow-y: auto !important;                         /* 右侧栏内部单独滚动 */
+    overflow-x: hidden !important;
+    z-index: 999 !important;
   }
 }
 
