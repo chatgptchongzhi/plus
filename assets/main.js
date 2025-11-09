@@ -404,14 +404,8 @@ function renderSidebar(){
   const contactBox = q('#contactBox');
 
   if (aboutBox){
-    // 关于本站：增加一个自适应正方形容器
-    aboutBox.innerHTML = `
-      <h3>关于本站</h3>
-      <div>${SITE.sidebar?.about || '专注 ChatGPT / Sora 教程与充值引导。'}</div>
-      <div class="sidebar-square"></div>
-    `;
+    aboutBox.innerHTML = `<h3>关于本站</h3><div>${SITE.sidebar?.about || '专注 ChatGPT / Sora 教程与充值引导。'}</div>`;
   }
-
   if (adBox){
     const ad = SITE.sidebar?.ad || {};
     adBox.innerHTML = `<h3>${esc(ad.title||'推广')}</h3>
@@ -421,7 +415,6 @@ function renderSidebar(){
         <a class="btn" href="${ad.buttonLink||'#'}" target="_blank">${esc(ad.buttonText||'了解更多')}</a>
       </div>`;
   }
-
   if (contactBox){
     const c = SITE.sidebar?.contact || {};
     contactBox.innerHTML = `<h3>${esc(c.title||'联系木子')}</h3>
@@ -429,6 +422,7 @@ function renderSidebar(){
       <img src="${SITE.wechatQrcode||'/plus/images/qrcode-wechat.png'}" alt="微信二维码">`;
   }
 }
+
 
 
 /* ---------------- 悬浮微信按钮占位图（仅首页） ---------------- */
