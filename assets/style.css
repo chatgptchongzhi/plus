@@ -421,3 +421,65 @@ main{min-width:0}
 
 .article-page #toc .toc-link {
   displ
+   /* ========== 文章页右侧目录：时间轴样式 ========== */
+
+/* 整个目录区域：内部可以滚动（你已经有滚动条了，这里一起写） */
+.article-page #toc {
+  font-size: 14px;
+  line-height: 1.6;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* tocbot 的外层列表：左边一条淡色竖线 */
+.article-page #toc .toc-list {
+  list-style: none;
+  margin: 0;
+  padding-left: 20px;             /* 给竖线和圆点留位置 */
+  border-left: 1px solid #eee;    /* ← 这就是那根淡色竖线 */
+}
+
+/* 每一项 */
+.article-page #toc .toc-list-item {
+  position: relative;
+  margin: 4px 0;
+}
+
+/* 链接本身 */
+.article-page #toc .toc-link {
+  display: block;
+  padding: 4px 0 4px 12px;        /* 文本稍微往右缩一点 */
+  color: #555;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* 每一项左边的小圆点 */
+.article-page #toc .toc-link::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 11px;                      /* 垂直居中文字的中线附近 */
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+
+/* hover 效果 */
+.article-page #toc .toc-link:hover {
+  color: var(--primary);
+}
+
+/* 当前小节（tocbot 自动加 is-active-link）高亮效果 */
+.article-page #toc .toc-link.is-active-link {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.article-page #toc .toc-link.is-active-link::before {
+  border-color: var(--primary);
+}
+
