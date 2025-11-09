@@ -242,6 +242,10 @@ main{min-width:0}
 /* 用 Unicode 画出一个小人 */
 .article-meta .meta-icon-user::before {
   content: "👤";
+   .article-meta .meta-sep{
+  margin: 0 4px;
+  color: #ccc;
+}
 }
 /* 右侧栏正方形容器（自适应宽度，高度自动保持 1:1） */
 .sidebar-square {
