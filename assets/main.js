@@ -433,9 +433,16 @@ function renderSidebar(){
   const adBox      = q('#sideBox2') || q('#adBox');
   const contactBox = q('#contactBox');
 
+  // 关于本站：标题 + 文案 + 正方形盒子
   if (aboutBox){
-    aboutBox.innerHTML = `<h3>关于本站</h3><div>${SITE.sidebar?.about || '专注 ChatGPT / Sora 教程与充值引导。'}</div>`;
+    aboutBox.innerHTML = `
+      <h3>关于本站</h3>
+      <div>${SITE.sidebar?.about || '专注 ChatGPT / Sora 教程与充值引导。'}</div>
+      <div class="sidebar-square"></div>
+    `;
   }
+
+  // 推广卡片（保持不变）
   if (adBox){
     const ad = SITE.sidebar?.ad || {};
     adBox.innerHTML = `<h3>${esc(ad.title||'推广')}</h3>
@@ -445,6 +452,8 @@ function renderSidebar(){
         <a class="btn" href="${ad.buttonLink||'#'}" target="_blank">${esc(ad.buttonText||'了解更多')}</a>
       </div>`;
   }
+
+  // 联系木子（保持不变）
   if (contactBox){
     const c = SITE.sidebar?.contact || {};
     contactBox.innerHTML = `<h3>${esc(c.title||'联系木子')}</h3>
