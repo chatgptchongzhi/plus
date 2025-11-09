@@ -420,7 +420,9 @@ main{min-width:0}
 }
 
 .article-page #toc .toc-link {
-  displ
+  display: block;
+}
+
    /* ========== 文章页右侧目录：时间轴样式 ========== */
 
 /* 整个目录区域：内部可以滚动（你已经有滚动条了，这里一起写） */
