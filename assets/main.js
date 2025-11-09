@@ -429,13 +429,22 @@ function renderPagination(cur,total,categoryFilter){
 
 /* ---------------- 右侧栏 ---------------- */
 function renderSidebar(){
-  const aboutBox   = q('#sideBox1') || q('#aboutBox');
-  const adBox      = q('#sideBox2') || q('#adBox');
-  const contactBox = q('#contactBox');
+  const sidebar   = q('.sidebar');                       // 整个右侧栏
+  const aboutBox  = q('#sideBox1') || q('#aboutBox');    // 优先按 id 找
+  const adBox     = q('#sideBox2') || q('#adBox');
+  const contactBox= q('#contactBox');
+
+  // 1）优先用指定 id 的 aboutBox；
+  //    如果没有，就退一步：在 .sidebar 里面找第一个 .card，当作“关于本站”
+  let targetAbout = aboutBox;
+  if (!targetAbout && sidebar){
+    const firstCard = q('.card', sidebar);
+    if (firstCard) targetAbout = firstCard;
+  }
 
   // 关于本站：标题 + 文案 + 正方形盒子
-  if (aboutBox){
-    aboutBox.innerHTML = `
+  if (targetAbout){
+    targetAbout.innerHTML = `
       <h3>关于本站</h3>
       <div>${SITE.sidebar?.about || '专注 ChatGPT / Sora 教程与充值引导。'}</div>
       <div class="sidebar-square"></div>
