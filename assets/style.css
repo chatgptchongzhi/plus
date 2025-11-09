@@ -484,4 +484,33 @@ main{min-width:0}
 .article-page #toc .toc-link.is-active-link::before {
   border-color: var(--primary);
 }
+/* ================== 文章详情页右侧目录：卡片 & 标题 ================== */
+
+/* 让文章页右侧这块卡片变成长方形，带阴影 */
+.article-page .side-square {
+  aspect-ratio: auto;              /* 不要正方形 */
+  padding: 16px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+/* 标题“文章目录”：前面一根红色竖条，字体稍微大一点、加粗 */
+.article-page .side-square h3 {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.article-page .side-square h3::before {
+  content: "";
+  width: 4px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--primary);  /* 红色 */
+  margin-right: 8px;
+}
 
