@@ -1,6 +1,6 @@
 ---
 title: ChatGPT取消订阅没自动退款怎么办？2025年ChatGPT取消订阅退款完整解决方案
-slug: chatgpt-cancel-refund-guide-2025
+slug: chatgpt-cancel-refund-guide
 date: 2025-11-10 11:10:00
 tags: [ChatGPT取消订阅,ChatGPT退款,ChatGPT Plus,订阅管理,支付问题]
 category: ChatGPT/支付与订阅
