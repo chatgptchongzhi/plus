@@ -510,20 +510,33 @@ body.article-page #postTitle{
   font-weight: 800;
   margin: 0 0 16px;
 }
-/* 文章页：面包屑导航单独成块布局，并与正文区拉开距离 */
-body.article-page #breadcrumb{
-  padding: 8px 16px;              /* 让这条路径有一点内边距，看起来是一个条状容器 */
-  margin: 8px 0 24px;             /* 重点：底部 24px 的竖向留白，把它和文章内容隔开 */
-  border-radius: 8px;
-  background: #fff;
-  border: 1px solid #eee;
-  font-size: 13px;
-  color: #888;
-}
 
 /* 面包屑里的链接样式 */
 body.article-page #breadcrumb a{
   color: #666;
+  text-decoration: none;
+}
+body.article-page #breadcrumb a:hover{
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* 文章页：面包屑（当前位置）—— 独占一行，和上下只隔一条缝 */
+body.article-page #breadcrumb{
+  display: block;
+  margin: 6px 0 10px;   /* 上面 6px，下面 10px：就是你说的“一条缝” */
+  padding: 0;           /* 不额外加内边距，和标题左对齐 */
+
+  font-size: 13px;
+  color: #888;
+
+  background: transparent; /* 不要单独白底 */
+  border: none;            /* 不要边框 */
+}
+
+/* 面包屑里的链接样式（颜色淡一点，hover 有主色） */
+body.article-page #breadcrumb a{
+  color: #888;
   text-decoration: none;
 }
 body.article-page #breadcrumb a:hover{
