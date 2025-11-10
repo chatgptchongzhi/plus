@@ -163,9 +163,3 @@ excerpt: 想取消ChatGPT Plus订阅却找不到入口 这篇教程直接按渠�
 
 如果你只是想停掉以后每月二十美元的扣款 上面几节的步骤就足够完成如何取消ChatGPT Plus订阅 如果还希望争取退款 可以在取消之后再根据各平台的退款规则单独操作
 
-[1]: https://help.openai.com/en/articles/7232927-how-do-i-cancel-my-chatgpt-plus-subscription?utm_source=chatgpt.com "How do I cancel my ChatGPT subscription?"
-[2]: https://help.openai.com/en/articles/7905690-how-to-cancel-your-apple-subscription-for-chatgpt-in-the-chatgpt-ios-app?utm_source=chatgpt.com "How to cancel your Apple subscription for ChatGPT in the ..."
-[3]: https://help.openai.com/en/articles/8258076-how-to-cancel-a-subscription-in-the-chatgpt-android-app?utm_source=chatgpt.com "How to cancel a subscription in the ChatGPT Android app"
-[4]: https://pixenate.com/t/can-someone-explain-how-to-cancel-a-chatgpt-subscription/1987?utm_source=chatgpt.com "Can someone explain how to cancel a ChatGPT subscription?"
-[5]: https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus?utm_source=chatgpt.com "What is ChatGPT Plus?"
-[6]: https://community.openai.com/t/want-to-cancel-subscription-but-cannot-access-my-plan/620247?utm_source=chatgpt.com "Want to cancel subscription but cannot access \"My Plan\""
