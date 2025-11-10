@@ -134,7 +134,6 @@ function renderBreadcrumb(){
 }
 
 /* ---------------- 标题 + Meta ---------------- */
-/* ---------------- 标题 + Meta ---------------- */
 function renderTitleAndMeta(){
   const h1   = q('#postTitle');
   const meta = q('#metaBar');
@@ -148,10 +147,8 @@ function renderTitleAndMeta(){
   const title = CUR.title || CUR.slug || '';
   if (h1) h1.textContent = title;
 
-  // ✅ 这里用的是 CUR.date，而不是写死的某个日期
   const date = fmtDate(CUR.date || '');
 
-  // 从 CUR 中取分类（优先 category，再退回 categories[0]）
   const cat =
     CUR.category ||
     (Array.isArray(CUR.categories) && CUR.categories.length ? CUR.categories[0] : '') ||
@@ -186,8 +183,6 @@ function renderTitleAndMeta(){
     `;
   }
 }
-
-
 
 /* ---------------- 正文渲染（优先使用 CUR.file 兜底；再目录扫描） ---------------- */
 async function renderContent(){
@@ -330,13 +325,12 @@ async function renderContent(){
     : '';
 }
 
-/* ---------------- 目录（不用 tocbot，自己生成） ---------------- */
+/* ---------------- 目录（不用 tocbot，自己生成 + 滚动联动高亮） ---------------- */
 function renderTOC(){
   const tocEl = q('#toc');          // 右侧“目录”这个盒子
   const box   = q('#postContent');  // 文章正文
   if (!tocEl || !box) return;
 
-  // 抓正文里的所有 h1 / h2 / h3 标题
   const headings = box.querySelectorAll('h1, h2, h3');
   if (!headings.length){
     tocEl.innerHTML = '';   // 没有标题就不显示目录
@@ -346,6 +340,9 @@ function renderTOC(){
   const ul = document.createElement('ul');
   ul.className = 'toc-list';
 
+  const headingArr = [];
+  const linkArr = [];
+
   headings.forEach((h, idx) => {
     const level = Number(h.tagName[1] || 2); // H1/H2/H3 → 1/2/3
 
@@ -353,17 +350,38 @@ function renderTOC(){
     if (!h.id){
       const base = h.textContent.trim()
         .replace(/\s+/g, '-')                     // 空格变成 -
-        .replace(/[^\w\u4e00-\u9fa5\-]/g, '')     // 去掉奇怪字符，保留中英文和 -
+        .replace(/[^\w\u4e00-\u9fa5\-]/g, '')     // 保留中英文和 -
         || 'sec';
       h.id = 'toc-' + base + '-' + idx;
     }
 
     const li = document.createElement('li');
-    li.className = 'toc-item toc-level-' + level;
+    li.className = 'toc-list-item toc-level-' + level;
 
     const a = document.createElement('a');
-    a.href = '#' + h.id;                   // 点击跳到对应标题
-    a.textContent = h.textContent.trim();  // 目录里显示标题文字
+    a.className = 'toc-link';
+    a.href = '#' + h.id;                         // 点击跳到对应标题
+    a.textContent = h.textContent.trim();        // 目录里显示标题文字
+
+    // 平滑滚动 + 顶部导航预留
+    a.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      const target = document.getElementById(h.id);
+      if (!target) return;
+
+      const rootStyle = getComputedStyle(document.documentElement);
+      const navVar = rootStyle.getPropertyValue('--nav-h').trim();
+      const navH = parseInt(navVar, 10) || 64;
+      const offset = navH + 16;                 // 导航高度 + 一点间距
+
+      const rect = target.getBoundingClientRect();
+      const y = rect.top + window.pageYOffset - offset;
+
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    });
+
+    headingArr.push(h);
+    linkArr.push(a);
 
     li.appendChild(a);
     ul.appendChild(li);
@@ -371,8 +389,46 @@ function renderTOC(){
 
   tocEl.innerHTML = '';        // 清空原内容
   tocEl.appendChild(ul);       // 把生成好的目录塞进去
+
+  // 启用滚动联动高亮
+  setupTOCScrollSpy(headingArr, linkArr);
 }
 
+function setupTOCScrollSpy(headings, links){
+  if (!headings.length || !links.length) return;
+
+  const rootStyle = getComputedStyle(document.documentElement);
+  const navVar = rootStyle.getPropertyValue('--nav-h').trim();
+  const navH = parseInt(navVar, 10) || 64;
+  const offset = navH + 16;
+
+  function onScroll(){
+    let activeIndex = -1;
+    let minDelta = Infinity;
+
+    headings.forEach((h, idx) => {
+      const rect = h.getBoundingClientRect();
+      const delta = Math.abs(rect.top - offset);
+
+      // 只考虑已经“进入视口上方区域”的标题，并取距离 offset 最近的一个
+      if (rect.top <= offset + 40 && delta < minDelta){
+        minDelta = delta;
+        activeIndex = idx;
+      }
+    });
+
+    links.forEach((link, idx) => {
+      if (idx === activeIndex){
+        link.classList.add('is-active-link');
+      }else{
+        link.classList.remove('is-active-link');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll(); // 初始渲染时先算一次
+}
 
 /* ---------------- 上一篇 / 下一篇 ---------------- */
 function renderPrevNext(){
