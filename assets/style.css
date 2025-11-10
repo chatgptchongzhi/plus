@@ -527,7 +527,7 @@ body.article-page #breadcrumb{
   margin: 6px 0 10px;   /* 上面 6px，下面 10px：就是你说的“一条缝” */
   padding: 0;           /* 不额外加内边距，和标题左对齐 */
 
-  font-size: 13px;
+  font-size: 16px;
   color: #888;
 
   background: transparent; /* 不要单独白底 */
