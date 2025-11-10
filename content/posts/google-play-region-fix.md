@@ -1,6 +1,6 @@
 ---
 title: "Google Play未在您所在地区提供此应用？2025 年完整解决方案和避坑指南"
-slug: "google-play-not-available-in-your-country-solution-2025"
+slug: "google-play-region-fix"
 date: "2025-11-10 10:35:20"
 tags: ["Google Play", "地区限制", "应用在您所在地区不可用", "安卓应用安装"]
 category: "Google Play/使用教程"
