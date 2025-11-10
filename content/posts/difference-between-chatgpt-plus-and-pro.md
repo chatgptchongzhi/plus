@@ -14,7 +14,8 @@ chatgpt plus和 pro的区别主要在价格、模型权限、配额和适用人�
 下面就围绕chatgpt plus和 pro的区别，从价格、模型、配额、功能和适用人群几个维度展开，尽量用简单直观的方式帮你做选择。
 一眼看懂chatgpt plus和 pro的区别
 先用一张表，把chatgpt plus和 pro的区别快速过一遍。
-![chatgpt plus和 pro的区别](/plus/images/difference-between-chatgpt-plus-and-pro.png)
+
+<img src="/plus/images/difference-between-chatgpt-plus-and-pro.png" alt="chatgpt plus和 pro的区别" loading="lazy" style="max-width:100%;height:auto;display:block;margin:16px auto;">
 
 维度	ChatGPT Plus	ChatGPT Pro
 价格	约二十美元每月	约两百美元每月
