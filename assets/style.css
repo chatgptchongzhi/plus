@@ -368,8 +368,8 @@ main{min-width:0}
 
 /* ================== 文章详情页右侧目录（卡片 + 时间轴样式） ================== */
 
-/* 目录所在卡片：文章页专用 */
-body.article-page .side-square {
+/* 目录所在卡片 */
+.side-square {
   aspect-ratio: auto;
   padding: 16px;
   border-radius: 12px;
@@ -379,14 +379,14 @@ body.article-page .side-square {
 }
 
 /* 标题“文章目录”：左侧红色竖条 */
-body.article-page .side-square h3 {
+.side-square h3 {
   display: flex;
   align-items: center;
   font-size: 16px;
   font-weight: 700;
   margin: 0 0 12px;
 }
-body.article-page .side-square h3::before {
+.side-square h3::before {
   content: "";
   width: 4px;
   height: 18px;
@@ -396,7 +396,7 @@ body.article-page .side-square h3::before {
 }
 
 /* 目录区域：内部滚动 */
-body.article-page #toc {
+#toc {
   font-size: 14px;
   line-height: 1.6;
   max-height: calc(100vh - 200px);
@@ -405,7 +405,7 @@ body.article-page #toc {
 }
 
 /* tocbot 生成的列表：左侧一根竖线 */
-body.article-page #toc .toc-list {
+#toc .toc-list {
   list-style: none;
   margin: 0;
   padding-left: 20px;           /* 给竖线和圆点留位置 */
@@ -413,13 +413,13 @@ body.article-page #toc .toc-list {
 }
 
 /* 每一项 */
-body.article-page #toc .toc-list-item {
+#toc .toc-list-item {
   position: relative;
   margin: 4px 0;
 }
 
 /* 链接文字 */
-body.article-page #toc .toc-link {
+#toc .toc-link {
   position: relative;
   display: block;
   padding: 4px 0 4px 12px;
@@ -432,7 +432,7 @@ body.article-page #toc .toc-link {
 }
 
 /* 每一项左边的小圆点 */
-body.article-page #toc .toc-link::before {
+#toc .toc-link::before {
   content: "";
   position: absolute;
   left: -6px;
@@ -445,15 +445,15 @@ body.article-page #toc .toc-link::before {
 }
 
 /* hover 效果 */
-body.article-page #toc .toc-link:hover {
+#toc .toc-link:hover {
   color: var(--primary);
 }
 
 /* 当前小节高亮（tocbot 会加 is-active-link） */
-body.article-page #toc .toc-link.is-active-link {
+#toc .toc-link.is-active-link {
   color: var(--primary);
   font-weight: 600;
 }
-body.article-page #toc .toc-link.is-active-link::before {
+#toc .toc-link.is-active-link::before {
   border-color: var(--primary);
 }
