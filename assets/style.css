@@ -488,3 +488,13 @@ body.article-page #toc .toc-link.is-active-link{
 body.article-page #toc .toc-link.is-active-link::before{
   border-color:var(--primary);
 }
+/* 文章页：正文字体统一放大到 17px，行高 1.7，微软雅黑 */
+body.article-page #postContent p,
+body.article-page #postContent li {
+  font-family: "Microsoft YaHei","微软雅黑",
+               -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
+               "PingFang SC",Helvetica,Arial,sans-serif;
+  font-size: 17px;
+  line-height: 1.7;
+  color: #222;
+}
