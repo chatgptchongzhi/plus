@@ -171,11 +171,7 @@ ChatGPT 取消订阅退款也是同样的逻辑。搞清楚取消和退款的区
 ## ChatGPT取消订阅退款方案对比（时间、成功率、风险）
 
 整体上，可以这样把几种常见 ChatGPT 取消订阅退款方式做一个横向比较。
-
-<img src="/plus/images/chatgpt-subscription-cancellation-and-refund-policy-comparison.png"
-     alt="ChatGPT取消订阅退款方案对比"
-     loading="lazy"
-     style="max-width:100%;height:auto;display:block;margin:16px auto;">
+<img src="/plus/images/chatgpt-subscription-cancellation-and-refund-policy-comparison.png" alt="ChatGPT取消订阅退款方案对比" loading="lazy" style="max-width:100%;height:auto;display:block;margin:16px auto;">
 
 
 如果你只是单纯不想继续用 ChatGPT Plus，也可以只做取消订阅，保证下次不再扣款。如果你已经产生了一笔甚至多笔费用，希望尽量争取 ChatGPT 退款，那就建议直接走最后一条“按渠道分步退款”的完整流程。
