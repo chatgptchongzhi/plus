@@ -496,11 +496,11 @@ body.article-page #postContent li {
   font-family: "Microsoft YaHei","微软雅黑",
                -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
                "PingFang SC",Helvetica,Arial,sans-serif;
-  font-size: 21px;
+  font-size: 17px;
   line-height: 1.7;
   color: #222;
 }
-/* 文章页标题：放大到约 32px */
+/* 文章页标题：放大到约 28px */
 body.article-page #postTitle{
   font-family:"Microsoft YaHei","微软雅黑",
               -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
