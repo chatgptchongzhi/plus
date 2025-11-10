@@ -510,3 +510,23 @@ body.article-page #postTitle{
   font-weight: 800;
   margin: 0 0 16px;
 }
+/* 文章页：面包屑导航单独成块布局，并与正文区拉开距离 */
+body.article-page #breadcrumb{
+  padding: 8px 16px;              /* 让这条路径有一点内边距，看起来是一个条状容器 */
+  margin: 8px 0 24px;             /* 重点：底部 24px 的竖向留白，把它和文章内容隔开 */
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #eee;
+  font-size: 13px;
+  color: #888;
+}
+
+/* 面包屑里的链接样式 */
+body.article-page #breadcrumb a{
+  color: #666;
+  text-decoration: none;
+}
+body.article-page #breadcrumb a:hover{
+  color: var(--primary);
+  text-decoration: underline;
+}
