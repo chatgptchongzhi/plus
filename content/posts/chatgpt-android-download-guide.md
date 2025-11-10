@@ -146,8 +146,3 @@ chatgpt 安卓详细下载教程默认你已经能正常打开Google Play 并且
 
 只要这几步做到位 基本上就能顺利完成ChatGPT 安卓下载 并开始在手机上正常使用ChatGPT 安卓版 把官方功能装在口袋里随时调用
 
-[1]: https://help.openai.com/en/articles/8167604-how-to-find-and-install-the-chatgpt-android-app-on-the-google-play-store?utm_source=chatgpt.com "How to find and install the ChatGPT Android app on ..."
-[2]: https://help.openai.com/en/articles/8142208-chatgpt-android-app-faq?utm_source=chatgpt.com "ChatGPT Android App FAQ"
-[3]: https://help.openai.com/en/articles/7947663-chatgpt-supported-countries?utm_source=chatgpt.com "ChatGPT Supported Countries"
-[4]: https://play.google.com/store/apps/details?hl=en_US&id=com.openai.chatgpt&utm_source=chatgpt.com "ChatGPT - Apps on Google Play"
-[5]: https://help.openai.com/en/collections/5461535-android-app?utm_source=chatgpt.com "Android app"
