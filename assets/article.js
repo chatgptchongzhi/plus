@@ -290,7 +290,11 @@ async function renderContent(){
   if (parsed && parsed.fm && Object.keys(parsed.fm).length){
     const fm = parsed.fm;
     if (fm.title) CUR.title = fm.title;
-    if (fm.date)  CUR.date  = fm.date;
+
+    // ✅ 让首页 index.json 里的 date 优先作为真实发布日期；
+    // 只有当 CUR.date 还没有值时，才用 md 里的 date 做兜底。
+    if (fm.date && !CUR.date) CUR.date = fm.date;
+
     if (fm.tags)  CUR.tags  = Array.isArray(fm.tags)? fm.tags : [fm.tags];
     if (fm.categories) CUR.categories = Array.isArray(fm.categories)? fm.categories : [fm.categories];
     if (fm.category)   CUR.category   = fm.category;
@@ -299,6 +303,7 @@ async function renderContent(){
     if (fm.excerpt && !CUR.excerpt) CUR.excerpt = fm.excerpt;
   }
   const body = parsed ? parsed.body : (md||'');
+
 
   if (window.marked){
     box.innerHTML = window.marked.parse(body || '');
