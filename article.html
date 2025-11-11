@@ -5,10 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>文章 - 木子AI</title>
 
-  <!-- 只保留一个 link，不带 ?v；稍后用 JS 注入时间戳规避缓存 -->
   <link id="site-css" rel="stylesheet" href="/plus/assets/style.css" />
-
-  <!-- 统一路径/版本工具：先定义，再切换 CSS 到带时间戳的地址 -->
   <script>
     const PREFIX = '/plus/';
     const BUILD_VERSION = Date.now();
@@ -21,34 +18,25 @@
 </head>
 
 <body class="article-page">
-  <!-- 顶部导航 -->
   <header class="navbar shadow">
     <a class="logo" href="/plus/">木子AI</a>
     <nav class="nav"><ul id="navList" class="nav-list"></ul></nav>
     <div class="search"><span class="icon">🔍</span><input id="searchInput" type="search" placeholder="搜索"></div>
   </header>
 
-  <!-- 两栏容器 -->
   <div class="container">
     <main class="main-col">
-      <!-- 面包屑 -->
       <nav class="breadcrumb" aria-label="breadcrumb" id="breadcrumb"></nav>
-
-      <!-- 顶部广告 -->
       <section id="topAds" class="ads"></section>
 
-      <!-- 标题 + MetaBar -->
       <h1 id="postTitle" class="post-title"></h1>
       <div id="metaBar" class="meta-bar"></div>
 
-      <!-- 正文 -->
       <article id="postContent" class="post-content"></article>
 
-      <!-- 上/下一篇 -->
       <div id="postNav" class="post-nav"></div>
     </main>
 
-    <!-- 右侧栏：两个正方形容器（上：目录；下：推广/联系位） -->
     <aside class="sidebar sticky side-squares">
       <section class="card side-square" id="tocCard">
         <h3>文章目录</h3>
@@ -62,14 +50,13 @@
     © 2025 木子科技 · <span id="siteEmail"></span>
   </footer>
 
-  <!-- 返回顶部按钮 -->
   <div id="backToTop" aria-label="返回顶部" title="返回顶部">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M12 5l-7 7m7-7l7 7M12 5v14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </div>
 
-  <!-- ✅ 新增：marked 初始化，必须放在 article.js 之前 -->
+  <!-- ✅ 新增 marked 支持 -->
   <script src="/plus/assets/libs/marked.min.js"></script>
   <script>
     window.marked?.setOptions({
@@ -80,10 +67,9 @@
     });
   </script>
 
-  <!-- ✅ 按顺序加载主脚本 -->
+  <!-- ✅ 主脚本加载区 -->
   <script>
     (function () {
-      // 保留原有逻辑，只调整顺序
       const scripts = [
         'assets/libs/tocbot.min.js',
         'assets/article.js'
@@ -94,8 +80,22 @@
           const w = document.createElement('script');
           w.src = url('assets/wechat-float.js');
           document.head.appendChild(w);
+
+          /* ✅ 新增：渲染后自动包裹表格为可滚动容器 */
+          (function wrapTables() {
+            const pc = document.getElementById('postContent');
+            if (!pc) return;
+            pc.querySelectorAll('table').forEach(tb => {
+              if (tb.parentElement && tb.parentElement.classList.contains('md-table-wrap')) return;
+              const wrap = document.createElement('div');
+              wrap.className = 'md-table-wrap';
+              tb.parentNode.insertBefore(wrap, tb);
+              wrap.appendChild(tb);
+            });
+          })();
           return;
         }
+
         const s = document.createElement('script');
         s.src = url(scripts[i]);
         s.onload = () => loadSeq(i + 1);
