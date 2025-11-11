@@ -74,31 +74,11 @@
   <script>
     (function () {
       // ✅ 仓库名是 plus，路径要带 /plus/ 前缀
-      const scripts = [
-        '/plus/assets/libs/marked.min.js',
-        '/plus/assets/libs/tocbot.min.js',
-        '/plus/assets/article.js'
-      ];
+<!-- 先加载 marked（解析 Markdown） -->
+<script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
 
-      function loadSeq(i){
-        if (i >= scripts.length) {
-          // 三个主要脚本都加载完后，再挂微信浮窗
-          const w = document.createElement('script');
-          w.src = '/plus/assets/wechat-float.js?v=' + Date.now();
-          document.head.appendChild(w);
-          return;
-        }
-        const s = document.createElement('script');
-        s.src = scripts[i] + '?v=' + Date.now();
-        s.onload = () => loadSeq(i + 1);
-        document.head.appendChild(s);
-      }
-
-      loadSeq(0);
-    })();
-  </script>
-
-
+<!-- 再加载你自己的文章脚本 -->
+<script src="/plus/assets/article.js?v=1"></script>
 
 
   <!-- 返回顶部逻辑（独立、零依赖） -->
