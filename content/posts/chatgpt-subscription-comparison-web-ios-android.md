@@ -1,5 +1,4 @@
 ---
-
 title: ChatGPT订阅方式对比：官网订阅、iOS内购、安卓内购价格与退款政策
 slug: chatgpt-subscription-comparison
 date: 2025-11-12 10:25:00
@@ -8,7 +7,7 @@ category: ChatGPT教程
 Cover:
 top: false
 excerpt: 本文对比了ChatGPT官网订阅、iOS内购、安卓内购的价格、退款政策与风险，帮助用户选择最适合自己的订阅方式。
-
+---
 
 
 ## 1. ChatGPT订阅方式：官网、iOS内购、安卓内购
