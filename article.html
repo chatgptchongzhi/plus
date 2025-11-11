@@ -69,44 +69,45 @@
     </svg>
   </div>
 
-  <!-- 可靠加载器：先本地 marked，再 CDN 回退；然后加载 article.js，最后挂 wechat-float.js -->
+  <!-- 可靠加载器：先本地 marked（/plus/…），失败回退 CDN；再加载 article.js，最后挂 wechat-float.js -->
   <script>
     (function () {
       function loadScript(src) {
         return new Promise((resolve, reject) => {
           const s = document.createElement('script');
           s.src = src + (src.includes('?') ? '&' : '?') + 'v=' + Date.now(); // 防缓存
-          s.async = false; // 保证加载顺序
+          s.async = false;                     // 保证按顺序
+          s.referrerPolicy = 'no-referrer';    // 避免某些 CDN 策略问题
           s.onload = () => resolve(src);
           s.onerror = () => reject(new Error('load fail: ' + src));
           document.head.appendChild(s);
         });
       }
 
-      const localMarked = '/plus/assets/libs/marked.min.js';
-      const cdnMarked   = 'https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js';
-      const articleJS   = '/plus/assets/article.js';
-      const wechatJS    = '/plus/assets/wechat-float.js';
+      const LOCAL_MARKED = '/plus/assets/libs/marked.min.js';
+      const CDN_MARKED   = 'https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js';
+      const ARTICLE_JS   = '/plus/assets/article.js';
+      const WECHAT_JS    = '/plus/assets/wechat-float.js';
 
-      // 先尝试本地 marked，失败自动回退 CDN
-      loadScript(localMarked)
-        .catch(() => loadScript(cdnMarked))
+      // 1) 先本地，再 CDN 回退；2) 确保 window.marked 就绪；3) 再加载文章逻辑
+      loadScript(LOCAL_MARKED)
+        .catch(() => loadScript(CDN_MARKED))
         .then(() => {
-          if (!window.marked) throw new Error('marked loaded but no global found');
-          // 确保开启 GFM 表格渲染，避免标题混淆
-          window.marked.setOptions({ gfm: true, breaks: false, headerIds: true, mangle: false });
+          if (!window.marked) throw new Error('marked 已加载但未挂到 window');
+          // 开启 GFM 表格渲染、稳定的标题 id 生成（避免中文标题被“混淆”）
+          try {
+            window.marked.setOptions({ gfm: true, breaks: false, headerIds: true, mangle: false });
+          } catch (_) {}
         })
         .catch(err => {
-          console.warn('[marked] fallback fail or no global:', err);
-          // 即使没有 marked 也继续加载文章逻辑（文章至少能显示为纯文本）
+          console.error('[marked] 加载失败：', err);
+          // 即使没有 marked，也继续加载 article.js（至少能显示纯文本）
         })
         .finally(() => {
-          // 加载文章逻辑
-          loadScript(articleJS)
-            .catch(e => console.error('load article.js fail:', e))
+          loadScript(ARTICLE_JS)
+            .catch(e => console.error('[article.js] 加载失败：', e))
             .finally(() => {
-              // 挂微信浮窗（不影响主要逻辑）
-              loadScript(wechatJS).catch(() => {});
+              loadScript(WECHAT_JS).catch(() => {});
             });
         });
     })();
