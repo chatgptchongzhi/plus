@@ -44,12 +44,7 @@ excerpt: 本文通过操作流程说明如何给 OpenAI API 账号绑定信用�
 • 如果你想通过代码自动获取用量或余额：可调用 GET /v1/usage 或 /v1/dashboard/billing/credit_grants 等接口。 
 
 ## 5. 常见问题与注意事项对比
-
-| 使用方式 | 成本水平 | 安全性 | 稳定性 | 适合人群 | 主要风险 |
-|-----------|------------|-----------|-----------|------------|------------|
-| 绑定国际信用卡 | 低至中 | 高 | 高（视银行） | 开发者／服务商 | 卡片被拒、地区不支持 |
-| 充值预付额度 | 中 | 高 | 高 | 个人开发者／项目小团队 | 充值金额锁定、余额错误 |
-| 查看用量监控 | 免费／无额外成本 | 高 | 高 | 所有使用者 | 模型计费理解错误、遗漏消耗 |
+<img src="/plus/images/openai-api-recharge-tutorial.png" alt=" 2025年OpenAI API充值教程：从绑卡、充值到查看用量的完整流程" loading="lazy" style="max-width:100%;height:auto;display:block;margin:16px auto;">
 
 
 ## 6. 提示建议
