@@ -78,29 +78,33 @@
       const BUILD_VERSION = Date.now();
       const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
 
-      // 先加载 marked（解析 Markdown），再加载文章逻辑
-      const list = [
-        'assets/libs/marked.min.js',
-        'assets/article.js'
-      ];
+      <script>
+(function () {
+  // ✅ 改成完整路径并保证优先加载 marked
+  const scripts = [
+    '/plus/assets/libs/marked.min.js',
+    '/plus/assets/libs/tocbot.min.js',
+    '/plus/assets/article.js'
+  ];
 
-      function loadSeq(i){
-        if (i >= list.length) {
-          // 可选：最后再挂微信浮窗脚本（如果你在用）
-          const w = document.createElement('script');
-          w.src = url('assets/wechat-float.js');
-          document.head.appendChild(w);
-          return;
-        }
-        const s = document.createElement('script');
-        s.src = url(list[i]);
-        s.onload = () => loadSeq(i + 1);
-        document.head.appendChild(s);
-      }
+  function loadSeq(i){
+    if (i >= scripts.length) {
+      // 三个主要脚本都加载完了，再挂微信浮窗
+      const w = document.createElement('script');
+      w.src = '/plus/assets/wechat-float.js?v=' + Date.now();
+      document.head.appendChild(w);
+      return;
+    }
+    const s = document.createElement('script');
+    s.src = scripts[i] + '?v=' + Date.now();
+    s.onload = () => loadSeq(i + 1);
+    document.head.appendChild(s);
+  }
 
-      loadSeq(0);
-    })();
-  </script>
+  loadSeq(0);
+})();
+</script>
+
 
   <!-- 返回顶部逻辑（独立、零依赖） -->
   <script>
