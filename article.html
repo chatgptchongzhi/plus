@@ -70,38 +70,34 @@
     </svg>
   </div>
 
-  <!-- 动态注入脚本（统一走 url()，避免固定版本号；顺序：marked -> article.js） -->
+    <!-- 动态注入脚本（统一走 url()，避免固定版本号；顺序：marked -> article.js） -->
   <script>
     (function () {
-      // 与顶部保持一致：PREFIX / BUILD_VERSION / url()
-      const PREFIX = '/plus/';
-      const BUILD_VERSION = Date.now();
-      const url = p => `${PREFIX}${p}?v=${BUILD_VERSION}`;
-(function () {
-  // ✅ 仓库名是 plus，路径要带 /plus/ 前缀
-  const scripts = [
-    '/plus/assets/libs/marked.min.js',
-    '/plus/assets/libs/tocbot.min.js',
-    '/plus/assets/article.js'
-  ];
+      // ✅ 仓库名是 plus，路径要带 /plus/ 前缀
+      const scripts = [
+        '/plus/assets/libs/marked.min.js',
+        '/plus/assets/libs/tocbot.min.js',
+        '/plus/assets/article.js'
+      ];
 
-  function loadSeq(i){
-    if (i >= scripts.length) {
-      // 三个主要脚本都加载完后，再挂微信浮窗
-      const w = document.createElement('script');
-      w.src = '/plus/assets/wechat-float.js?v=' + Date.now();
-      document.head.appendChild(w);
-      return;
-    }
-    const s = document.createElement('script');
-    s.src = scripts[i] + '?v=' + Date.now();
-    s.onload = () => loadSeq(i + 1);
-    document.head.appendChild(s);
-  }
+      function loadSeq(i){
+        if (i >= scripts.length) {
+          // 三个主要脚本都加载完后，再挂微信浮窗
+          const w = document.createElement('script');
+          w.src = '/plus/assets/wechat-float.js?v=' + Date.now();
+          document.head.appendChild(w);
+          return;
+        }
+        const s = document.createElement('script');
+        s.src = scripts[i] + '?v=' + Date.now();
+        s.onload = () => loadSeq(i + 1);
+        document.head.appendChild(s);
+      }
 
-  loadSeq(0);
-})();
-</script>
+      loadSeq(0);
+    })();
+  </script>
+
 
 
 
