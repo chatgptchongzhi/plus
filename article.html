@@ -21,11 +21,10 @@
 </head>
 
 <body class="article-page">
-  <!-- 顶部导航（修复：给 nav 补上 class="nav"） -->
+  <!-- 顶部导航 -->
   <header class="navbar shadow">
     <a class="logo" href="/plus/">木子AI</a>
     <nav class="nav"><ul id="navList" class="nav-list"></ul></nav>
-    <!-- 修复：搜索框 id 与首页保持一致，便于脚本复用 -->
     <div class="search"><span class="icon">🔍</span><input id="searchInput" type="search" placeholder="搜索"></div>
   </header>
 
@@ -63,43 +62,55 @@
     © 2025 木子科技 · <span id="siteEmail"></span>
   </footer>
 
-  <!-- 返回顶部按钮（样式在 /plus/assets/style.css 中的 #backToTop） -->
+  <!-- 返回顶部按钮 -->
   <div id="backToTop" aria-label="返回顶部" title="返回顶部">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M12 5l-7 7m7-7l7 7M12 5v14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </div>
 
-    <!-- 动态注入脚本（统一走 url()，避免固定版本号；顺序：marked -> article.js） -->
+  <!-- 可靠加载器：先本地 marked，再 CDN 回退；然后加载 article.js，最后挂 wechat-float.js -->
   <script>
     (function () {
-      // ✅ 仓库名是 plus，路径要带 /plus/ 前缀
-      const scripts = [
-        '/plus/assets/libs/marked.min.js',
-        '/plus/assets/libs/tocbot.min.js',
-        '/plus/assets/article.js'
-      ];
-
-      function loadSeq(i){
-        if (i >= scripts.length) {
-          // 三个主要脚本都加载完后，再挂微信浮窗
-          const w = document.createElement('script');
-          w.src = '/plus/assets/wechat-float.js?v=' + Date.now();
-          document.head.appendChild(w);
-          return;
-        }
-        const s = document.createElement('script');
-        s.src = scripts[i] + '?v=' + Date.now();
-        s.onload = () => loadSeq(i + 1);
-        document.head.appendChild(s);
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = src + (src.includes('?') ? '&' : '?') + 'v=' + Date.now(); // 防缓存
+          s.async = false; // 保证加载顺序
+          s.onload = () => resolve(src);
+          s.onerror = () => reject(new Error('load fail: ' + src));
+          document.head.appendChild(s);
+        });
       }
 
-      loadSeq(0);
+      const localMarked = '/plus/assets/libs/marked.min.js';
+      const cdnMarked   = 'https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js';
+      const articleJS   = '/plus/assets/article.js';
+      const wechatJS    = '/plus/assets/wechat-float.js';
+
+      // 先尝试本地 marked，失败自动回退 CDN
+      loadScript(localMarked)
+        .catch(() => loadScript(cdnMarked))
+        .then(() => {
+          if (!window.marked) throw new Error('marked loaded but no global found');
+          // 确保开启 GFM 表格渲染，避免标题混淆
+          window.marked.setOptions({ gfm: true, breaks: false, headerIds: true, mangle: false });
+        })
+        .catch(err => {
+          console.warn('[marked] fallback fail or no global:', err);
+          // 即使没有 marked 也继续加载文章逻辑（文章至少能显示为纯文本）
+        })
+        .finally(() => {
+          // 加载文章逻辑
+          loadScript(articleJS)
+            .catch(e => console.error('load article.js fail:', e))
+            .finally(() => {
+              // 挂微信浮窗（不影响主要逻辑）
+              loadScript(wechatJS).catch(() => {});
+            });
+        });
     })();
   </script>
-
-
-
 
   <!-- 返回顶部逻辑（独立、零依赖） -->
   <script>
