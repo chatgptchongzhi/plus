@@ -383,7 +383,9 @@ function renderList(items){
         <!-- 标题 -->
         <a class="article-title" href="${buildLink(p.slug)}">${esc(p.title)}</a>
         <!-- 元信息行（放到标题下面） -->
-        <div class="article-meta"><span class="meta-icon meta-icon-user"></span>木子-联系微信：ef98ee&nbsp;&nbsp;&nbsp;2025-07-28</div>
+        <div class="article-meta">
+  <span class="meta-icon meta-icon-user"></span>木子-联系微信：ef98ee&nbsp;&nbsp;&nbsp;发布于 ${fmtDate(p.date)}
+</div>
         <!-- 摘要 -->
         <div class="article-excerpt">${esc(p.excerpt||'')}</div>
         <!-- 标签 -->
