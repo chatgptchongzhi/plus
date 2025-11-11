@@ -1,7 +1,7 @@
 ---
 title: 2025年ChatGPT Plus已扣款但账号未升级：申诉与退款完整流程
 slug: chatgpt-plus-payment-no-upgrade
-date: 2025-11-11 22:12:20
+date: 2025-11-11 21：26
 tags: [ChatGPT Plus未升级,ChatGPT Plus退款,ChatGPT Plus支付问题,ChatGPT扣款未到账,ChatGPT账户未升级]
 category: ChatGPT教程
 Cover:
