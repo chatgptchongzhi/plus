@@ -6,7 +6,19 @@ const q  = (sel, el=document)=>el.querySelector(sel);
 const qa = (sel, el=document)=>[...el.querySelectorAll(sel)];
 function getParam(k){ return new URLSearchParams(location.search).get(k)||''; }
 function esc(s){ return (s??'').toString().replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
-function fmtDate(s){ return s || ''; }
+function fmtDate(s){
+  if (!s) return '';
+  s = String(s).trim();
+
+  const m = s.match(/^(\d{4})(\d{2})(\d{2})(?:\s+(\d{2}:\d{2}:\d{2}))?$/);
+  if (m) {
+    const datePart = `${m[1]}-${m[2]}-${m[3]}`;
+    return m[4] ? `${datePart} ${m[4]}` : datePart;
+  }
+
+  return s;
+}
+
 function buildLink(slug){ return `${PREFIX}article.html?v=${BUILD_VERSION}&slug=${encodeURIComponent(slug)}`; }
 
 async function getJSON(path){
