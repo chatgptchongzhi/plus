@@ -15,13 +15,13 @@ excerpt: 本文通过操作流程说明如何给 OpenAI API 账号绑定信用�
 ## 1. 账户准备：确认你的账号状态
 
 • 登录 OpenAI 的 [Dashboard](https://platform.openai.com)（建议使用桌面浏览器）。
-• 确认你是否已创建 API Key（路径：左侧菜单 → API Keys） 。 ([OpenAI платформы][1])
+• 确认你是否已创建 API Key（路径：左侧菜单 → API Keys） 。
 • 确认你所在组织或账号是否有权限进行付款／充值操作（如果你所属的是团队或子帐号，可能需要管理员权限）。
 • 建议先检查你的账户是否有未完成的付款、限额是否已达到或已触发预警，以免后续充值失败。
 
 ## 2. 绑定信用卡或其他支付方式
 
-• 在 Dashboard 中找到「Billing（计费）／Payment Methods（支付方式）」菜单。 ([Team-GPT][2])
+• 在 Dashboard 中找到「Billing（计费）／Payment Methods（支付方式）」菜单。
 • 点击「Add payment method（添加支付方式）」。
 • 填入信用卡号、有效期、CVC、安全码，以及账单地址（必须与卡片银行所在地或账户所在地一致）。
 • 保存后，系统通常会进行小额验证或预授权，确认卡片可用。
