@@ -543,25 +543,36 @@ body.article-page #breadcrumb a:hover{
   color: var(--primary);
   text-decoration: underline;
 }
-/* ========== Markdown 表格可视化样式 ========== */
-article table {
+/* ========== Markdown 表格可视化样式（增强版） ========== */
+.post-body table,
+article table,
+.content table {
   width: 100%;
   border-collapse: collapse;
   margin: 16px 0;
   font-size: 15px;
   border: 1px solid #ddd;
 }
-article th, article td {
+
+.post-body th, .post-body td,
+article th, article td,
+.content th, .content td {
   border: 1px solid #ddd;
   padding: 8px 10px;
   text-align: center;
   line-height: 1.6;
 }
-article th {
+
+.post-body th,
+article th,
+.content th {
   background-color: #f9f9f9;
   font-weight: 600;
   color: #333;
 }
-article tr:nth-child(even) {
+
+.post-body tr:nth-child(even),
+article tr:nth-child(even),
+.content tr:nth-child(even) {
   background-color: #fafafa;
 }
