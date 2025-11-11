@@ -21,11 +21,10 @@
 </head>
 
 <body class="article-page">
-  <!-- 顶部导航（修复：给 nav 补上 class="nav"） -->
+  <!-- 顶部导航 -->
   <header class="navbar shadow">
     <a class="logo" href="/plus/">木子AI</a>
     <nav class="nav"><ul id="navList" class="nav-list"></ul></nav>
-    <!-- 修复：搜索框 id 与首页保持一致，便于脚本复用 -->
     <div class="search"><span class="icon">🔍</span><input id="searchInput" type="search" placeholder="搜索"></div>
   </header>
 
@@ -50,55 +49,64 @@
     </main>
 
     <!-- 右侧栏：两个正方形容器（上：目录；下：推广/联系位） -->
-<aside class="sidebar sticky side-squares">
-  <section class="card side-square" id="tocCard">
-    <h3>文章目录</h3>
-    <nav id="toc" class="toc"></nav>
-  </section>
-  <section class="card side-square" id="articleSideBox2"></section>
-</aside>
+    <aside class="sidebar sticky side-squares">
+      <section class="card side-square" id="tocCard">
+        <h3>文章目录</h3>
+        <nav id="toc" class="toc"></nav>
+      </section>
+      <section class="card side-square" id="articleSideBox2"></section>
+    </aside>
+  </div>
 
   <footer class="footer">
     © 2025 木子科技 · <span id="siteEmail"></span>
   </footer>
 
-  <!-- 返回顶部按钮（样式在 /plus/assets/style.css 中的 #backToTop） -->
+  <!-- 返回顶部按钮 -->
   <div id="backToTop" aria-label="返回顶部" title="返回顶部">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M12 5l-7 7m7-7l7 7M12 5v14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </div>
 
-  <!-- 动态注入脚本（统一走 url()，避免固定版本号），保持依赖顺序 -->
+  <!-- ✅ 新增：marked 初始化，必须放在 article.js 之前 -->
+  <script src="/plus/assets/libs/marked.min.js"></script>
   <script>
-  (function () {
-    // 按顺序：先 marked → 再 tocbot → 最后 article.js
-    const scripts = [
-      'assets/libs/marked.min.js',
-      'assets/libs/tocbot.min.js',
-      'assets/article.js'
-    ];
+    window.marked?.setOptions({
+      gfm: true,
+      breaks: false,
+      mangle: false,
+      headerIds: false
+    });
+  </script>
 
-    function loadSeq(i){
-      if (i >= scripts.length) {
-        // 三个主要脚本都加载完了，再挂微信浮窗
-        const w = document.createElement('script');
-        w.src = url('assets/wechat-float.js');
-        document.head.appendChild(w);
-        return;
+  <!-- ✅ 按顺序加载主脚本 -->
+  <script>
+    (function () {
+      // 保留原有逻辑，只调整顺序
+      const scripts = [
+        'assets/libs/tocbot.min.js',
+        'assets/article.js'
+      ];
+
+      function loadSeq(i) {
+        if (i >= scripts.length) {
+          const w = document.createElement('script');
+          w.src = url('assets/wechat-float.js');
+          document.head.appendChild(w);
+          return;
+        }
+        const s = document.createElement('script');
+        s.src = url(scripts[i]);
+        s.onload = () => loadSeq(i + 1);
+        document.head.appendChild(s);
       }
-      const s = document.createElement('script');
-      s.src = url(scripts[i]);
-      s.onload = () => loadSeq(i + 1);
-      document.head.appendChild(s);
-    }
 
-    loadSeq(0);
-  })();
-</script>
+      loadSeq(0);
+    })();
+  </script>
 
-
-  <!-- 返回顶部逻辑（独立、零依赖） -->
+  <!-- 返回顶部逻辑 -->
   <script>
     (function () {
       const btn = document.getElementById('backToTop');
