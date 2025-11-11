@@ -1,7 +1,7 @@
 ---
 title: 2025年GPT账号被停用解决方案：完整解封流程与实测经验
 slug: gpt-account-recovery-guide-2025
-date: 2025-11-11 23:40:00
+date: 2025-11-11 14:52:00
 tags: [ChatGPT账号, GPT封禁, OpenAI解封, 账号恢复, 使用教程]
 category: ChatGPT使用指南
 Cover:
