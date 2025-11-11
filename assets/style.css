@@ -576,3 +576,67 @@ article tr:nth-child(even),
 .content tr:nth-child(even) {
   background-color: #fafafa;
 }
+/* ============ Markdown 表格：自动渲染为干净对比表格（仅正文） ============ */
+
+/* 外层滚动容器：小屏横向滚动，桌面端不挤压布局 */
+#postContent .md-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 16px 0;
+  padding-bottom: 4px;            /* 给滚动条留点空间，视觉更干净 */
+}
+
+/* 基础表格样式 */
+#postContent table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;               /* 防止列太多时挤爆 */
+  font-size: 15px;
+  line-height: 1.65;
+  background: #fff;
+}
+
+#postContent th,
+#postContent td {
+  border: 1px solid #eaeaea;
+  padding: 10px 14px;
+  text-align: left;
+  vertical-align: top;
+  word-break: break-word;
+}
+
+/* 表头：弱灰底、加粗、固定高度 */
+#postContent thead th {
+  background: #fafafa;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 斑马纹 + hover 行高亮 */
+#postContent tbody tr:nth-child(even) td { background: #fcfcfc; }
+#postContent tbody tr:hover td { background: #f6f9ff; transition: background .15s; }
+
+/* 首列加粗，便于横向对比 */
+#postContent tbody td:first-child,
+#postContent thead th:first-child {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 数字列右对齐：在 Markdown 里用冒号对齐语法或 colgroup 时，会更规整 */
+#postContent td.num, #postContent th.num { text-align: right; }
+
+/* 让 <code> 在单元格里不炸行 */
+#postContent td code, #postContent th code {
+  background: #f7f7f7;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.95em;
+}
+
+/* 小屏时减小表格最小宽度，减少横向滚动距离 */
+@media (max-width: 480px) {
+  #postContent table { min-width: 600px; }
+}
