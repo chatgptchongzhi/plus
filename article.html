@@ -80,7 +80,7 @@
 
       <script>
 (function () {
-  // ✅ 改成完整路径并保证优先加载 marked
+  // ✅ 仓库名是 plus，路径要带 /plus/ 前缀
   const scripts = [
     '/plus/assets/libs/marked.min.js',
     '/plus/assets/libs/tocbot.min.js',
@@ -89,7 +89,7 @@
 
   function loadSeq(i){
     if (i >= scripts.length) {
-      // 三个主要脚本都加载完了，再挂微信浮窗
+      // 三个主要脚本都加载完后，再挂微信浮窗
       const w = document.createElement('script');
       w.src = '/plus/assets/wechat-float.js?v=' + Date.now();
       document.head.appendChild(w);
@@ -104,6 +104,7 @@
   loadSeq(0);
 })();
 </script>
+
 
 
   <!-- 返回顶部逻辑（独立、零依赖） -->
