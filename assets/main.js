@@ -27,7 +27,21 @@ async function getJSON(path){
   return r.json();
 }
 function esc(s){return (s??'').toString().replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))}
-function fmtDate(s){return s || '';}
+function fmtDate(s){
+  if (!s) return '';
+  s = String(s).trim();
+
+  // 识别 20251110 或 20251110 15:35:20 这种写法
+  const m = s.match(/^(\d{4})(\d{2})(\d{2})(?:\s+(\d{2}:\d{2}:\d{2}))?$/);
+  if (m) {
+    const datePart = `${m[1]}-${m[2]}-${m[3]}`;     // 2025-11-10
+    return m[4] ? `${datePart} ${m[4]}` : datePart; // 拼上时间：2025-11-10 15:35:20
+  }
+
+  // 如果本来就是 2025-07-28 或 2025-07-28 15:35:20，就直接原样返回
+  return s;
+}
+
 function buildLink(slug){return `${PREFIX}article.html?v=${BUILD_VERSION}&slug=${encodeURIComponent(slug)}`}
 
 /* -------- Front-Matter 解析：返回 { fm, body } -------- */
