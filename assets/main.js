@@ -201,19 +201,20 @@ async function discoverPostsViaGitHub(repo, branch = 'main', subdir = 'plus'){
     .filter(n => n.type === 'blob' && n.path.startsWith(prefix) && /\.md$/i.test(n.path))
     .map(n => n.path.slice(prefix.length)); // 纯文件名：xxx.md
 
-  // 3) 逐个取 raw 内容，解析 Front-Matter
-  const posts = [];
-  for (const name of files) {
+  // 3) 并行取 raw 内容，解析 Front-Matter（而不是一个一个顺序来）
+  const tasks = files.map(async (name) => {
     const slug = name.replace(/\.md$/i,'');
     const basePart = base ? `${encodeURIComponent(base)}/` : '';
     const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${basePart}content/posts/${encodeURIComponent(name)}`;
+
     try{
       const res = await fetch(rawUrl, { cache: 'no-store' });
-      if (!res.ok) continue;
+      if (!res.ok) return null;
+
       const md = await res.text();
       const { fm, body } = parseFrontMatter(md);
 
-      const p = {
+      return {
         file: name,                                  // 记录原始 md 文件名（文章页兜底用）
         slug: fm.slug || slug,
         title: fm.title || slug,
@@ -226,11 +227,15 @@ async function discoverPostsViaGitHub(repo, branch = 'main', subdir = 'plus'){
         excerpt: fm.excerpt || deriveExcerptFromBody(body),
         views: fm.views || 0
       };
-      posts.push(p);
-    }catch(_){}
-  }
+    }catch(_){
+      return null;
+    }
+  });
+
+  const posts = (await Promise.all(tasks)).filter(Boolean);
   return posts;
 }
+
 
 /* 规范化 post 字段；过滤无 slug 的项 */
 function normalizePosts(arr){
