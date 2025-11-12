@@ -1,7 +1,7 @@
 ---
 title: 用 Google One 开通 Gemini 划算吗？套餐差异与权益对比详解
 slug: google-one-gemini-subscribe-2025
-date: 2025-11-12 20:27:47
+date: 2025-11-12 23:51:47
 tags: [Google One Gemini, Gemini Advanced订阅, Google One AI Premium, Gemini套餐对比, Gemini家庭共享, Google One权益, Gemini代充风险]
 category: AI工具教程
 cover: 
