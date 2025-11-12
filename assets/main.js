@@ -1,3 +1,4 @@
+
 // /plus/assets/main.js
 // 首页：导航 / 推荐 / 列表（单一面板式文章流）/ 分页 / 搜索 / 右侧栏
 // 自动发现 posts（GitHub API 扫描 {repoSubdir}/content/posts/*.md 或 content/posts/*.md），与 index.json 合并去重。
@@ -337,11 +338,9 @@ function renderRecommend(){
   const source = Array.isArray(POSTS) ? POSTS : [];
   if (!source.length){ grid.innerHTML = '<div style="color:#999;padding:8px 0;">（暂无推荐内容）</div>'; return; }
 
-const sorted = [...source].sort(
-  (a,b)=>(b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||'')
-);
-
-
+  const rec = [...source]
+    .sort((a,b)=>(b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||''))
+    .slice(0, SITE.recommendCount||4);
 
   grid.innerHTML = rec.map(p=>`
     <a class="rec-item" href="${buildLink(p.slug)}">
