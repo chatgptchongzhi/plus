@@ -1,7 +1,7 @@
 ---
 title: 2025年安卓端订阅 ChatGPT：内购入口位置、开通步骤与常见报错处理
 slug: chatgpt-android-subscribe-guide
-date: 2025-11-12 17:36:00
+date: 2025-11-12 20:42:36:00
 tags: [ChatGPT安卓订阅,ChatGPT安卓内购,ChatGPT Plus支付失败,ChatGPT安卓版本,ChatGPT安卓开通入口]
 category: ChatGPT教程
 Cover:
