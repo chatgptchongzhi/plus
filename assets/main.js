@@ -339,7 +339,17 @@ function renderRecommend(){
   if (!source.length){ grid.innerHTML = '<div style="color:#999;padding:8px 0;">（暂无推荐内容）</div>'; return; }
 
   const rec = [...source]
-    .sort((a,b)=>(b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||''))
+    .sort((a, b) => {
+  // 置顶优先
+  if (a.top && !b.top) return -1;
+  if (b.top && !a.top) return 1;
+
+  // 日期倒序（新文章在前）
+  const da = new Date(a.date).getTime() || 0;
+  const db = new Date(b.date).getTime() || 0;
+  return db - da;
+})
+
     .slice(0, SITE.recommendCount||4);
 
   grid.innerHTML = rec.map(p=>`
@@ -381,7 +391,17 @@ function renderListWithPagination(){
     return;
   }
 
-  const sorted = [...source].sort((a,b)=>(b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||''));
+  const sorted = [...source].sort((a, b) => {
+  // 置顶优先
+  if (a.top && !b.top) return -1;
+  if (b.top && !a.top) return 1;
+
+  // 日期倒序（新文章在前）
+  const da = new Date(a.date).getTime() || 0;
+  const db = new Date(b.date).getTime() || 0;
+  return db - da;
+});
+
   const total = Math.ceil(sorted.length / pageSize);
   const start = (ps-1)*pageSize;
   const pageItems = sorted.slice(start, start+pageSize);
