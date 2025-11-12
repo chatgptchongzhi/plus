@@ -1,7 +1,7 @@
 ---
 title: 2025年 ChatGPT 显示“所在地区不可用”怎么解决：网络与地区配置规范与合规提醒
 slug: chatgpt-region-unavailable-2025
-date: 2025-11-12 20:27:47
+date: 2025-11-12 21:14:47
 tags: [ChatGPT 地区不可用, ChatGPT 所在地区不可用, ChatGPT 地区限制, ChatGPT 网络配置, ChatGPT 合规使用, ChatGPT VPN, ChatGPT 地区切换]
 category: AI工具教程
 cover: 
