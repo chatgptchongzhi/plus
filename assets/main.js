@@ -337,16 +337,10 @@ function renderRecommend(){
   const source = Array.isArray(POSTS) ? POSTS : [];
   if (!source.length){ grid.innerHTML = '<div style="color:#999;padding:8px 0;">（暂无推荐内容）</div>'; return; }
 
-const sorted = [...source].sort((a, b) => {
-  // 置顶文章优先
-  if (a.top && !b.top) return -1;
-  if (b.top && !a.top) return 1;
+const sorted = [...source].sort(
+  (a,b)=>(b.top?1:0)-(a.top?1:0) || (b.date||'').localeCompare(a.date||'')
+);
 
-  // 日期按时间戳降序
-  const da = new Date(a.date).getTime() || 0;
-  const db = new Date(b.date).getTime() || 0;
-  return db - da;
-});
 
 
   grid.innerHTML = rec.map(p=>`
