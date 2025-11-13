@@ -1,7 +1,7 @@
 ---
 title: ChatGPT 聊天记录保存与导出教程：网页版与移动端功能全解析
 slug: chatgpt-chat-history-export-compare-2025
-date: 2025-11-13 13:30:00
+date: 2025-11-13 13:05:00
 tags: [ChatGPT聊天记录导出, ChatGPT网页版保存, ChatGPT移动端导出, ChatGPT备份教程, ChatGPT数据导出]
 category: ChatGPT教程
 cover: 
