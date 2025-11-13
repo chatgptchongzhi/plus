@@ -1,7 +1,7 @@
 ---
 title: ChatGPT Plus 订阅支付全指南：国内银行卡和虚拟卡能用吗？
 slug: chatgpt-plus-subscribe-payment-cn
-date: 2025-11-14 12:13:00
+date: 2025-11-13 12:39:00
 tags: [ChatGPT Plus订阅,国内银行卡能否支付ChatGPT,虚拟卡 ChatGPT,ChatGPT支付失败]
 category: ChatGPT教程
 cover:
