@@ -380,20 +380,15 @@ body.article-page .side-square{
   box-shadow:var(--shadow);
   box-sizing:border-box;
 }
-
-
-
-
-/* 目录区域：内部滚动 */
-body.article-page #toc{
-  max-height:calc(100vh - var(--nav-h) - 80px);
-  overflow-y:auto;
-  padding-right:8px;
+/* 文章目录的列表基础样式：去掉默认圆点和缩进 */
+body.article-page #toc ul{
+  list-style: none;   /* 去掉浏览器自动加的黑色小圆点 */
+  margin: 0;          /* 去掉默认外边距 */
+  padding: 0;         /* 去掉默认内边距 */
 }
 
 
-
-/* 链接文字：微软雅黑、17px、行高 1.4、加粗、左对齐 */
+/* 链接文字：微软雅黑、15px、行高 1.4、加粗、左对齐 */
 body.article-page #toc .toc-link{
   position:relative;
   display:block;
