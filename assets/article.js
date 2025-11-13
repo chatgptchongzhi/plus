@@ -468,37 +468,56 @@ function renderPrevNext(){
     </div>
   `;
 }
-/* ---------------- 相关文章推荐区 ---------------- */
+/* ---------------- 相关文章推荐区（自动补足版） ---------------- */
 function renderRelated(currentSlug, currentTags = [], currentCategory = '') {
   const box = document.getElementById('relatedGrid');
   if (!box || !Array.isArray(window.POSTS)) return;
 
-  // 过滤同标签或同分类，排除自己
-  const related = window.POSTS.filter(p => {
-    if (p.slug === currentSlug) return false;
+  // 过滤掉当前文章
+  let related = window.POSTS.filter(p => p.slug !== currentSlug);
+
+  // 先匹配“同分类或同标签”
+  let sameGroup = related.filter(p => {
     const sameTag = (p.tags || []).some(t => currentTags.includes(t));
     const sameCat = currentCategory && (p.category === currentCategory);
     return sameTag || sameCat;
-  })
-  // 时间倒序排列
-  .sort((a,b)=>{
-    const da = new Date(a.date.replace(/-/g,'/')).getTime() || 0;
-    const db = new Date(b.date.replace(/-/g,'/')).getTime() || 0;
-    return db - da;
-  })
-  .slice(0,5);  // 只显示5篇
+  });
+
+  // 如果不足 5 篇，则自动补充最新文章（去重）
+  if (sameGroup.length < 5) {
+    const existingSlugs = new Set(sameGroup.map(p => p.slug));
+    const supplement = related
+      .filter(p => !existingSlugs.has(p.slug))
+      .sort((a, b) => {
+        const da = new Date(a.date.replace(/-/g, '/')).getTime() || 0;
+        const db = new Date(b.date.replace(/-/g, '/')).getTime() || 0;
+        return db - da; // 按时间倒序
+      })
+      .slice(0, 5 - sameGroup.length);
+    sameGroup = sameGroup.concat(supplement);
+  }
+
+  // 最终结果（去重 + 时间倒序）
+  related = Array.from(new Map(sameGroup.map(p => [p.slug, p])).values())
+    .sort((a, b) => {
+      const da = new Date(a.date.replace(/-/g, '/')).getTime() || 0;
+      const db = new Date(b.date.replace(/-/g, '/')).getTime() || 0;
+      return db - da;
+    })
+    .slice(0, 5);
 
   if (!related.length) {
     box.innerHTML = '<div style="color:#999;padding:8px 0;">（暂无相关文章）</div>';
     return;
   }
 
-  box.innerHTML = related.map(p=>`
+  box.innerHTML = related.map(p => `
     <a class="rec-item" href="${buildLink(p.slug)}">
-      <img src="${p.cover||'/plus/images/banner-plus.jpg'}" alt="${esc(p.title)}">
+      <img src="${p.cover || '/plus/images/banner-plus.jpg'}" alt="${esc(p.title)}">
       <div>
         <div class="title">${esc(p.title)}</div>
-        <div class="rec-meta">${fmtDate(p.date)} · 阅读 ${p.views??0}</div>
+        <div class="rec-meta">${fmtDate(p.date)} · 阅读 ${p.views ?? 0}</div>
       </div>
-    </a>`).join('');
+    </a>
+  `).join('');
 }
