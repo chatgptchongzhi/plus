@@ -640,7 +640,7 @@ article tr:nth-child(even),
 @media (max-width: 480px) {
   #postContent table { min-width: 600px; }
 }
-/* ==================== TOC 目录样式（带竖线+横线+圆点） ==================== */
+/* ==================== TOC目录修正版（单竖线 + 横线 + 高亮圆点） ==================== */
 .toc-box {
   background: #fff;
   border-radius: 12px;
@@ -648,8 +648,8 @@ article tr:nth-child(even),
   box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
   font-size: 14px;
   color: #333;
-  position: relative;
-  overflow: hidden;
+  position: sticky;
+  top: 80px;
 }
 
 .toc-title {
@@ -660,59 +660,57 @@ article tr:nth-child(even),
   margin-bottom: 14px;
 }
 
+/* 目录滚动区域 */
 #toc {
   position: relative;
   max-height: 420px;
   overflow-y: auto;
-  padding-left: 10px;
+  padding-left: 18px;
 }
+#toc::-webkit-scrollbar { width: 5px; }
+#toc::-webkit-scrollbar-thumb { background: #ddd; border-radius: 5px; }
+#toc::-webkit-scrollbar-thumb:hover { background: #bbb; }
 
-#toc::-webkit-scrollbar {
-  width: 5px;
-}
-#toc::-webkit-scrollbar-thumb {
-  background-color: #ddd;
-  border-radius: 5px;
-}
-#toc::-webkit-scrollbar-thumb:hover {
-  background-color: #bbb;
-}
-
-/* 绘制竖线 */
+/* 全局竖线，只绘制一次 */
 .toc-list {
   list-style: none;
   margin: 0;
-  padding: 0 0 0 14px;
+  padding: 0;
   position: relative;
 }
-.toc-list::before {
+#toc::before {
   content: "";
   position: absolute;
-  left: 3px;
+  left: 6px;
   top: 0;
   bottom: 0;
   width: 1px;
   background: #e6e6e6;
+  z-index: 0;
 }
 
-/* 每一行横线与缩进 */
+/* 每个项目 */
 .toc-list-item {
   position: relative;
-  margin: 4px 0;
-  padding-left: 12px;
+  margin: 3px 0;
+  padding-left: 16px;
   line-height: 1.6;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* 横线（每项） */
 .toc-list-item::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 12px;
-  width: 8px;
+  top: 50%;
+  width: 10px;
   height: 1px;
   background: #ddd;
+  transform: translateY(-50%);
+  z-index: 1;
 }
 
 /* 链接样式 */
@@ -720,21 +718,22 @@ article tr:nth-child(even),
   color: #333;
   text-decoration: none;
   transition: color 0.2s;
+  position: relative;
+  z-index: 2;
 }
 .toc-link:hover {
   color: var(--primary);
 }
 
-/* 当前高亮标题 */
+/* 当前标题高亮 */
 .toc-link.is-active-link {
   color: var(--primary);
   font-weight: 600;
-  position: relative;
 }
-.toc-link.is-active-link::before {
+.toc-link.is-active-link::after {
   content: "";
   position: absolute;
-  left: -14px;
+  left: -13px;
   top: 50%;
   transform: translateY(-50%);
   width: 8px;
@@ -744,14 +743,7 @@ article tr:nth-child(even),
   background: #fff;
 }
 
-/* 层级缩进（多级标题） */
+/* 层级缩进控制 */
 .toc-level-1 { padding-left: 0; font-weight: 600; }
-.toc-level-2 { padding-left: 12px; font-size: 14px; }
-.toc-level-3 { padding-left: 24px; font-size: 13px; color: #666; }
-
-/* 右侧固定位置 */
-.toc-box {
-  position: sticky;
-  top: 80px;
-}
-
+.toc-level-2 { padding-left: 14px; font-size: 14px; }
+.toc-level-3 { padding-left: 26px; font-size: 13px; color: #666; }
