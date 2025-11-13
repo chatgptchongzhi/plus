@@ -75,6 +75,7 @@ init().catch(e=>{
 async function init(){
   SITE  = await getJSON('content/site.json').catch(()=>({}));
   POSTS = await getJSON('content/index.json').catch(()=>([]));
+window.POSTS = POSTS;  // ✅ 补上这行（让 renderRelated 能访问到文章列表）
 
   // 渲染导航
   renderNav();
