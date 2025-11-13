@@ -368,7 +368,6 @@ main{min-width:0}
   }
 }
 
-/* ================== 文章详情页右侧目录（卡片 + 时间轴样式） ================== */
 
 /* 只在文章详情页中使用卡片式“文章目录”模块，避免影响首页其它 side-square */
 body.article-page .side-square{
@@ -382,34 +381,8 @@ body.article-page .side-square{
   box-sizing:border-box;
 }
 
-/* 标题“文章目录”：左侧主色竖条 */
-/* ================== 文章详情页右侧目录（卡片 + 时间轴样式） ================== */
 
-/* 只在文章详情页中使用卡片式“文章目录”模块（#tocCard 这一个） */
-body.article-page #tocCard{
-  width:100%;
-  aspect-ratio:auto;
-  padding:16px 18px 18px;
-  border-radius:12px;
-  background:#fff;
-  border:1px solid var(--line);
-  box-shadow:var(--shadow);
-  box-sizing:border-box;
-}
 
-/* 标题“文章目录”：左侧主色竖条 */
-body.article-page #tocCard h3{
-  position:relative;
-  margin:0 0 10px;
-  padding-left:12px;  /* 标题整体右移一点，给竖条留空间 */
-  font-family:"Microsoft YaHei","微软雅黑",
-              -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
-              "PingFang SC",Helvetica,Arial,sans-serif;
-  font-size:17px;     /* ≈ 17px */
-  line-height:1.4;    /* 行高 ≈ 1.4 */
-  font-weight:700;
-  color:#222;
-}
 body.article-page #tocCard h3::before{
   content:"";
   position:absolute;
