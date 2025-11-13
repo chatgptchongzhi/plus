@@ -402,19 +402,7 @@ body.article-page #toc{
   padding-right:8px;
 }
 
-/* 时间轴：左侧一根浅灰竖线，整体略向右缩进 */
-body.article-page #toc .toc-list{
-  list-style:none;
-  margin:0;
-  padding-left:20px;          /* 所有条目整体略向右缩进，避免贴边 */
-  border-left:1px solid #eee; /* 时间轴竖线 */
-}
 
-/* 每一项 */
-body.article-page #toc .toc-list-item{
-  position:relative;
-  margin:4px 0;
-}
 
 /* 链接文字：微软雅黑、17px、行高 1.4、加粗、左对齐 */
 body.article-page #toc .toc-link{
