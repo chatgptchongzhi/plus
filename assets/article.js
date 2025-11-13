@@ -325,6 +325,9 @@ async function renderContent(){
 
   // 解析完 FM 后，用新 title/date 刷新标题栏
   renderTitleAndMeta();
+    // 调用相关文章渲染
+  renderRelated(CUR.slug, CUR.tags || [], CUR.category || '');
+
 
   // 标签
   const tags = CUR.tags || CUR.tag || [];
