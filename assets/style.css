@@ -640,3 +640,118 @@ article tr:nth-child(even),
 @media (max-width: 480px) {
   #postContent table { min-width: 600px; }
 }
+/* ==================== TOC 目录样式（带竖线+横线+圆点） ==================== */
+.toc-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+  font-size: 14px;
+  color: #333;
+  position: relative;
+  overflow: hidden;
+}
+
+.toc-title {
+  font-weight: 600;
+  font-size: 15px;
+  border-left: 4px solid var(--primary);
+  padding-left: 8px;
+  margin-bottom: 14px;
+}
+
+#toc {
+  position: relative;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-left: 10px;
+}
+
+#toc::-webkit-scrollbar {
+  width: 5px;
+}
+#toc::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 5px;
+}
+#toc::-webkit-scrollbar-thumb:hover {
+  background-color: #bbb;
+}
+
+/* 绘制竖线 */
+.toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 14px;
+  position: relative;
+}
+.toc-list::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #e6e6e6;
+}
+
+/* 每一行横线与缩进 */
+.toc-list-item {
+  position: relative;
+  margin: 4px 0;
+  padding-left: 12px;
+  line-height: 1.6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.toc-list-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 8px;
+  height: 1px;
+  background: #ddd;
+}
+
+/* 链接样式 */
+.toc-link {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.toc-link:hover {
+  color: var(--primary);
+}
+
+/* 当前高亮标题 */
+.toc-link.is-active-link {
+  color: var(--primary);
+  font-weight: 600;
+  position: relative;
+}
+.toc-link.is-active-link::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* 层级缩进（多级标题） */
+.toc-level-1 { padding-left: 0; font-weight: 600; }
+.toc-level-2 { padding-left: 12px; font-size: 14px; }
+.toc-level-3 { padding-left: 24px; font-size: 13px; color: #666; }
+
+/* 右侧固定位置 */
+.toc-box {
+  position: sticky;
+  top: 80px;
+}
+
