@@ -378,8 +378,14 @@ body.article-page .side-square{
   background:#fff;
   border:1px solid var(--line);
   box-shadow:var(--shadow);
-  box-sizing:border-box;
+  box-sizing:border-box;  
 }
+/* 让文章目录卡片变窄一点 */
+body.article-page #tocCard {
+  max-width: 85%;         /* 宽度改为右栏的85%，可以自由调整为80%-90%之间 */
+  margin: 0 auto;         /* 居中显示 */
+}
+
 /* 文章目录的列表基础样式：去掉默认圆点和缩进 */
 body.article-page #toc ul{
   list-style: none;   /* 去掉浏览器自动加的黑色小圆点 */
