@@ -383,17 +383,6 @@ body.article-page .side-square{
 
 
 
-body.article-page #tocCard h3::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:50%;
-  transform:translateY(-50%);
-  width:4px;
-  height:1.2em;  /* 比文字略高一点的竖条 */
-  border-radius:999px;
-  background:var(--primary);
-}
 
 /* 目录区域：内部滚动 */
 body.article-page #toc{
