@@ -424,19 +424,6 @@ body.article-page #toc .toc-link{
   text-align:left;            /* 所有条目左对齐 */
 }
 
-/* 每一项左边的小圆点（普通状态） */
-body.article-page #toc .toc-link::before{
-  content:"";
-  position:absolute;
-  left:-7px;
-  top:50%;
-  transform:translateY(-50%);
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  border:1px solid #ddd;
-  background:#fff;
-}
 
 /* hover 效果 */
 body.article-page #toc .toc-link:hover{
