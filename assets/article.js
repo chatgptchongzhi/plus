@@ -464,3 +464,37 @@ function renderPrevNext(){
     </div>
   `;
 }
+/* ---------------- 相关文章推荐区 ---------------- */
+function renderRelated(currentSlug, currentTags = [], currentCategory = '') {
+  const box = document.getElementById('relatedGrid');
+  if (!box || !Array.isArray(window.POSTS)) return;
+
+  // 过滤同标签或同分类，排除自己
+  const related = window.POSTS.filter(p => {
+    if (p.slug === currentSlug) return false;
+    const sameTag = (p.tags || []).some(t => currentTags.includes(t));
+    const sameCat = currentCategory && (p.category === currentCategory);
+    return sameTag || sameCat;
+  })
+  // 时间倒序排列
+  .sort((a,b)=>{
+    const da = new Date(a.date.replace(/-/g,'/')).getTime() || 0;
+    const db = new Date(b.date.replace(/-/g,'/')).getTime() || 0;
+    return db - da;
+  })
+  .slice(0,5);  // 只显示5篇
+
+  if (!related.length) {
+    box.innerHTML = '<div style="color:#999;padding:8px 0;">（暂无相关文章）</div>';
+    return;
+  }
+
+  box.innerHTML = related.map(p=>`
+    <a class="rec-item" href="${buildLink(p.slug)}">
+      <img src="${p.cover||'/plus/images/banner-plus.jpg'}" alt="${esc(p.title)}">
+      <div>
+        <div class="title">${esc(p.title)}</div>
+        <div class="rec-meta">${fmtDate(p.date)} · 阅读 ${p.views??0}</div>
+      </div>
+    </a>`).join('');
+}
