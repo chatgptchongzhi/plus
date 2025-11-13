@@ -380,11 +380,20 @@ body.article-page .side-square{
   box-shadow:var(--shadow);
   box-sizing:border-box;  
 }
-/* 让文章目录卡片变窄一点 */
+
+/* 让文章目录卡片变成竖长形的窄卡片 */
 body.article-page #tocCard {
-  max-width: 85%;         /* 宽度改为右栏的85%，可以自由调整为80%-90%之间 */
-  margin: 0 auto;         /* 居中显示 */
+  width: 85%;              /* 宽度缩小为右侧栏的85%，你也可以调成 80% 或 75% */
+  max-width: 280px;        /* 限制最大宽度，防止太宽 */
+  margin: 0 auto;          /* 居中显示 */
+  padding: 16px 20px;      /* 上下左右内边距 */
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  box-sizing: border-box;
 }
+
 
 /* 文章目录的列表基础样式：去掉默认圆点和缩进 */
 body.article-page #toc ul{
