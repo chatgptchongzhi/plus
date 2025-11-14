@@ -604,7 +604,7 @@ box-shadow: 0 4px 16px rgba(0,0,0,.06);
 #tocCard .toc-link.is-active-link::before{
   content:"";
   position:absolute;
-  left:14px;                          /* 仍在主干上 */
+  left:10px;                          /* 仍在主干上 */
   top:50%;                            /* 与当前行中线对齐 */
   width:10px; height:10px;
   border:2px solid #D32F2F;           /* 空心红圈 */
