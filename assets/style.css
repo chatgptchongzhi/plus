@@ -613,3 +613,17 @@ box-shadow: 0 4px 16px rgba(0,0,0,.06);
   transform:translate(-50%,-50%);
   z-index: 1;                         /* 在短横之上，但文字在 34px 之后，不会被遮挡 */
 }
+/* === TOC：把红色圈圈整体左移，并与竖干/短横保持对齐（强制覆盖） === */
+body.article-page #tocCard .toc-link.is-active-link::before{
+  left: 12px !important;              /* 红点相对链接盒子的 X；数值越小越靠左 */
+  transform: translate(-50%, -50%) !important;
+}
+
+body.article-page #tocCard .toc-list-item::before{
+  left: 12px !important;              /* 短横起点与红点、竖干同一条线 */
+  width: 20px !important;             /* 短横长度保持不变 */
+}
+
+body.article-page #tocCard .toc-list-item{
+  padding-left: 32px !important;      /* 文字起点 = left(12) + 短横(20) ≈ 32，避免红点压字 */
+}
