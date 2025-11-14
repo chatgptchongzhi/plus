@@ -557,43 +557,59 @@ box-shadow: 0 4px 16px rgba(0,0,0,.06);
   width:2px; background:#ececec; border-radius:1px;
 }
 
-/* 分支短横线：零缝隙从竖干连出 */
-#tocCard .toc-list-item{ position:relative; padding-left:18px; }
-#tocCard .toc-list-item::before{
-  content:"";
-  position:absolute;
-  left:14px;                        /* 与竖干同 x */
-  top:0.95em;                       /* 正对文字中线 */
-  width:18px; height:2px;
-  background:#ececec;
-  transform:translateY(-1px);
+/* ======= TOC：主干、短横、文字对齐（修正红点遮字） ======= */
+
+/* 列表容器：保持你之前设置不变即可 */
+
+/* 每一项为主干 + 短横 + 文字预留统一空间 */
+#tocCard .toc-list-item{
+  position: relative;
+  padding-left: 34px;                 /* 文字起始 = 竖干(14) + 短横(20) = 34px */
 }
 
-/* 链接文本 */
+/* 短横：从主干零缝隙连出，并与文字中线对齐 */
+#tocCard .toc-list-item::before{
+  content: "";
+  position: absolute;
+  left: 14px;                         /* 与主干竖线同一 X */
+  top: 50%;                           /* 精准对齐当前行垂直中线 */
+  width: 20px;                        /* 短横长度正好延伸到文字起点 */
+  height: 2px;
+  background: #ececec;
+  transform: translateY(-50%);
+}
+
+/* 链接文字：去掉会把文字往左推的多余内边距，避免被红点覆盖 */
 #tocCard .toc-link{
   position: relative;
-  display:block;
-  padding:6px 4px;
-  font-size:15px; line-height:1.45; color:#333; text-decoration:none;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left;
+  display: block;
+  padding: 6px 0;                     /* 不再额外左内边距，文字从 34px 处开始 */
+  font-size: 15px;
+  line-height: 1.45;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
 }
 
-/* 层级缩进仅作用于文字 */
-#tocCard .toc-level-2 .toc-link{ padding-left:6px; }
-#tocCard .toc-level-3 .toc-link{ padding-left:12px; font-size:14.5px; }
+/* 层级缩进：仅文字缩进，竖干与短横不动 */
+#tocCard .toc-level-2 .toc-link{ margin-left: 8px; }
+#tocCard .toc-level-3 .toc-link{ margin-left: 16px; font-size: 14.5px; }
 
-/* 激活态：空心红点 + 文字高亮 */
+/* 激活态：空心红点放在主干上，且不会压到文字 */
 #tocCard .toc-link.is-active-link{
   color:#D32F2F; font-weight:600;
 }
 #tocCard .toc-link.is-active-link::before{
   content:"";
   position:absolute;
-  left:14px; top:0.95em;            /* 与短横/竖干交汇点 */
-  width:10px; height:10px; border-radius:50%;
-  background:#fff; border:2px solid #D32F2F;
+  left:14px;                          /* 仍在主干上 */
+  top:50%;                            /* 与当前行中线对齐 */
+  width:10px; height:10px;
+  border:2px solid #D32F2F;           /* 空心红圈 */
+  background:#fff;                    /* 白心，避免与文字融合 */
+  border-radius:50%;
   transform:translate(-50%,-50%);
+  z-index: 1;                         /* 在短横之上，但文字在 34px 之后，不会被遮挡 */
 }
-
-/* 悬停仅变色 */
-#tocCard .toc-link:hover{ color:#D32F2F; }
