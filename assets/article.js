@@ -1,6 +1,8 @@
+下面是可直接覆盖的完整文件。
+
+```javascript
 // /plus/assets/article.js
-// 文章页：加载文章、解析 Front-Matter、渲染导航/正文/目录/上下篇、可点击面包屑
-// 新增：优先使用首页传来的 CUR.file（原始 md 文件名）兜底；若无/失败，再扫描目录按文件名或 FM.slug 匹配。
+// 文章页：加载文章、解析 Front-Matter、渲染导航/正文/上下篇/面包屑（已彻底移除“目录”相关逻辑）
 
 const q  = (sel, el=document)=>el.querySelector(sel);
 const qa = (sel, el=document)=>[...el.querySelectorAll(sel)];
@@ -10,12 +12,12 @@ function fmtDate(s){
   if (!s) return '';
   s = String(s).trim();
 
+  // 兼容 20251111 或 20251111 16:59:45
   const m = s.match(/^(\d{4})(\d{2})(\d{2})(?:\s+(\d{2}:\d{2}:\d{2}))?$/);
   if (m) {
     const datePart = `${m[1]}-${m[2]}-${m[3]}`;
     return m[4] ? `${datePart} ${m[4]}` : datePart;
   }
-
   return s;
 }
 
@@ -75,17 +77,17 @@ init().catch(e=>{
 async function init(){
   SITE  = await getJSON('content/site.json').catch(()=>({}));
   POSTS = await getJSON('content/index.json').catch(()=>([]));
-window.POSTS = POSTS;  // ✅ 补上这行（让 renderRelated 能访问到文章列表）
-
-  // 渲染导航
+  window.POSTS = POSTS;  // 给相关文章区使用
+  // 导航
   renderNav();
 
   const slug = getParam('slug');
   CUR = (POSTS||[]).find(p=> (p.slug||'') === slug) || { slug };
-window.CUR = CUR; // 让相关文章区能访问当前文章
+  window.CUR = CUR;
+
   renderTitleAndMeta();
-  await renderContent();   // ← 内含 file 优先兜底
-  renderTOC();
+  await renderContent();      // 加载并渲染正文（含 FM 合并）
+  // renderTOC();              // ← 已删除：不再渲染右侧目录
   renderPrevNext();
   renderBreadcrumb();
 
@@ -93,7 +95,7 @@ window.CUR = CUR; // 让相关文章区能访问当前文章
   if (emailEl) emailEl.textContent = SITE.email || '';
 }
 
-/* ---------------- 导航（与首页保持一致） ---------------- */
+/* ---------------- 导航 ---------------- */
 function renderNav(){
   const ul = q('#navList');
   if(!ul) return;
@@ -207,7 +209,7 @@ async function renderContent(){
   }
 
   const slug = CUR.slug;
-  const file = CUR.file && String(CUR.file); // ★ main.js 自动发现时附带的原始 md 文件名
+  const file = CUR.file && String(CUR.file);
   let md = '';
 
   // 1) 本地：按 slug 读取 /plus/content/posts/${slug}.md
@@ -304,8 +306,7 @@ async function renderContent(){
     const fm = parsed.fm;
     if (fm.title) CUR.title = fm.title;
 
-    // ✅ 让首页 index.json 里的 date 优先作为真实发布日期；
-    // 只有当 CUR.date 还没有值时，才用 md 里的 date 做兜底。
+    // 真实发布日期：允许 md 里的 date 覆盖列表兜底
     if (fm.date)  CUR.date  = fm.date;
 
     if (fm.tags)  CUR.tags  = Array.isArray(fm.tags)? fm.tags : [fm.tags];
@@ -317,7 +318,6 @@ async function renderContent(){
   }
   const body = parsed ? parsed.body : (md||'');
 
-
   if (window.marked){
     box.innerHTML = window.marked.parse(body || '');
   }else{
@@ -326,9 +326,9 @@ async function renderContent(){
 
   // 解析完 FM 后，用新 title/date 刷新标题栏
   renderTitleAndMeta();
-    // 调用相关文章渲染
-  renderRelated(CUR.slug, CUR.tags || [], CUR.category || '');
 
+  // 相关文章
+  renderRelated(CUR.slug, CUR.tags || [], CUR.category || '');
 
   // 标签
   const tags = CUR.tags || CUR.tag || [];
@@ -344,111 +344,6 @@ async function renderContent(){
   wrap.innerHTML = (Array.isArray(tags) && tags.length)
     ? tags.map(t=>`<a class="tag" href="${PREFIX}?q=${encodeURIComponent(t)}">${esc('#'+t)}</a>`).join('')
     : '';
-}
-
-/* ---------------- 目录（不用 tocbot，自己生成 + 滚动联动高亮） ---------------- */
-function renderTOC(){
-  const tocEl = q('#toc');          // 右侧“目录”这个盒子
-  const box   = q('#postContent');  // 文章正文
-  if (!tocEl || !box) return;
-
-  const headings = box.querySelectorAll('h1, h2, h3');
-  if (!headings.length){
-    tocEl.innerHTML = '';   // 没有标题就不显示目录
-    return;
-  }
-
-  const ul = document.createElement('ul');
-  ul.className = 'toc-list';
-
-  const headingArr = [];
-  const linkArr = [];
-
-  headings.forEach((h, idx) => {
-    const level = Number(h.tagName[1] || 2); // H1/H2/H3 → 1/2/3
-
-    // 如果这个标题没有 id，就自动给它生成一个
-    if (!h.id){
-      const base = h.textContent.trim()
-        .replace(/\s+/g, '-')                     // 空格变成 -
-        .replace(/[^\w\u4e00-\u9fa5\-]/g, '')     // 保留中英文和 -
-        || 'sec';
-      h.id = 'toc-' + base + '-' + idx;
-    }
-
-    const li = document.createElement('li');
-    li.className = 'toc-list-item toc-level-' + level;
-
-    const a = document.createElement('a');
-    a.className = 'toc-link';
-    a.href = '#' + h.id;                         // 点击跳到对应标题
-    a.textContent = h.textContent.trim();        // 目录里显示标题文字
-
-    // 平滑滚动 + 顶部导航预留
-    a.addEventListener('click', (ev) => {
-      ev.preventDefault();
-      const target = document.getElementById(h.id);
-      if (!target) return;
-
-      const rootStyle = getComputedStyle(document.documentElement);
-      const navVar = rootStyle.getPropertyValue('--nav-h').trim();
-      const navH = parseInt(navVar, 10) || 64;
-      const offset = navH + 16;                 // 导航高度 + 一点间距
-
-      const rect = target.getBoundingClientRect();
-      const y = rect.top + window.pageYOffset - offset;
-
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    });
-
-    headingArr.push(h);
-    linkArr.push(a);
-
-    li.appendChild(a);
-    ul.appendChild(li);
-  });
-
-  tocEl.innerHTML = '';        // 清空原内容
-  tocEl.appendChild(ul);       // 把生成好的目录塞进去
-
-  // 启用滚动联动高亮
-  setupTOCScrollSpy(headingArr, linkArr);
-}
-
-function setupTOCScrollSpy(headings, links){
-  if (!headings.length || !links.length) return;
-
-  const rootStyle = getComputedStyle(document.documentElement);
-  const navVar = rootStyle.getPropertyValue('--nav-h').trim();
-  const navH = parseInt(navVar, 10) || 64;
-  const offset = navH + 16;
-
-  function onScroll(){
-    let activeIndex = -1;
-    let minDelta = Infinity;
-
-    headings.forEach((h, idx) => {
-      const rect = h.getBoundingClientRect();
-      const delta = Math.abs(rect.top - offset);
-
-      // 只考虑已经“进入视口上方区域”的标题，并取距离 offset 最近的一个
-      if (rect.top <= offset + 40 && delta < minDelta){
-        minDelta = delta;
-        activeIndex = idx;
-      }
-    });
-
-    links.forEach((link, idx) => {
-      if (idx === activeIndex){
-        link.classList.add('is-active-link');
-      }else{
-        link.classList.remove('is-active-link');
-      }
-    });
-  }
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll(); // 初始渲染时先算一次
 }
 
 /* ---------------- 上一篇 / 下一篇 ---------------- */
@@ -468,7 +363,8 @@ function renderPrevNext(){
     </div>
   `;
 }
-/* ---------------- 相关文章推荐区（自动补足版） ---------------- */
+
+/* ---------------- 相关文章推荐区 ---------------- */
 function renderRelated(currentSlug, currentTags = [], currentCategory = '') {
   const box = document.getElementById('relatedGrid');
   if (!box || !Array.isArray(window.POSTS)) return;
@@ -489,8 +385,8 @@ function renderRelated(currentSlug, currentTags = [], currentCategory = '') {
     const supplement = related
       .filter(p => !existingSlugs.has(p.slug))
       .sort((a, b) => {
-        const da = new Date(a.date.replace(/-/g, '/')).getTime() || 0;
-        const db = new Date(b.date.replace(/-/g, '/')).getTime() || 0;
+        const da = new Date((a.date||'').replace(/-/g, '/')).getTime() || 0;
+        const db = new Date((b.date||'').replace(/-/g, '/')).getTime() || 0;
         return db - da; // 按时间倒序
       })
       .slice(0, 5 - sameGroup.length);
@@ -500,8 +396,8 @@ function renderRelated(currentSlug, currentTags = [], currentCategory = '') {
   // 最终结果（去重 + 时间倒序）
   related = Array.from(new Map(sameGroup.map(p => [p.slug, p])).values())
     .sort((a, b) => {
-      const da = new Date(a.date.replace(/-/g, '/')).getTime() || 0;
-      const db = new Date(b.date.replace(/-/g, '/')).getTime() || 0;
+      const da = new Date((a.date||'').replace(/-/g, '/')).getTime() || 0;
+      const db = new Date((b.date||'').replace(/-/g, '/')).getTime() || 0;
       return db - da;
     })
     .slice(0, 5);
@@ -521,3 +417,4 @@ function renderRelated(currentSlug, currentTags = [], currentCategory = '') {
     </a>
   `).join('');
 }
+```
