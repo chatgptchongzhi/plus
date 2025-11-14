@@ -382,15 +382,6 @@ body.article-page .side-square{
 }
 
 
-
-/* 当前小节高亮（JS 会加 is-active-link） */
-body.article-page #toc .toc-link.is-active-link{
-  color:var(--primary);
-  font-weight:700;
-}
-body.article-page #toc .toc-link.is-active-link::before{
-  border-color:var(--primary);
-}
 /* 文章页：正文字体统一放大到 15px，行高 1.7，微软雅黑 */
 body.article-page #postContent p,
 body.article-page #postContent li {
