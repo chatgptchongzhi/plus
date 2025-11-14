@@ -85,7 +85,7 @@ window.POSTS = POSTS;  // ✅ 补上这行（让 renderRelated 能访问到文�
 window.CUR = CUR; // 让相关文章区能访问当前文章
   renderTitleAndMeta();
   await renderContent();   // ← 内含 file 优先兜底
-
+renderTOC();     目录生成
   renderPrevNext();
   renderBreadcrumb();
 
@@ -345,6 +345,73 @@ async function renderContent(){
     ? tags.map(t=>`<a class="tag" href="${PREFIX}?q=${encodeURIComponent(t)}">${esc('#'+t)}</a>`).join('')
     : '';
 }
+/* ---------------- 目录（右侧 #toc 自动生成） ---------------- */
+function renderTOC(){
+  const tocEl = document.getElementById('toc');   // 右侧目录容器
+  const box   = document.getElementById('postContent'); // 正文容器
+  if (!tocEl || !box){ return; }
+
+  // 收集正文里的 H1/H2/H3
+  const headings = box.querySelectorAll('h1, h2, h3');
+  if (!headings.length){
+    tocEl.innerHTML = '';
+    return;
+  }
+
+  // 生成列表
+  const ul = document.createElement('ul');
+  ul.className = 'toc-list';
+  const headingArr = [];
+  const linkArr = [];
+
+  headings.forEach((h, idx) => {
+    const level = Number(h.tagName[1] || 2);      // H1/H2/H3 → 1/2/3
+
+    // 确保每个标题有可跳转的 id
+    if (!h.id){
+      const base = (h.textContent || 'sec').trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\u4e00-\u9fa5\-]/g, '') || 'sec';
+      h.id = 'toc-' + base + '-' + idx;
+    }
+
+    const li = document.createElement('li');
+    li.className = 'toc-list-item toc-level-' + level;
+
+    const a = document.createElement('a');
+    a.className = 'toc-link';
+    a.href = '#' + h.id;
+    a.textContent = h.textContent.trim();
+
+    // 平滑滚动并预留固定导航高度
+    a.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      const target = document.getElementById(h.id);
+      if (!target) return;
+
+      const rootStyle = getComputedStyle(document.documentElement);
+      const navVar = rootStyle.getPropertyValue('--nav-h').trim();
+      const navH = parseInt(navVar, 10) || 64;
+      const offset = navH + 16;
+
+      const rect = target.getBoundingClientRect();
+      const y = rect.top + window.pageYOffset - offset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    });
+
+    headingArr.push(h);
+    linkArr.push(a);
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+
+  // 填充目录
+  tocEl.innerHTML = '';
+  tocEl.appendChild(ul);
+
+  // 启用滚动联动高亮
+  setupTOCScrollSpy(headingArr, linkArr);
+}
 
 
 function setupTOCScrollSpy(headings, links){
@@ -452,4 +519,4 @@ function renderRelated(currentSlug, currentTags = [], currentCategory = '') {
       </div>
     </a>
   `).join('');
-}  请帮我把关于文章页右侧目录的所有内容都删掉
+}  
