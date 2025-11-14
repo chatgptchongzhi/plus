@@ -599,7 +599,7 @@ body.article-page #tocCard{
 #tocCard .toc-link.is-active-link::before{
   content:"";
   position:absolute;
-  left: calc(14px - 34px);          /* 竖干X=14px，li padding-left=34px → 左移20px */
+  left: calc(14px - 34px);          /* 竖干X=14px，li padding-left=34px → 左移5px */
   top:50%;
   width:10px; height:10px;
   border:2px solid #D32F2F;         /* 空心红圈 */
