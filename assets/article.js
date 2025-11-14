@@ -9,13 +9,11 @@ function esc(s){ return (s??'').toString().replace(/[&<>"']/g,m=>({ '&':'&amp;',
 function fmtDate(s){
   if (!s) return '';
   s = String(s).trim();
-
   const m = s.match(/^(\d{4})(\d{2})(\d{2})(?:\s+(\d{2}:\d{2}:\d{2}))?$/);
   if (m) {
     const datePart = `${m[1]}-${m[2]}-${m[3]}`;
     return m[4] ? `${datePart} ${m[4]}` : datePart;
   }
-
   return s;
 }
 
@@ -75,17 +73,18 @@ init().catch(e=>{
 async function init(){
   SITE  = await getJSON('content/site.json').catch(()=>({}));
   POSTS = await getJSON('content/index.json').catch(()=>([]));
-window.POSTS = POSTS;  // ✅ 补上这行（让 renderRelated 能访问到文章列表）
+  window.POSTS = POSTS;  // 让 renderRelated 能访问到文章列表
 
   // 渲染导航
   renderNav();
 
   const slug = getParam('slug');
   CUR = (POSTS||[]).find(p=> (p.slug||'') === slug) || { slug };
-window.CUR = CUR; // 让相关文章区能访问当前文章
+  window.CUR = CUR;
+
   renderTitleAndMeta();
-  await renderContent();   // ← 内含 file 优先兜底
-renderTOC();// 目录生成
+  await renderContent();   // 内含 file 优先兜底
+  renderTOC();             // 目录生成（只保留右侧唯一的 #toc）
   renderPrevNext();
   renderBreadcrumb();
 
@@ -161,11 +160,9 @@ function renderTitleAndMeta(){
   if (h1) h1.textContent = title;
 
   const date = fmtDate(CUR.date || '');
-
   const cat =
     CUR.category ||
-    (Array.isArray(CUR.categories) && CUR.categories.length ? CUR.categories[0] : '') ||
-    '';
+    (Array.isArray(CUR.categories) && CUR.categories.length ? CUR.categories[0] : '') || '';
 
   if (meta){
     const dateHtml = date ? `
@@ -207,7 +204,7 @@ async function renderContent(){
   }
 
   const slug = CUR.slug;
-  const file = CUR.file && String(CUR.file); // ★ main.js 自动发现时附带的原始 md 文件名
+  const file = CUR.file && String(CUR.file); // main.js 自动发现时附带的原始 md 文件名
   let md = '';
 
   // 1) 本地：按 slug 读取 /plus/content/posts/${slug}.md
@@ -252,7 +249,7 @@ async function renderContent(){
     }catch(_){}
   }
 
-  // 5) 仍无：目录扫描（匹配文件名或 FM.slug）
+  // 5) 目录扫描（匹配文件名或 FM.slug）
   if(!md){
     try{
       const repo   = SITE.repo   || '';
@@ -303,11 +300,7 @@ async function renderContent(){
   if (parsed && parsed.fm && Object.keys(parsed.fm).length){
     const fm = parsed.fm;
     if (fm.title) CUR.title = fm.title;
-
-    // ✅ 让首页 index.json 里的 date 优先作为真实发布日期；
-    // 只有当 CUR.date 还没有值时，才用 md 里的 date 做兜底。
     if (fm.date)  CUR.date  = fm.date;
-
     if (fm.tags)  CUR.tags  = Array.isArray(fm.tags)? fm.tags : [fm.tags];
     if (fm.categories) CUR.categories = Array.isArray(fm.categories)? fm.categories : [fm.categories];
     if (fm.category)   CUR.category   = fm.category;
@@ -317,37 +310,20 @@ async function renderContent(){
   }
   const body = parsed ? parsed.body : (md||'');
 
-
   if (window.marked){
     box.innerHTML = window.marked.parse(body || '');
   }else{
     box.textContent = body || '';
   }
 
-  // 解析完 FM 后，用新 title/date 刷新标题栏
+  // 解析完 FM 后刷新标题栏与相关文章
   renderTitleAndMeta();
-    // 调用相关文章渲染
   renderRelated(CUR.slug, CUR.tags || [], CUR.category || '');
-
-
-  // 标签
-  const tags = CUR.tags || CUR.tag || [];
-  const wrapId = 'postTagsWrap';
-  let wrap = document.getElementById(wrapId);
-  if (!wrap){
-    wrap = document.createElement('div');
-    wrap.id = wrapId;
-    wrap.className = 'article-tags';
-    wrap.style.marginTop = '16px';
-    box.insertAdjacentElement('afterend', wrap);
-  }
-  wrap.innerHTML = (Array.isArray(tags) && tags.length)
-    ? tags.map(t=>`<a class="tag" href="${PREFIX}?q=${encodeURIComponent(t)}">${esc('#'+t)}</a>`).join('')
-    : '';
 }
+
 /* ---------------- 目录（右侧 #toc 自动生成） ---------------- */
 function renderTOC(){
-  const tocEl = document.getElementById('toc');   // 右侧目录容器
+  const tocEl = document.getElementById('toc');   // 右侧目录容器（全站唯一）
   const box   = document.getElementById('postContent'); // 正文容器
   if (!tocEl || !box){ return; }
 
@@ -365,7 +341,7 @@ function renderTOC(){
   const linkArr = [];
 
   headings.forEach((h, idx) => {
-    const level = Number(h.tagName[1] || 2);      // H1/H2/H3 → 1/2/3
+    const level = Number(h.tagName[1] || 2); // H1/H2/H3 → 1/2/3
 
     // 确保每个标题有可跳转的 id
     if (!h.id){
@@ -413,7 +389,7 @@ function renderTOC(){
   setupTOCScrollSpy(headingArr, linkArr);
 }
 
-
+/* ---------------- 滚动联动高亮（为空心圆圈定位提供“is-active-link”类） ---------------- */
 function setupTOCScrollSpy(headings, links){
   if (!headings.length || !links.length) return;
 
@@ -429,8 +405,6 @@ function setupTOCScrollSpy(headings, links){
     headings.forEach((h, idx) => {
       const rect = h.getBoundingClientRect();
       const delta = Math.abs(rect.top - offset);
-
-      // 只考虑已经“进入视口上方区域”的标题，并取距离 offset 最近的一个
       if (rect.top <= offset + 40 && delta < minDelta){
         minDelta = delta;
         activeIndex = idx;
@@ -467,6 +441,7 @@ function renderPrevNext(){
     </div>
   `;
 }
+
 /* ---------------- 相关文章推荐区（自动补足版） ---------------- */
 function renderRelated(currentSlug, currentTags = [], currentCategory = '') {
   const box = document.getElementById('relatedGrid');
@@ -519,4 +494,4 @@ function renderRelated(currentSlug, currentTags = [], currentCategory = '') {
       </div>
     </a>
   `).join('');
-}  
+}
