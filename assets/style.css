@@ -537,50 +537,69 @@ body.article-page #tocCard{
   box-shadow: 0 4px 16px rgba(0,0,0,.06);
 }
 
-/* 标题“文章目录”行 */
+/* ===== 文章页右侧目录（#tocCard）——替换整段 ===== */
+#tocCard{ background:#fff; }                        /* 卡片底色改白 */
+
+/* 标题行 */
 #tocCard .toc-title{
   display:flex; align-items:center; gap:10px;
-  font-size: 18px; font-weight: 800; color:#222; margin:0 0 12px;
+  font-size:18px; font-weight:800; color:#222; margin:0 0 12px;
 }
-#tocCard .toc-title i{ width:4px; height:18px; background:#D32F2F; border-radius:2px; display:inline-block; }
+#tocCard .toc-title i{
+  width:4px; height:18px; background:#D32F2F; border-radius:2px; display:inline-block;
+}
 
-/* 竖向时间轴主干 */
+/* 列表与主干竖线 */
 #tocCard .toc-list{
-  position: relative; list-style: none; margin: 0; padding: 6px 0 6px 28px;
+  position:relative;
+  list-style:none;
+  margin:0;
+  padding:6px 0 6px 28px;                          /* 给竖线+短横预留 */
+  line-height:1.35;                                 /* 行距更紧 */
 }
 #tocCard .toc-list::before{
-  content:""; position:absolute; left:12px; top:0; bottom:0;
-  width:1px; background:#e9e1da;            /* 主干竖线 */
-  border-radius:1px;
+  content:"";
+  position:absolute;
+  left:10px; top:0; bottom:0;                       /* 竖线固定在 x=10px */
+  width:2px; background:#ececec; border-radius:1px;
 }
 
-/* 每一项：分支短横 + 文本 */
+/* 每项的“短横线”，从竖线零缝隙连出 */
+#tocCard .toc-list-item{ position:relative; padding-left:18px; }
+#tocCard .toc-list-item::before{
+  content:"";
+  position:absolute;
+  left:10px;                                        /* 与竖线同 x，零缝隙 */
+  top:0.95em;                                       /* 视觉对齐文字中线 */
+  width:14px; height:2px;
+  background:#ececec;
+  transform:translateY(-1px);
+}
+
+/* 链接文本 */
 #tocCard .toc-link{
-  position: relative; display:block;
-  padding: 10px 0 10px 16px;                 /* 给短横留空间 */
-  font-size:16px; line-height:1.6; color:#333; text-decoration:none;
+  display:block;
+  padding:6px 4px;                                  /* 更紧凑 */
+  font-size:15px; color:#333; text-decoration:none;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left;
 }
-#tocCard .toc-link::before{
-  content:""; position:absolute; left:-16px; top:50%;
-  width:24px; height:1px; background:#e9e1da; transform:translateY(-50%); /* 分支短横 */
-}
 
-/* 层级缩进（2级/3级） */
-#tocCard .toc-level-2 .toc-link{ padding-left: 28px; }
-#tocCard .toc-level-2 .toc-link::before{ left:-4px; width:20px; }
-#tocCard .toc-level-3 .toc-link{ padding-left: 40px; font-size:15px; }
-#tocCard .toc-level-3 .toc-link::before{ left:8px; width:18px; }
+/* 层级缩进（2/3 级在文字上再退一点，但短横线仍从竖线起） */
+#tocCard .toc-level-2 .toc-link{ padding-left:6px; }
+#tocCard .toc-level-3 .toc-link{ padding-left:12px; font-size:14.5px; }
 
-/* 当前项：圆点 + 文字高亮 */
+/* 激活态：红色小圆圈 + 文字高亮 */
 #tocCard .toc-link.is-active-link{
-  color:#D32F2F; font-weight:700;
+  color:#D32F2F; font-weight:600;
 }
-#tocCard .toc-link.is-active-link::after{
-  content:""; position:absolute; left:7px; top:50%;
-  width:10px; height:10px; border:2px solid #D32F2F; background:#fff;
-  border-radius:50%; transform:translate(-50%,-50%);   /* 主干上的高亮圆点 */
+#tocCard .toc-link.is-active-link::before{
+  content:"";
+  position:absolute;
+  left:10px; top:0.95em;                            /* 圆圈画在主干竖线上 */
+  width:8px; height:8px; border-radius:50%;
+  background:#D32F2F;
+  transform:translate(-50%,-50%);
 }
 
-/* 悬停仅变色，不改变布局 */
+/* 悬停变色（不改变布局） */
 #tocCard .toc-link:hover{ color:#D32F2F; }
