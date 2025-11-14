@@ -512,19 +512,32 @@ article tr:nth-child(even),
   #postContent table { min-width: 600px; }
 }
 
-/* 目录卡片：竖向长方形（白底、可独立滚动） */
+/* 目录卡片（容器本身不滚动） /
 body.article-page #tocCard{
-  width: 380px;
-  max-width: 95%;
-  min-height: 60vh;
-  max-height: calc(100vh - var(--nav-h) - 48px);
-  overflow-y: auto;                 /* 目录内部滚动 */
-  margin: 0 auto;
-  padding: 18px 20px;
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0,0,0,.06);
+width: 380px;
+max-width: 95%;
+min-height: 60vh;
+/ 外层不设高度上限与滚动条 */
+max-height: none;
+overflow: visible;
+
+margin: 0 auto;
+padding: 18px 20px;
+background: #fff;
+border: 1px solid #eee;
+border-radius: 12px;
+box-shadow: 0 4px 16px rgba(0,0,0,.06);
+}
+/* 目录内容区（仅内层滚动） /
+@media (min-width: 992px){
+#toc{
+display: block;
+max-height: calc(100vh - var(--nav-h) - 72px); / 预留导航与内边距 */
+overflow-y: auto;
+overflow-x: hidden;
+overscroll-behavior: contain;
+scrollbar-gutter: stable;
+}
 }
 
 /* ===== 文章页右侧目录（#tocCard） ===== */
