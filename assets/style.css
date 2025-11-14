@@ -369,17 +369,7 @@ main{min-width:0}
 }
 
 
-/* 只在文章详情页中使用卡片式“文章目录”模块，避免影响首页其它 side-square */
-body.article-page .side-square{
-  width:100%;
-  aspect-ratio:auto;
-  padding:16px 18px 18px;
-  border-radius:12px;
-  background:#fff;
-  border:1px solid var(--line);
-  box-shadow:var(--shadow);
-  box-sizing:border-box;  
-}
+
 
 
 /* 文章页：正文字体统一放大到 15px，行高 1.7，微软雅黑 */
