@@ -1,3 +1,4 @@
+<!-- /plus/article.html -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -28,7 +29,7 @@
     <div class="search"><span class="icon">🔍</span><input id="searchInput" type="search" placeholder="搜索"></div>
   </header>
 
-  <!-- 两栏容器 -->
+  <!-- 两栏容器（左：main，右：aside） -->
   <div class="container">
     <main class="main-col">
       <!-- 面包屑 -->
@@ -46,22 +47,22 @@
 
       <!-- 上/下一篇 -->
       <div id="postNav" class="post-nav"></div>
-      <!-- 相关文章 -->
-<section id="relatedPosts" class="card related-box" aria-labelledby="relatedTitle">
-  <h2 id="relatedTitle" class="block-title"><i class="bar"></i>相关文章</h2>
-  <div id="relatedGrid" class="grid-2"></div>
-</section>
 
+      <!-- 相关文章 -->
+      <section id="relatedPosts" class="card related-box" aria-labelledby="relatedTitle">
+        <h2 id="relatedTitle" class="block-title"><i class="bar"></i>相关文章</h2>
+        <div id="relatedGrid" class="grid-2"></div>
+      </section>
     </main>
-  <!-- 右侧栏（第二列）：目录 + 备用卡片 -->
-  <aside class="sidebar sticky">
-    <section class="card side-square" id="tocCard">
-      <h3 class="block-title"><i class="bar"></i>文章目录</h3>
-      <nav id="toc" class="toc"></nav>
-    </section>
-    <section class="card side-square" id="articleSideBox2"></section>
-  </aside>
-  
+
+    <!-- 右侧栏：一个 aside 内放两个正方形卡片；全站仅此处存在 id="toc" -->
+    <aside class="side-col sticky">
+      <section class="card side-square" id="tocCard">
+        <h3 class="block-title"><i class="bar"></i>文章目录</h3>
+        <nav id="toc" class="toc"></nav>
+      </section>
+      <section class="card side-square" id="articleSideBox2"></section>
+    </aside>
   </div>
 
   <footer class="footer">
@@ -100,14 +101,12 @@
         .catch(() => loadScript(CDN_MARKED))
         .then(() => {
           if (!window.marked) throw new Error('marked 已加载但未挂到 window');
-          // 开启 GFM 表格渲染、稳定的标题 id 生成（避免中文标题被“混淆”）
           try {
             window.marked.setOptions({ gfm: true, breaks: false, headerIds: true, mangle: false });
           } catch (_) {}
         })
         .catch(err => {
           console.error('[marked] 加载失败：', err);
-          // 即使没有 marked，也继续加载 article.js（至少能显示纯文本）
         })
         .finally(() => {
           loadScript(ARTICLE_JS)
