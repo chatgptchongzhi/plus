@@ -253,3 +253,13 @@ body.article-page #tocCard{
 #tocCard .toc-level-2 .toc-link{ margin-left:8px; }
 #tocCard .toc-level-3 .toc-link{ margin-left:16px; font-size:14.5px; }
 #tocCard .toc-link:hover{ color:#D32F2F; }
+/* === 调整目录容器大小为 360px 宽（匹配截图）=== */
+@media (min-width: 992px){
+  body.article-page #tocCard{
+    width: 360px;         /* 目录卡片固定宽度 */
+    max-width: 92%;       /* 防止极窄屏时溢出侧栏 */
+    padding: 16px 20px;   /* 与截图一致的内边距 */
+    border-radius: 12px;  /* 圆角一致 */
+    box-shadow: 0 6px 24px rgba(0,0,0,.06);
+  }
+}
