@@ -602,17 +602,18 @@ box-shadow: 0 4px 16px rgba(0,0,0,.06);
   color:#D32F2F; font-weight:600;
 }
 #tocCard .toc-link.is-active-link::before{
-  content:"";
-  position:absolute;
-  left:7px;                          /* 仍在主干上 */
-  top:50%;                            /* 与当前行中线对齐 */
-  width:10px; height:10px;
-  border:2px solid #D32F2F;           /* 空心红圈 */
-  background:#fff;                    /* 白心，避免与文字融合 */
-  border-radius:50%;
-  transform:translate(-50%,-50%);
-  z-index: 1;                         /* 在短横之上，但文字在 34px 之后，不会被遮挡 */
+content:"";
+position:absolute;
+left: calc(14px - 34px); /* 方案1：向左补偿，14=竖干X，34=li的padding-left */
+top:50%;
+width:10px; height:10px;
+border:2px solid #D32F2F;
+background:#fff;
+border-radius:50%;
+transform:translate(-50%,-50%);
+z-index:1;
 }
+
 /* === TOC：把红色圈圈整体左移，并与竖干/短横保持对齐（强制覆盖） === */
 body.article-page #tocCard .toc-link.is-active-link::before{
   left: 12px !important;              /* 红点相对链接盒子的 X；数值越小越靠左 */
