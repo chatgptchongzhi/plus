@@ -512,23 +512,22 @@ article tr:nth-child(even),
   #postContent table { min-width: 600px; }
 }
 
-/* 目录卡片（容器本身不滚动） /
+/* ===== 目录卡片（容器本身不滚动） ===== */
 body.article-page #tocCard{
-width: 380px;
-max-width: 95%;
-min-height: 60vh;
-/ 外层不设高度上限与滚动条 */
-max-height: none;
-overflow: visible;
+  width: 380px;
+  max-width: 95%;
+  min-height: 60vh;
+  /* 外层不设高度上限与滚动条 */
+  max-height: none;
+  overflow: visible;
 
-margin: 0 auto;
-padding: 18px 20px;
-background: #fff;
-border: 1px solid #eee;
-border-radius: 12px;
-box-shadow: 0 4px 16px rgba(0,0,0,.06);
+  margin: 0 auto;
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.06);
 }
-
 
 /* ===== 文章页右侧目录（#tocCard） ===== */
 #tocCard{ background:#fff; }
@@ -557,33 +556,29 @@ box-shadow: 0 4px 16px rgba(0,0,0,.06);
   width:2px; background:#ececec; border-radius:1px;
 }
 
-/* ======= TOC：主干、短横、文字对齐（修正红点遮字） ======= */
-
-/* 列表容器：保持你之前设置不变即可 */
-
-/* 每一项为主干 + 短横 + 文字预留统一空间 */
+/* 每一项：为主干 + 短横 + 文字预留统一空间 */
 #tocCard .toc-list-item{
   position: relative;
-  padding-left: 34px;                 /* 文字起始 = 竖干(14) + 短横(20) = 34px */
+  padding-left: 34px;               /* 文字起始 = 竖干(14) + 短横(20) = 34px */
 }
 
 /* 短横：从主干零缝隙连出，并与文字中线对齐 */
 #tocCard .toc-list-item::before{
   content: "";
   position: absolute;
-  left: 14px;                         /* 与主干竖线同一 X */
-  top: 50%;                           /* 精准对齐当前行垂直中线 */
-  width: 20px;                        /* 短横长度正好延伸到文字起点 */
+  left: 14px;                       /* 与主干竖线同一 X */
+  top: 50%;
+  width: 20px;                      /* 短横长度正好延伸到文字起点 */
   height: 2px;
   background: #ececec;
   transform: translateY(-50%);
 }
 
-/* 链接文字：去掉会把文字往左推的多余内边距，避免被红点覆盖 */
+/* 链接文字：从 34px 处开始，不再额外左内边距 */
 #tocCard .toc-link{
   position: relative;
   display: block;
-  padding: 6px 0;                     /* 不再额外左内边距，文字从 34px 处开始 */
+  padding: 6px 0;
   font-size: 15px;
   line-height: 1.45;
   color: #333;
@@ -597,34 +592,22 @@ box-shadow: 0 4px 16px rgba(0,0,0,.06);
 #tocCard .toc-level-2 .toc-link{ margin-left: 8px; }
 #tocCard .toc-level-3 .toc-link{ margin-left: 16px; font-size: 14.5px; }
 
-/* 激活态：空心红点放在主干上，且不会压到文字 */
+/* 激活态：空心红点放在主干上，且不会压到文字（关键补偿） */
 #tocCard .toc-link.is-active-link{
   color:#D32F2F; font-weight:600;
 }
 #tocCard .toc-link.is-active-link::before{
-content:"";
-position:absolute;
-left: calc(14px - 34px); /* 方案1：向左补偿，14=竖干X，34=li的padding-left */
-top:50%;
-width:10px; height:10px;
-border:2px solid #D32F2F;
-background:#fff;
-border-radius:50%;
-transform:translate(-50%,-50%);
-z-index:1;
+  content:"";
+  position:absolute;
+  left: calc(14px - 34px);          /* 竖干X=14px，li padding-left=34px → 左移20px */
+  top:50%;
+  width:10px; height:10px;
+  border:2px solid #D32F2F;         /* 空心红圈 */
+  background:#fff;                  /* 白心，避免与文字融合 */
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  z-index:1;                        /* 在短横之上；文字起点在 34px，不会被遮挡 */
 }
 
-/* === TOC：把红色圈圈整体左移，并与竖干/短横保持对齐（强制覆盖） === */
-body.article-page #tocCard .toc-link.is-active-link::before{
-  left: 12px !important;              /* 红点相对链接盒子的 X；数值越小越靠左 */
-  transform: translate(-50%, -50%) !important;
-}
-
-body.article-page #tocCard .toc-list-item::before{
-  left: 12px !important;              /* 短横起点与红点、竖干同一条线 */
-  width: 20px !important;             /* 短横长度保持不变 */
-}
-
-body.article-page #tocCard .toc-list-item{
-  padding-left: 32px !important;      /* 文字起点 = left(12) + 短横(20) ≈ 32，避免红点压字 */
-}
+/* 悬停变色（不改变布局） */
+#tocCard .toc-link:hover{ color:#D32F2F; }
