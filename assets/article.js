@@ -85,7 +85,7 @@ window.POSTS = POSTS;  // ✅ 补上这行（让 renderRelated 能访问到文�
 window.CUR = CUR; // 让相关文章区能访问当前文章
   renderTitleAndMeta();
   await renderContent();   // ← 内含 file 优先兜底
-  renderTOC();
+
   renderPrevNext();
   renderBreadcrumb();
 
@@ -348,7 +348,7 @@ async function renderContent(){
 
 /* ---------------- 目录（不用 tocbot，自己生成 + 滚动联动高亮） ---------------- */
 function renderTOC(){
-  const tocEl = q('#toc');          // 右侧“目录”这个盒子
+
   const box   = q('#postContent');  // 文章正文
   if (!tocEl || !box) return;
 
