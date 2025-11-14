@@ -524,8 +524,8 @@ article tr:nth-child(even),
 }
 /* 目录卡片：竖向长方形 */
 body.article-page #tocCard{
-  width: 350px;                 /* 固定偏窄的列宽 */
-  max-width: 88%;               /* 防止小屏溢出 */
+  width: 380px;                 /* 固定偏窄的列宽 */
+  max-width: 95%;               /* 防止小屏溢出 */
   min-height: 60vh;             /* 有“竖长”观感 */
   max-height: calc(100vh - var(--nav-h) - 48px); /* 不超过视口 */
   overflow-y: auto;             /* 目录多时内部滚动 */
