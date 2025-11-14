@@ -85,7 +85,7 @@ window.POSTS = POSTS;  // ✅ 补上这行（让 renderRelated 能访问到文�
 window.CUR = CUR; // 让相关文章区能访问当前文章
   renderTitleAndMeta();
   await renderContent();   // ← 内含 file 优先兜底
-renderTOC();     目录生成
+renderTOC();// 目录生成
   renderPrevNext();
   renderBreadcrumb();
 
